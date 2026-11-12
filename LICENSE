@@ -4,7 +4,7 @@ A projekt saját kódjára a jogtulajdonos még nem választott terjesztési lic
 Ez a fájl nem ad külön felhasználási vagy terjesztési engedélyt.
 
 Külső komponensek:
-- PySide6 / Qt: LGPLv3, GPLv3 vagy kereskedelmi licenc, a komponens feltételei szerint.
+- PySide2 / Qt: LGPLv3, GPLv3 vagy kereskedelmi licenc, a komponens feltételei szerint.
   https://doc.qt.io/qtforpython-6/licenses.html
 - PyMuPDF / MuPDF: GNU AGPLv3 vagy Artifex kereskedelmi licenc.
   https://pymupdf.readthedocs.io/en/latest/about.html#license-and-copyright

@@ -1,5 +1,5 @@
 from collections import OrderedDict
-import pymupdf
+import fitz as pymupdf
 from .models import EDPDError
 
 

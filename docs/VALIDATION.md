@@ -1,3 +1,11 @@
+# 0.2.0 – Windows 1607 célplatform
+
+A Qt 5.15.2 / PySide2 5.15.2.1 / Python 3.10 átállás után Linuxon **30 teszt sikeres**, továbbá a csomagolással azonos belépési pont önellenőrzése mind a nyolc funkcionális ellenőrzést teljesítette. Ez nem 1607-es futtatási bizonyíték. A Windows build és a kiadás eredményét a sikeres futás után rögzítjük.
+
+Valódi Windows 10 1607-es VM nem érhető el a felhőkörnyezetben; a felhasználó a céges 1607-es célgépen tudja futtatni a [Python nélküli EXE-önellenőrzést](WINDOWS1607.md).
+
+## Korábbi 0.1.0 eredmények (Qt 6, 1607-re nem megfelelő)
+
 # Ellenőrzési eredmények – 0.1.0
 
 Dátum: 2026. november 12.

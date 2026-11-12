@@ -1,8 +1,8 @@
 import os
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 import pytest
-import pymupdf
-from PySide6.QtWidgets import QApplication
+import fitz as pymupdf
+from PySide2.QtWidgets import QApplication
 
 
 @pytest.fixture(scope='session')

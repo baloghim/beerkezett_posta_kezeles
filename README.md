@@ -4,9 +4,9 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
-**[EDPD – Windows verzió letöltése (v0.1.0)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v0.1.0/EDPD-Manager-Windows-x64.zip)**
+A **0.2.0** verzió Qt 5.15 / Python 3.10 alapú, Windows 10 **1607 x64 (build 14393)** célplatformhoz készül. Az új kiadás letöltési linkjét csak sikeres build és kiadás után állítjuk be. A korábbi **0.1.0 Qt 6-os csomag ehhez a célgéphez nem megfelelő**.
 
-A Windows build és a kiadás sikeresen lefutott; a letöltött ZIP épségét és a Windows EXE/Qt-platformplugin jelenlétét ellenőriztük. A fizikai Windows-nyomtatás és a valós SMB-környezet kézi átvételi próbája még szükséges. [Ellenőrzési eredmények](docs/VALIDATION.md).
+A tényleges 1607-es indítás még ellenőrizendő; a modern runner sikere nem ilyen bizonyíték. [Kompatibilitási vizsgálat és helyi EXE-önellenőrzés](docs/WINDOWS1607.md).
 
 A [Windows kiadás munkafolyamat](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) sikeres futásának **Artifacts** részében az `EDPD-Manager-Windows-x64` csomag tölthető le. Artifact csak sikeres build után létezik; letöltéséhez GitHub-bejelentkezés szükséges lehet. A `v*` verziócímkével indított sikeres futás verziózott GitHub Release-t és ZIP-mellékletet is létrehoz.
 
@@ -26,7 +26,7 @@ A [Windows kiadás munkafolyamat](https://github.com/baloghim/beerkezett_posta_k
 
 ## Rendszerkövetelmények és indítás
 
-Windows 10/11 x64; ajánlott Full HD képernyő, olvasási jogosultság a forráshoz, írási/törlési és hálózati zárolási jogosultság a munkamappához. A teljes kiadási ZIP-et egy helyi mappába kell kibontani, majd az `EDPD-Manager.exe` indítható. A mellette található `_internal` mappát is meg kell tartani. A kiadás használatához nem kell Python.
+Célplatform: Windows 10 1607 x64 (build 14393); ajánlott Full HD képernyő, olvasási jogosultság a forráshoz, írási/törlési és hálózati zárolási jogosultság a munkamappához. A teljes kiadási ZIP-et egy helyi mappába kell kibontani, majd az `EDPD-Manager.exe` indítható. A mellette található `_internal` mappát is meg kell tartani. A kiadás használatához nem kell Python.
 
 ## Mappák beállítása
 
@@ -62,15 +62,15 @@ A működési határokat, a megszakadt műveletek kezelését és a szükséges 
 
 ## Fejlesztői telepítés
 
-Python 3.12 vagy újabb kompatibilis verzió szükséges. Windows PowerShell:
+Python **3.10** szükséges (PySide2 nem támogatja a 3.11+ verziókat). A Windows kiadás Python **3.10.11 x64** verzióval készül. Windows PowerShell:
 
 ```powershell
-python -m venv .venv
+py -3.10 -m venv .venv
 .venv\Scripts\python -m pip install -e ".[dev]"
 .venv\Scripts\python -m edpd.main
 ```
 
-Linuxon ugyanez `.venv/bin/python` útvonallal futtatható. Meglévő izolált checkoutban dolgozzon; új Git worktree nem szükséges. A PySide6 és PyMuPDF verziója rögzített a projektleírásban.
+Linuxon ugyanez `.venv/bin/python` útvonallal futtatható. Meglévő izolált checkoutban dolgozzon; új Git worktree nem szükséges. A PySide2 és PyMuPDF verziója rögzített a projektleírásban.
 
 ## Tesztek futtatása
 
@@ -88,14 +88,14 @@ A tesztek kizárólag ideiglenes, szintetikus adatokkal dolgoznak. Valós NEAK h
 Windows környezetben, telepített fejlesztői függőségekkel:
 
 ```powershell
-.venv\Scripts\python -m PyInstaller --noconfirm --clean --windowed --onedir --name EDPD-Manager --paths src --collect-all pymupdf run_edpd.py
+.venv\Scripts\python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
 Compress-Archive -Path dist/EDPD-Manager -DestinationPath EDPD-Manager-Windows-x64.zip
 ```
 
-A PyInstaller Qt-hookjai gyűjtik a PySide6 modulokat és platformpluginokat. A GitHub Actions Windows runneren telepít, tesztel, csomagol és feltölti az artifactot. Verziózott kiadáshoz `v0.1.0` jellegű címke szükséges. Kiadás előtt a verziószámot a `pyproject.toml` és `src/edpd/__init__.py` fájlokban együtt kell módosítani.
+A PyInstaller Qt-hookjai gyűjtik a PySide2 modulokat és platformpluginokat. A GitHub Actions Windows runneren telepít, tesztel, csomagol és feltölti az artifactot. Verziózott kiadáshoz `v0.1.0` jellegű címke szükséges. Kiadás előtt a verziószámot a `pyproject.toml` és `src/edpd/__init__.py` fájlokban együtt kell módosítani.
 
 ## Verzió és licencek
 
-Verzió: **0.1.0**. A Windows EXE kiadva; az éles hivatali bevezetéshez a dokumentált Windows/SMB/nyomtatási átvételi próba még hátravan.
+Verzió: **0.2.0**. Az új Windows kiadás ellenőrzése folyamatban; az éles hivatali bevezetéshez a dokumentált Windows/SMB/nyomtatási átvételi próba még hátravan.
 
-A projekt saját kódjára nincs megadva felhasználási licenc; ennek kiválasztása a jogtulajdonos feladata. A PySide6 és a PyMuPDF külön licencei érvényesek. A PyMuPDF AGPL/kereskedelmi feltételeit és a Qt terjesztési követelményeit Windows-csomag terjesztése előtt rendezni kell.
+A projekt saját kódjára nincs megadva felhasználási licenc; ennek kiválasztása a jogtulajdonos feladata. A PySide2 és a PyMuPDF külön licencei érvényesek. A PyMuPDF AGPL/kereskedelmi feltételeit és a Qt terjesztési követelményeit Windows-csomag terjesztése előtt rendezni kell.

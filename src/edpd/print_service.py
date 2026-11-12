@@ -1,7 +1,8 @@
-from PySide6.QtCore import Qt, QRectF
-from PySide6.QtGui import QImage, QPainter
-from PySide6.QtPrintSupport import QPrinter, QPrintDialog
-from PySide6.QtWidgets import QDialog
+from .qt_image import image_from_pixmap
+from PySide2.QtCore import Qt, QRectF
+from PySide2.QtGui import QImage, QPainter
+from PySide2.QtPrintSupport import QPrinter, QPrintDialog
+from PySide2.QtWidgets import QDialog
 from .models import EDPDError
 
 
@@ -18,7 +19,7 @@ def print_pdf(pdf, parent):
     dialog.setMinMax(1, pdf.pages)
     dialog.setOption(QPrintDialog.PrintDialogOption.PrintPageRange, True)
     dialog.setOption(QPrintDialog.PrintDialogOption.PrintSelection, False)
-    if dialog.exec() != QDialog.DialogCode.Accepted:
+    if dialog.exec_() != QDialog.DialogCode.Accepted:
         return
     render_to_printer(pdf, printer)
 
@@ -38,7 +39,7 @@ def render_to_printer(pdf, printer):
             if index and not printer.newPage():
                 raise EDPDError('A nyomtatás megszakadt.')
             pix = pdf.render(page, 2.5)
-            image = QImage(pix.samples, pix.width, pix.height, pix.stride, QImage.Format.Format_RGB888).copy()
+            image = image_from_pixmap(pix)
             paper = printer.pageRect(QPrinter.Unit.DevicePixel)
             size = image.size().scaled(int(paper.width()), int(paper.height()), Qt.AspectRatioMode.KeepAspectRatio)
             bounds = QRectF(paper.x() + (paper.width() - size.width()) / 2,

@@ -1,6 +1,7 @@
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QImage, QPixmap, QIcon, QPainter, QColor, QPen
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QToolBar, QScrollArea, QLabel, QMessageBox, QStyle
+from ..qt_image import image_from_pixmap
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QImage, QPixmap, QIcon, QPainter, QColor, QPen
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QToolBar, QScrollArea, QLabel, QMessageBox, QStyle
 from ..pdf_service import PDFService
 from ..print_service import print_pdf
 
@@ -70,7 +71,7 @@ class PDFViewer(QWidget):
                 if self.fit_mode == 'page':
                     self.scale = min(self.scale, height / rect.height)
             pix = self.pdf.render(self.page, self.scale)
-            image = QImage(pix.samples, pix.width, pix.height, pix.stride, QImage.Format.Format_RGB888).copy()
+            image = image_from_pixmap(pix)
             self.label.setPixmap(QPixmap.fromImage(image))
             self.label.resize(pix.width, pix.height)
             self.page_label.setText(f'  {self.page + 1} / {self.pdf.pages}  ')

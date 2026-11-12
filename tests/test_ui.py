@@ -1,6 +1,6 @@
 import time
 import zipfile
-from PySide6.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QMessageBox
 from edpd.config import Settings
 from edpd.ui.main_window import MainWindow
 from edpd.ui.pdf_viewer import PDFViewer
@@ -63,12 +63,12 @@ def test_main_workflow_and_settings(app, folders, pdf_bytes, tmp_path, monkeypat
 
 
 def test_print_cancel_never_renders(app, pdf_bytes, monkeypatch):
-    from PySide6.QtPrintSupport import QPrintDialog
-    from PySide6.QtWidgets import QDialog
+    from PySide2.QtPrintSupport import QPrintDialog
+    from PySide2.QtWidgets import QDialog
     import edpd.print_service as printing
     from edpd.pdf_service import PDFService
     pdf = PDFService(pdf_bytes)
-    monkeypatch.setattr(QPrintDialog, 'exec', lambda self: QDialog.DialogCode.Rejected)
+    monkeypatch.setattr(QPrintDialog, 'exec_', lambda self: QDialog.DialogCode.Rejected)
     monkeypatch.setattr(printing, 'render_to_printer', lambda *args: (_ for _ in ()).throw(AssertionError('Nyomtatás megszakítás után')))
     printing.print_pdf(pdf, None)
     pdf.close()
@@ -83,7 +83,7 @@ def test_ui_extract_delete_and_clear(app, folders, pdf_bytes, tmp_path, monkeypa
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
     monkeypatch.setattr(QMessageBox, 'information', lambda *args: None)
     monkeypatch.setattr(QMessageBox, 'question', lambda *args: QMessageBox.StandardButton.Yes)
-    monkeypatch.setattr(QMessageBox, 'exec', lambda self: 0)
+    monkeypatch.setattr(QMessageBox, 'exec_', lambda self: 0)
     monkeypatch.setattr(QMessageBox, 'clickedButton', lambda self: next(b for b in self.buttons() if b.text() == 'Meglévők kihagyása'))
     window = MainWindow(Settings(source=str(source), target=str(target)))
     window.show()
@@ -98,3 +98,36 @@ def test_ui_extract_delete_and_clear(app, folders, pdf_bytes, tmp_path, monkeypa
     wait_for(app, lambda: not (target / 'unrelated.pdf').exists() and not window.jobs)
     assert not errors
     window.close()
+
+
+def test_packaged_entry_selftest_without_real_folders(tmp_path):
+    import json
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+    report = tmp_path / 'result.json'
+    result = subprocess.run([sys.executable, '-m', 'edpd.main', '--self-test', '--report', str(report)],
+                            capture_output=True, text=True, timeout=60, env=os.environ.copy())
+    assert result.returncode == 0, result.stderr
+    data = json.loads(report.read_text())
+    assert data['passed'] and len(data['checks']) == 8
+    assert data['versions']['Qt'] == '5.15.2'
+    assert not data['host']['frozen']
+    if sys.platform != 'win32' or sys.getwindowsversion().build != 14393:
+        assert not data['windows1607_verified']
+
+
+def test_selftest_requires_real_1607(tmp_path):
+    import json
+    import os
+    import subprocess
+    import sys
+    if sys.platform == 'win32' and sys.getwindowsversion().build == 14393:
+        return  # A valódi gépen a másik teszt ellenőrzi a sikert.
+    report = tmp_path / 'reject.json'
+    process = subprocess.run([sys.executable, '-m', 'edpd.main', '--self-test', '--require-windows1607', '--report', str(report)],
+                             capture_output=True, timeout=30, env=os.environ.copy())
+    assert process.returncode == 1
+    result = json.loads(report.read_text())
+    assert not result['passed'] and not result['windows1607_verified']

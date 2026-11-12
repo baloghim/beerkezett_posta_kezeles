@@ -225,9 +225,9 @@ def test_zip_read_no_extraction(folders, pdf_bytes):
 
 
 def test_print_full_pages_to_pdf(app, pdf_bytes, tmp_path):
-    from PySide6.QtPrintSupport import QPrinter
+    from PySide2.QtPrintSupport import QPrinter
     from edpd.print_service import render_to_printer
-    import pymupdf
+    import fitz as pymupdf
     output = tmp_path / 'printed.pdf'
     printer = QPrinter(QPrinter.PrinterMode.HighResolution)
     printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)

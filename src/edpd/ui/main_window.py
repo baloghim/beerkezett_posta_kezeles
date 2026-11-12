@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
-from PySide6.QtCore import Qt, QTimer, QObject, Signal, QRunnable, QThreadPool, QByteArray
-from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
+from PySide2.QtCore import Qt, QTimer, QObject, Signal, QRunnable, QThreadPool, QByteArray
+from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView, QStyle)
 from ..file_service import FileService, validate_paths
 from ..state_service import inventory, day_status, document_status
@@ -241,7 +241,7 @@ class MainWindow(QMainWindow):
         cancel = box.addButton('Mégse', QMessageBox.ButtonRole.RejectRole)
         box.setDefaultButton(skip)
         box.setEscapeButton(cancel)
-        box.exec()
+        box.exec_()
         if box.clickedButton() not in (skip, overwrite):
             return
         mode = 'overwrite' if box.clickedButton() == overwrite else 'skip'
@@ -278,7 +278,7 @@ class MainWindow(QMainWindow):
 
     def configure(self):
         dialog = SettingsDialog(self.settings, self)
-        if dialog.exec():
+        if dialog.exec_():
             candidate = dialog.result_settings()
             def save():
                 check_settings(candidate)

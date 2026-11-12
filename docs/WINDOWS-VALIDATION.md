@@ -1,6 +1,8 @@
 # Windows és hálózati átvételi próba
 
-Éles bevezetés előtt Windows 10 és Windows 11 gépen, kizárólag külön tesztmegosztással végezze el. Valós hivatali dokumentumokat ne másoljon a tesztkörnyezetbe.
+Éles bevezetés előtt elsőként a tényleges Windows 10 1607 x64 (build 14393) célgépen, kizárólag külön tesztmegosztással végezze el. Valós hivatali dokumentumokat ne másoljon a tesztkörnyezetbe.
+
+A [1607-es EXE-önellenőrzést](WINDOWS1607.md) futtassa le a részletes próba előtt. A modern CI runner eredménye nem helyettesíti ezt.
 
 1. A teljes kiadási ZIP kibontása után indítsa az `EDPD-Manager.exe` fájlt olyan gépen is, ahol nincs Python. Ellenőrizze a Qt-pluginok betöltését.
 2. Adjon meg két külön tesztmappát. Próbáljon meghajtóbetűjelet, UNC-útvonalat, ékezetes neveket, mappahivatkozást és ugyanannak a mappának különböző elérési útjait. Az azonos és egymásba ágyazott forrás/cél beállítást a programnak el kell utasítania.

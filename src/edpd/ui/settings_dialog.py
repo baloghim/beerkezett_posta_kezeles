@@ -1,8 +1,8 @@
 from dataclasses import replace
 import tempfile
 from pathlib import Path
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPushButton,
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPushButton,
                               QDialogButtonBox, QHBoxLayout, QFileDialog, QSlider, QLabel)
 from ..file_service import validate_paths
 
