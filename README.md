@@ -4,9 +4,13 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
-A **0.2.1** verzió Qt 5.15 / Python 3.10 alapú, Windows 10 **1607 x64 (build 14393)** célplatformhoz készül. Az új kiadás letöltési linkjét csak sikeres build és kiadás után állítjuk be. A korábbi **0.1.0 Qt 6-os csomag ehhez a célgéphez nem megfelelő**.
+**[EDPD – Windows verzió letöltése (v0.2.1)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v0.2.1/EDPD-Manager-Windows-x64.zip)**
 
-A tényleges 1607-es indítás még ellenőrizendő; a modern runner sikere nem ilyen bizonyíték. [Kompatibilitási vizsgálat és helyi EXE-önellenőrzés](docs/WINDOWS1607.md).
+A kiadás Python **3.10.11**, PySide2 **5.15.2.1 / Qt 5.15.2** és PyMuPDF **1.23.26** alapú, Windows 10 **1607 x64 (build 14393)** célplatformhoz készült. A teljes ZIP-et új helyi mappába bontsa ki; Python vagy Visual C++ fejlesztőeszköz telepítése nem szükséges. A szükséges alkalmazáslokális runtime DLL-ek a csomagban vannak.
+
+A Windows build, a csomagolt EXE nyolc funkcionális önellenőrzése, a DLL-függőségi vizsgálat és a letöltött ZIP ellenőrző összege sikeres. **A tényleges Windows 10 1607-es céges gépen az indítás még igazolandó**; a modern runner eredménye ezt nem helyettesíti. [Python nélkül futtatható célgépes önellenőrzés](docs/WINDOWS1607.md) · [Részletes eredmények](docs/VALIDATION.md).
+
+A korábbi **v0.1.0 Qt 6-os csomag a 1607-es géphez nem megfelelő**. A **v0.2.0** runtime-készlete hiányos volt; helyette a **v0.2.1** használandó.
 
 A [Windows kiadás munkafolyamat](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) sikeres futásának **Artifacts** részében az `EDPD-Manager-Windows-x64` csomag tölthető le. Artifact csak sikeres build után létezik; letöltéséhez GitHub-bejelentkezés szükséges lehet. A `v*` verziócímkével indított sikeres futás verziózott GitHub Release-t és ZIP-mellékletet is létrehoz.
 
@@ -96,6 +100,6 @@ A PyInstaller Qt-hookjai gyűjtik a PySide2 modulokat és platformpluginokat. A 
 
 ## Verzió és licencek
 
-Verzió: **0.2.1**. Az új Windows kiadás ellenőrzése folyamatban; az éles hivatali bevezetéshez a dokumentált Windows/SMB/nyomtatási átvételi próba még hátravan.
+Verzió: **0.2.1**. A Windows build és a kiadás elkészült; az éles hivatali bevezetéshez a dokumentált Windows/SMB/nyomtatási átvételi próba még hátravan.
 
 A projekt saját kódjára nincs megadva felhasználási licenc; ennek kiválasztása a jogtulajdonos feladata. A PySide2 és a PyMuPDF külön licencei érvényesek. A PyMuPDF AGPL/kereskedelmi feltételeit és a Qt terjesztési követelményeit Windows-csomag terjesztése előtt rendezni kell.
