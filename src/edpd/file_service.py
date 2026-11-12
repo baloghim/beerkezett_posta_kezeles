@@ -24,9 +24,9 @@ class FileService:
         self.source, self.target = Path(source), Path(target)
         self.capabilities = capabilities
 
-    def _current(self, selected):
+    def _current(self, selected, source):
         # Zárolás után újraolvasás, nem a felület elavult listájára támaszkodunk.
-        days = ZipService().scan(self.source)
+        days = ZipService().scan(source)
         day = next((d for d in days if d.date == selected.date), None)
         if day is None or day != selected:
             raise EDPDError('A napi csomag megváltozott. Frissítse a listát!')
@@ -43,7 +43,7 @@ class FileService:
         written = skipped = 0
         with workspace_lock(target):
             validate_paths(source, target)
-            days = self._current(day)
+            days = self._current(day, source)
             for doc in day.documents:
                 if any(other.date != day.date and any(d.name.casefold() == doc.name.casefold()
                        and (d.crc, d.size) != (doc.crc, doc.size) for d in other.documents) for other in days):
@@ -87,7 +87,7 @@ class FileService:
             validate_paths(source, target)
             files = inventory(target)
             if day is not None:
-                days = self._current(day)
+                days = self._current(day, source)
                 if any(other.error for other in days):
                     raise EDPDError('Hibás archívum miatt a napi fájlok tulajdonosa nem állapítható meg biztonságosan.')
                 names = {d.name.casefold() for d in day.documents}

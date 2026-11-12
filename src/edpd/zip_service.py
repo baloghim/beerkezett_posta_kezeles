@@ -35,7 +35,7 @@ class ZipService:
         with self.mutex:
             grouped = {}
             seen = set()
-            for path in Path(source).iterdir():
+            for path in Path(source).resolve(strict=True).iterdir():
                 if path.suffix.lower() != '.zip' or not path.is_file():
                     continue
                 try:

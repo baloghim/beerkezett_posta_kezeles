@@ -282,3 +282,20 @@ def test_partial_delete_failure_reported(folders, monkeypatch):
         service.delete(day, confirmed=True, expected_names={'a.pdf', 'b.pdf'})
     assert not (target / 'a.pdf').exists()
     assert (target / 'b.pdf').exists()
+
+
+def test_archive_paths_are_canonical_across_source_aliases(folders):
+    source, target = folders
+    archive(source)
+    alias = source.parent / 'archive-alias'
+    try:
+        alias.symlink_to(source, target_is_directory=True)
+    except OSError:
+        pytest.skip('A tesztfiók nem hozhat létre mappahivatkozást')
+    selected_day = selected(alias)
+    assert selected_day == selected(source)
+    assert selected_day.archives[0].parent == source.resolve()
+    service = FileService(alias, target)
+    service.extract(selected_day)
+    assert (target / 'árvíztűrő.pdf').read_bytes() == b'first'
+    service.delete(selected_day, confirmed=True, expected_names={'árvíztűrő.pdf'})
