@@ -4,9 +4,9 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
-**Az EDPD 2.0 kiadása készül.** Az alábbi letöltés a korábbi, Windows 1607-en kipróbált **0.2.1** verzió; az új 2.0-funkciók a fejlesztői ágon vannak. A közvetlen linket csak a sikeresen közzétett új ZIP ellenőrzése után frissítjük.
+**[EDPD 2.0 – Windows-verzió letöltése (v2.0.0)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.0.0/EDPD-Manager-Windows-x64.zip)**
 
-**[EDPD – korábbi Windows-verzió letöltése (v0.2.1)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v0.2.1/EDPD-Manager-Windows-x64.zip)**
+A Windows build, a tesztcsomag, a csomagolt EXE kilenc funkcionális önellenőrzése és a DLL-audit sikeres. A közzétett ZIP-et letöltöttük: CRC-ellenőrzése hibátlan, SHA-256 ellenőrző összege egyezik, a teljes szükséges runtime-készlet jelen van.
 
 A technológiai alap változatlan: Python **3.10.11 x64**, PySide2 **5.15.2.1 / Qt 5.15.2**, PyMuPDF **1.23.26**. A teljes ZIP-et **új helyi mappába** bontsa ki, majd indítsa az `EDPD-Manager.exe` fájlt. Az `_internal` mappát is meg kell tartani. Python vagy Visual C++ fejlesztőeszköz telepítése nem szükséges; a runtime DLL-ek a csomagban vannak.
 
@@ -43,7 +43,7 @@ Célplatform: Windows 10 1607 x64, ajánlott Full HD kijelző. A forráshoz olva
 
 A **Beállítások** panelen minden útvonal módosítható és tallózható. Meghajtóbetűjel és UNC, például `\\szerver\megosztas\mappa` is használható. A program normalizálja az ismételt elválasztójeleket, és megőrzi az UNC kezdő dupla fordított perjelét. A forrást és munkamappát nem hozza létre automatikusan. A közös jelölések mappája mentéskor, illetve az első jelöléskor létrehozható, ha a szülőmappa elérhető és írható.
 
-Mindhárom mappa legyen különálló; nem lehetnek egymás részei vagy szülőmappái. A forrásban nem készül próbaírás, technikai fájl vagy napló. Nem elérhető útvonalnál a program érthető hibát jelez és a Beállításokból javítható.
+Mindhárom mappa legyen különálló; nem lehetnek egymás részei vagy szülőmappái. A forrásban nem készül próbaírás, technikai fájl vagy napló. Nem elérhető útvonalnál a program érthető hibát jelez és a Beállításokból javítható. Ha csak a forrásarchívum nem érhető el, a hozzáférhető munkamappa PDF-jei továbbra is olvashatók, a módosító műveletek viszont letiltódnak.
 
 A személyes konfiguráció helye `%APPDATA%\EDPD\settings.json`, az ablak- és panelméretekkel, útvonalakkal, időszakkal és frissítési idővel együtt. A régebbi konfigurációhoz az új mezők alapértékei automatikusan hozzáadódnak.
 
@@ -127,6 +127,6 @@ A spec a Qt és MuPDF komponenseket, a Python saját C-runtime-ját és a teljes
 
 ## Verzió és licencek
 
-Fejlesztői verzió: **2.0.0**. A 0.2.1 natív alapja Windows 1607-en kipróbált, az új kiadás célgépes és munkahelyi átvételi próbája még szükséges.
+Kiadott verzió: **2.0.0**. A 0.2.1 natív alapja Windows 1607-en kipróbált, az új kiadás célgépes és munkahelyi átvételi próbája még szükséges.
 
 A projekt saját kódjára a jogtulajdonos még nem választott terjesztési licencet. A PySide2/Qt és PyMuPDF külön licencei érvényesek; részletek a [LICENSE](LICENSE) fájlban.
