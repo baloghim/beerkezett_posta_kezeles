@@ -91,11 +91,11 @@ def test_origins_detect_ambiguity_and_invalidated_cache(folders, tmp_path):
     service.scan(source)
     entries = service.catalogue(source)
     labels, _, complete = service.origin_state(source, files, entries)
-    assert complete and labels['a.pdf'].startswith('Többértelmű:')
+    assert complete and labels['a.pdf'] == 'Több lehetséges nap'
     make_zip(source, old, entries={'different.pdf': b'longer'})
     entries = service.catalogue(source)
     labels, pending, complete = service.origin_state(source, files, entries)
-    assert not complete and 'ellenőrzés alatt' in labels['a.pdf']
+    assert not complete and pending and labels['a.pdf'] == TODAY.strftime('%Y.%m.%d.')
     service.index_batch(pending)
     labels, _, complete = service.origin_state(source, files, entries)
     assert complete and labels['a.pdf'] == TODAY.strftime('%Y.%m.%d.')

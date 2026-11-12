@@ -4,9 +4,11 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
+A **2.0.1 hibajavító kiadás készül**. Az alábbi link még a korábbi 2.0.0 csomagra mutat; az új linket csak a sikeres kiadás ellenőrzése után állítjuk be.
+
 **[EDPD 2.0 – Windows-verzió letöltése (v2.0.0)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.0.0/EDPD-Manager-Windows-x64.zip)**
 
-A Windows build, a tesztcsomag, a csomagolt EXE kilenc funkcionális önellenőrzése és a DLL-audit sikeres. A közzétett ZIP-et letöltöttük: CRC-ellenőrzése hibátlan, SHA-256 ellenőrző összege egyezik, a teljes szükséges runtime-készlet jelen van.
+A korábbi 2.0.0 Windows buildje, tesztcsomagja, kilenc funkcionális EXE-önellenőrzése és DLL-auditja sikeres volt. Az új 2.0.1 kiadás tíz ellenőrzést és külön grafikus regressziós mérést tartalmaz. A közzétett ZIP-et letöltöttük: CRC-ellenőrzése hibátlan, SHA-256 ellenőrző összege egyezik, a teljes szükséges runtime-készlet jelen van.
 
 A technológiai alap változatlan: Python **3.10.11 x64**, PySide2 **5.15.2.1 / Qt 5.15.2**, PyMuPDF **1.23.26**. A teljes ZIP-et **új helyi mappába** bontsa ki, majd indítsa az `EDPD-Manager.exe` fájlt. Az `_internal` mappát is meg kell tartani. Python vagy Visual C++ fejlesztőeszköz telepítése nem szükséges; a runtime DLL-ek a csomagban vannak.
 
@@ -53,13 +55,15 @@ A könyvtár fájlneveit és metaadatait beolvassuk, a `YYYYMMDD` dátum alapjá
 
 A helyi index helye `%LOCALAPPDATA%\EDPD\zip-index` (Linuxon a felhasználói konfiguráció alatt). Csak fájlnevek, méretek, CRC-k és ZIP-időbélyegek szerepelnek benne, PDF-tartalom nem. A ZIP méretét és módosítási idejét minden ellenőrzéskor összevetjük az indexszel; a helyi rekordok ellenőrző összegét is vizsgáljuk. A sérült helyi index újraépíthető, nem üzleti állapot.
 
-A munkamappában régi, a felső időablakból már kiesett PDF is lehet. A korábban ismert megfeleltetéseket az indexből keressük ki. Ha a munkamappa nem üres és hiányos az index, a régebbi ZIP-eket kis adagokban, háttérben térképezzük fel. Az első ilyen feltérképezés nagy archívumban hosszabb lehet; utána a változatlan régi ZIP-eket nem kell újranyitni. Üres munkamappa miatt nem indítunk teljes háttérfeltérképezést.
+A munkamappában régi, a felső időablakból már kiesett PDF is lehet. Először a kiválasztott időszak és a korábbi, még érvényes helyi index megfeleltetéseit használjuk. **Induláskor és automatikus/kézi frissítéskor nincs történeti háttérkeresés**, nem üres munkamappánál sem. Az ismeretlen eredet nem akadályozza a PDF megnyitását vagy nyomtatását.
+
+A munkamappa-panel **További forráskeresés** gombjával külön kérhető a még hiányzó régebbi ZIP-tartalomjegyzékek beolvasása. Ez háttérben, kis adagokban fut és szüneteltethető; a pillanatnyilag futó adag még befejeződhet. A keresés engedélye nem marad meg újraindítás után. Az Összes időszak választása természetesen a teljes napi listát tölti be.
 
 - Nem azonosítható fájl: **Ismeretlen**.
-- Több ZIP-ben szereplő fájlnév: **Többértelmű**, az ismert napokkal és ZIP-ek számával.
-- Még nem teljes az ütközésvizsgálat: az ismert nap mellett **ellenőrzés alatt** jelzés szerepel. A program nem állít biztos, egyértelmű eredetet hiányos index alapján.
+- Több ismert napi ZIP-ben szereplő fájlnév: **Több lehetséges nap**.
+- A dátum az ismert, friss tartalomjegyzékekből származik. A még nem vizsgált régi ZIP-ek további egyezést is tartalmazhatnak; a lefedettség az állapotsorban látható, bővítése csak külön kéréssel történik.
 
-A háttérkeresés állapota az állapotsorban látható. Az időszakon kívüli eredetkeresés nem bővíti ki a felső napi listát.
+Az aktív időszak, a pontos programverzió és a külön indított keresés állapota az állapotsorban látható. Az időszakon kívüli eredetkeresés nem bővíti ki a felső napi listát.
 
 ## Elvégezve jelölés
 
@@ -76,7 +80,7 @@ Másik gép változtatása a következő kézi vagy automatikus frissítéskor l
 1. Válasszon napot a felső listában. A napi műveletek erre a napra vonatkoznak.
 2. A **Kicsomagolás** a nap összes ZIP-jének PDF-jeit közvetlenül a munkamappába teszi. Válasszon kihagyást, felülírást vagy Mégse lehetőséget. CSV és belső ZIP-almappa nem kerül a célba.
 3. Az alsó listában kattintson PDF-re: a program a munkamappából olvassa be. A jobb oldali **Nyomtatás** az éppen megnyitott teljes PDF-hez nyit párbeszédet.
-4. ZIP-ből, kicsomagolás nélkül is lehet betekinteni: duplakattintás a felső napi sorra, majd dokumentum és **Megtekintés kicsomagolás nélkül**. Az alsó panel továbbra is a munkamappa marad.
+4. ZIP-ből, kicsomagolás nélkül is lehet betekinteni: jobb kattintás a felső napi sorra, **ZIP-csomag PDF-jeinek megtekintése…**, majd dokumentum és **Megtekintés kicsomagolás nélkül**. A napra történő kattintás vagy duplakattintás önmagában nem nyit ZIP-dokumentumlistát. Az alsó panel továbbra is a munkamappa marad.
 5. A **Napi adag törlése** a felső kiválasztás teljes ZIP-listáját veti össze az aktuális munkamappával. Például hat csomagbeli PDF-ből négy jelen lévőnél a párbeszéd kifejezetten négy törlendő PDF-et jelez. Más napok fájljai megmaradnak.
 6. A **Munkamappa ürítése** minden közvetlen PDF-re vonatkozik, megerősítés után. Almappát, ZIP-et, CSV-t, technikai fájlt és közös jelölést nem töröl.
 7. Az ügyintézés befejezését külön az **Elvégezve jelölés** rögzíti. A dokumentumok ettől a munkamappában maradhatnak.
@@ -105,7 +109,7 @@ $env:QT_QPA_PLATFORM = "offscreen"
 
 Linuxon a megfelelő környezet `.venv-qt5/bin/python`; például `QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m pytest -q`. A meglévő izolált checkout használható, új Git worktree nem szükséges.
 
-A tesztek kizárólag szintetikus ZIP/PDF adatokkal, ideiglenes forrás-, cél-, közös állapot- és felhasználói mappákkal dolgoznak. Éles NEAK megosztáson nem végeznek műveletet. A tesztcsomag lefedi a dátumszűrést, a megnyitás előtti kizárást, az indexet és eredetet, a kézi jelölések többfolyamatos mentését, a célzott törlést, a színezést és munkamappa-listát, valamint a PDF-et és a nyomtatási előkészítést.
+A tesztek kizárólag szintetikus ZIP/PDF adatokkal, ideiglenes forrás-, cél-, közös állapot- és felhasználói mappákkal dolgoznak. Éles NEAK megosztáson nem végeznek műveletet. Az 1000, több évre elosztott ZIP-et használó grafikus teszt minden időszaknál rögzíti a forrásállományok számát, az időszak találatait, a tényleges ZIP-megnyitásokat és a Qt-táblázat sorait. A mérések a CI JUnit-eredményében is szerepelnek. A tesztcsomag lefedi a dátumszűrést, a megnyitás előtti kizárást, az indexet és eredetet, a kézi jelölések többfolyamatos mentését, a célzott törlést, a színezést és munkamappa-listát, valamint a PDF-et és a nyomtatási előkészítést.
 
 Önálló ellenőrzés, kizárólag ideiglenes adatokkal:
 
@@ -113,7 +117,7 @@ A tesztek kizárólag szintetikus ZIP/PDF adatokkal, ideiglenes forrás-, cél-,
 EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.0-1607.json"
 ```
 
-A jelentés alkalmazásverziót, OS-buildet és kilenc ellenőrzés eredményét tartalmazza. A `windows1607_verified` kizárólag valódi 14393-as Windows 10 x64 munkaállomáson lehet igaz.
+A jelentés alkalmazásverziót, OS-buildet, a tényleges felület oszlopait és címét, a szűrt indulás adatait és tíz ellenőrzés eredményét tartalmazza. A `windows1607_verified` kizárólag valódi 14393-as Windows 10 x64 munkaállomáson lehet igaz.
 
 ## Windows EXE készítése
 
@@ -123,10 +127,10 @@ Windows alatt Python 3.10.11 x64 és a fejlesztői függőségek telepítése ut
 .venv\Scripts\python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
 ```
 
-A spec a Qt és MuPDF komponenseket, a Python saját C-runtime-ját és a teljes rögzített VC-készletet csomagolja. A workflow teszteket, tényleges csomagolt EXE-indítást, statikus DLL-auditot, ZIP-et és SHA-256 fájlt készít. Verziózott kiadáshoz például `v2.0.0` címke használható. A verziószámot a `pyproject.toml` és `src/edpd/__init__.py` fájlokban együtt kell módosítani.
+A spec a Qt és MuPDF komponenseket, a Python saját C-runtime-ját és a teljes rögzített VC-készletet csomagolja. A workflow teszteket, tényleges csomagolt EXE-indítást, statikus DLL-auditot, ZIP-et és SHA-256 fájlt készít. Verziózott kiadáshoz például `v2.0.1` címke használható. A verziószámot a `pyproject.toml` és `src/edpd/__init__.py` fájlokban együtt kell módosítani.
 
 ## Verzió és licencek
 
-Kiadott verzió: **2.0.0**. A 0.2.1 natív alapja Windows 1607-en kipróbált, az új kiadás célgépes és munkahelyi átvételi próbája még szükséges.
+Fejlesztői verzió: **2.0.1**. A 0.2.1 natív alapja Windows 1607-en kipróbált, az új kiadás célgépes és munkahelyi átvételi próbája még szükséges.
 
 A projekt saját kódjára a jogtulajdonos még nem választott terjesztési licencet. A PySide2/Qt és PyMuPDF külön licencei érvényesek; részletek a [LICENSE](LICENSE) fájlban.

@@ -70,6 +70,10 @@ def run(report_path, require_windows1607=False):
             with zipfile.ZipFile(source / name, 'w') as archive:
                 archive.writestr(member, data)
                 archive.writestr('summary.csv', 'ignored')
+        historical_path = source / f'{date.today() - timedelta(days=1000):%Y%m%d}_HISTORICAL.zip'
+        with zipfile.ZipFile(historical_path, 'w') as archive:
+            archive.writestr('historical.pdf', data)
+        (source / 'invalid_date.zip').write_bytes(b'not a valid ZIP')
         app = QApplication([])
         app.setStyle('Fusion')
         errors = []
@@ -90,10 +94,36 @@ def run(report_path, require_windows1607=False):
         try:
             window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(base / 'shared')))
             window.show()
-            wait(lambda: len(window.days) == 2 and not window.jobs)
-            if len(window.days[0].documents) != 2:
+            wait(lambda: bool(window.entries) and not window.jobs)
+            if len(window.days) != 2 or len(window.days[0].documents) != 2:
                 raise RuntimeError('Hibás napi csoportosítás.')
+            if historical_path.resolve() in window.zip.cache:
+                raise RuntimeError('Induláskor időszakon kívüli ZIP-et dolgozott fel.')
+            result['startup_archives'] = {'total_valid_zips': len(window.entries), 'in_period_zips': sum(len(d.archives) for d in window.days),
+                                          'upper_rows': window.day_table.rowCount(), 'historical_zip_opened': False}
             result['checks'].append('three_panel_gui_and_zip_scan')
+            headers = [window.docs_table.horizontalHeaderItem(i).text() for i in range(window.docs_table.columnCount())]
+            if headers != ['Fájlnév', 'Méret', 'Forrásnap'] or window.workspace_panel.title_label.text() != 'A munkamappa dokumentumai':
+                raise RuntimeError('A becsomagolt felület munkamappa-táblája hibás.')
+            for row in range(window.day_table.rowCount()):
+                window.day_table.selectRow(row)
+                if window.docs_table.rowCount() != 0:
+                    raise RuntimeError('Az üres munkamappában ZIP-beli fájlokat listázott a felület.')
+            (target / 'workspace_only.pdf').write_bytes(data)
+            window.refresh()
+            wait(lambda: not window.jobs)
+            if window.docs_table.rowCount() != 1 or window.docs_table.item(0, 0).text() != 'workspace_only.pdf':
+                raise RuntimeError('Az alsó tábla nem a tényleges munkamappát mutatja.')
+            result['ui_contract'] = {'window_title': window.windowTitle(), 'workspace_title': window.workspace_panel.title_label.text(),
+                                     'workspace_headers': headers, 'history_days': window.settings.history_days,
+                                     'workspace_files_after_upper_selection': [window.docs_table.item(i, 0).text() for i in range(window.docs_table.rowCount())]}
+            if window.origin_requested or window.origin_timer.isActive():
+                raise RuntimeError('Automatikus történeti forráskeresés indult.')
+            (target / 'workspace_only.pdf').unlink()
+            window.refresh()
+            wait(lambda: not window.jobs)
+            window.day_table.selectRow(0)
+            result['checks'].append('independent_workspace_table_and_source_day_column')
             window.open_archive_document(window.days[0].documents[0])
             wait(lambda: window.viewer.pdf is not None and not window.jobs)
             window.viewer.move(2)

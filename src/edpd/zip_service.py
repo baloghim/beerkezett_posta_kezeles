@@ -229,10 +229,9 @@ class ZipService:
             labels = {}
             for name, matches in owners.items():
                 if len(matches) > 1:
-                    dates = ', '.join(sorted({d.strftime('%Y.%m.%d.') for d, _ in matches}))
-                    labels[name] = f'Többértelmű: {dates} ({len(matches)} ZIP)'
+                    labels[name] = 'Több lehetséges nap'
                 elif matches:
-                    labels[name] = matches[0][0].strftime('%Y.%m.%d.') + ('' if complete else ' (ellenőrzés alatt)')
+                    labels[name] = matches[0][0].strftime('%Y.%m.%d.')
                 else:
                     labels[name] = 'Ismeretlen'
             return labels, tuple(pending), complete

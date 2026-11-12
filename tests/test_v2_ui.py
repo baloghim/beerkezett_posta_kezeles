@@ -55,6 +55,9 @@ def test_whole_workspace_origins_day_navigation_and_pdf_retained(app, folders, t
     for name in ['today.pdf', 'yesterday.pdf', 'old.pdf', 'unknown.pdf']:
         (target / name).write_bytes(pdf_bytes)
     window, errors = setup_window(app, folders, tmp_path, monkeypatch)
+    assert window.origin_pending and not window.origin_requested
+    assert window.docs_table.item(window.work_keys.index('old.pdf'), 2).text() == 'Ismeretlen'
+    window.origin_button.click()
     wait(app, lambda: not window.origin_pending and not window.jobs)
     assert len(window.days) == 2
     assert window.docs_table.rowCount() == 4
