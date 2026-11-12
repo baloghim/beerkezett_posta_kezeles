@@ -34,9 +34,9 @@ jobs:
       - name: Automatikus tesztek (csak ideiglenes adatok)
         env:
           QT_QPA_PLATFORM: offscreen
-        run: python -m pytest -q
+        run: python scripts/ci_run.py python -m pytest -q
       - name: Önálló Windows x64 alkalmazás
-        run: python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
+        run: python scripts/ci_run.py python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
       - name: Csomagolt EXE valódi indítása a modern runneren
         shell: powershell
         run: |
@@ -50,7 +50,7 @@ jobs:
           # A modern runner eredménye nem 1607 kompatibilitási bizonyíték.
           if ($result.windows1607_verified) { throw 'Hibás OS-minősítés a modern runneren' }
       - name: Natív DLL-leltár és statikus kompatibilitási ellenőrzés
-        run: python scripts/audit_windows_binary.py dist/EDPD-Manager --report native-dependencies.json
+        run: python scripts/ci_run.py python scripts/audit_windows_binary.py dist/EDPD-Manager --report native-dependencies.json
       - name: Csomagolás
         shell: powershell
         run: |
@@ -93,12 +93,13 @@ jobs:
           New-Item -ItemType Directory $testRoot | Out-Null
           Expand-Archive legacy-package/EDPD-Manager-Windows-x64.zip $testRoot
           $app = Join-Path $testRoot 'EDPD-Manager'
-          & (Join-Path $app 'Test-Windows1607.ps1') -ApplicationDirectory $app -ReportPath (Join-Path $pwd 'windows1607-selftest.json')
+          $report = Join-Path $env:RUNNER_TEMP 'EDPD-1607-${{ github.run_id }}-${{ github.run_attempt }}.json'
+          & (Join-Path $app 'Test-Windows1607.ps1') -ApplicationDirectory $app -ReportPath $report
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: real-windows1607-evidence
-          path: windows1607-selftest.json
+          path: ${{ runner.temp }}/EDPD-1607-${{ github.run_id }}-${{ github.run_attempt }}.json
   release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
