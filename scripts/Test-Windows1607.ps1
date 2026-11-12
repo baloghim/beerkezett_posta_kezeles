@@ -1,4 +1,4 @@
-# Windows PowerShell 5.1; a célgépre nem kell Python vagy fejlesztőeszköz.
+﻿# Windows PowerShell 5.1; a célgépre nem kell Python vagy fejlesztőeszköz.
 param(
     [string]$ApplicationDirectory = $PSScriptRoot,
     [string]$ReportPath = (Join-Path ([Environment]::GetFolderPath('Desktop')) 'EDPD-Windows1607-result.json')

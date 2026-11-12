@@ -43,7 +43,7 @@ jobs:
       - name: Natív DLL-leltár és statikus kompatibilitási ellenőrzés
         run: python scripts/ci_run.py python scripts/audit_windows_binary.py dist/EDPD-Manager --report native-dependencies.json
       - name: Csomagolt EXE valódi indítása a modern runneren
-        shell: powershell
+        shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           trap { Write-Output ('::error title=EXE önellenőrzési hiba::' + $_.Exception.Message); exit 1 }
@@ -57,7 +57,7 @@ jobs:
           # A modern runner eredménye nem 1607 kompatibilitási bizonyíték.
           if ($result.windows1607_verified) { throw 'Hibás OS-minősítés a modern runneren' }
       - name: Csomagolás
-        shell: powershell
+        shell: pwsh
         run: |
           Copy-Item README.md, LICENSE dist/EDPD-Manager/
           Copy-Item docs/WINDOWS-VALIDATION.md, docs/WINDOWS1607.md dist/EDPD-Manager/
@@ -102,7 +102,7 @@ jobs:
           $url = 'https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts'
           $artifacts = Invoke-RestMethod -Uri $url -Headers $headers
           $artifact = @($artifacts.artifacts | Where-Object { $_.name -eq 'EDPD-Manager-Windows-x64' -and -not $_.expired })
-          if ($artifact.Count -ne 1) { throw 'Nem található egyértelmű, aktuális build artifact.' }
+          if ($artifact.Count -ne 1) { throw 'Current build artifact not found or ambiguous.' }
           $testRoot = Join-Path $env:RUNNER_TEMP ([Guid]::NewGuid().ToString())
           New-Item -ItemType Directory $testRoot | Out-Null
           $download = Join-Path $testRoot 'artifact.zip'
@@ -110,7 +110,7 @@ jobs:
           Expand-Archive $download (Join-Path $testRoot 'download')
           $zip = Join-Path $testRoot 'download/EDPD-Manager-Windows-x64.zip'
           $expected = ((Get-Content ($zip + '.sha256') -Raw).Trim() -split '\s+')[0]
-          if ((Get-FileHash $zip -Algorithm SHA256).Hash.ToLower() -ne $expected) { throw 'Hibás csomagellenőrző összeg.' }
+          if ((Get-FileHash $zip -Algorithm SHA256).Hash.ToLower() -ne $expected) { throw 'Package checksum mismatch.' }
           Expand-Archive $zip (Join-Path $testRoot 'unpacked')
           $app = Join-Path $testRoot 'unpacked/EDPD-Manager'
           $report = Join-Path $testRoot 'windows1607-selftest.json'

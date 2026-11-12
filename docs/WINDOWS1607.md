@@ -16,7 +16,7 @@ Elsőként a kért PySide2-átállást vizsgáltuk. Az 5.15.2.1 PyPI-csomag saj�
 | PyMuPDFb / MuPDF DLL | 1.23.22 | A PyMuPDF 1.23.26 által előírt bináris társfüggőség; csomagolva. |
 | PyInstaller | 6.12.0 | Dokumentált Windows 8+ alap; előre fordított bootloader. |
 | PyInstaller hooks | 2025.1 | Rögzített csomagolóhookok. |
-| VC-runtime | PySide2 wheel saját DLL-jei | A spec a runner rendszerkönyvtáraiból felfedezett VC DLL-eket ezekre cseréli; a hash-ellenőrzés ezt kikényszeríti. |
+| VC-runtime | Python 3.10.11 és PySide2 wheel saját DLL-jei | A Python vcruntime DLL-jei a rögzített interpreterből, a C++ runtime DLL-ek a Qt wheelből származnak; ezt hash-ellenőrzés kényszeríti ki. |
 | UCRT | Windows 10 beépített változata | Nem másoljuk a modern runner UCRT-jét a csomagba. |
 
 A natív függőségek régebbi verzióinak használata tudatos kompatibilitási kompromisszum. Nem jelent mai upstream karbantartási támogatást. Az újabb natív verziókra frissítés csak újabb célgépes próbával végezhető.
@@ -50,7 +50,7 @@ Opcionálisan a mellékelt PowerShell-script is futtatható, ha a vállalati sza
 .\Test-Windows1607.ps1
 ```
 
-A script ellenőrzi az OS-t, az EXE kilépési kódját, a friss JSON-eredményt és az időtúllépést is. Nem igényel rendszergazdát, nem telepít semmit, és nem módosítja a PowerShell végrehajtási házirendjét. Ha a vállalati policy tiltja a scripteket, a fenti közvetlen EXE-parancs használható.
+A script UTF-8 BOM kódolással készül, így a Windows PowerShell 5.1 is helyesen olvassa a magyar szöveget. Ellenőrzi az OS-t, az EXE kilépési kódját, a friss JSON-eredményt és az időtúllépést is. Nem igényel rendszergazdát, nem telepít semmit, és nem módosítja a PowerShell végrehajtási házirendjét. Ha a vállalati policy tiltja a scripteket, a fenti közvetlen EXE-parancs használható.
 
 Az önellenőrzés sikere után a fizikai nyomtató és a kétgépes SMB-megosztás próbája a [külön útmutató](WINDOWS-VALIDATION.md) szerint szükséges.
 
