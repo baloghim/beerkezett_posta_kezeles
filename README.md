@@ -4,7 +4,9 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
-**Még nincs ellenőrzött, közzétett Windows-kiadás, ezért letöltési hivatkozás sem szerepel itt.**
+**[EDPD – Windows verzió letöltése (v0.1.0)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v0.1.0/EDPD-Manager-Windows-x64.zip)**
+
+A Windows build és a kiadás sikeresen lefutott; a letöltött ZIP épségét és a Windows EXE/Qt-platformplugin jelenlétét ellenőriztük. A fizikai Windows-nyomtatás és a valós SMB-környezet kézi átvételi próbája még szükséges. [Ellenőrzési eredmények](docs/VALIDATION.md).
 
 A [Windows kiadás munkafolyamat](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) sikeres futásának **Artifacts** részében az `EDPD-Manager-Windows-x64` csomag tölthető le. Artifact csak sikeres build után létezik; letöltéséhez GitHub-bejelentkezés szükséges lehet. A `v*` verziócímkével indított sikeres futás verziózott GitHub Release-t és ZIP-mellékletet is létrehoz.
 
@@ -94,6 +96,6 @@ A PyInstaller Qt-hookjai gyűjtik a PySide6 modulokat és platformpluginokat. A 
 
 ## Verzió és licencek
 
-Fejlesztői verzió: **0.1.0**. Ellenőrzött éles Windows-kiadás még nincs.
+Verzió: **0.1.0**. A Windows EXE kiadva; az éles hivatali bevezetéshez a dokumentált Windows/SMB/nyomtatási átvételi próba még hátravan.
 
 A projekt saját kódjára nincs megadva felhasználási licenc; ennek kiválasztása a jogtulajdonos feladata. A PySide6 és a PyMuPDF külön licencei érvényesek. A PyMuPDF AGPL/kereskedelmi feltételeit és a Qt terjesztési követelményeit Windows-csomag terjesztése előtt rendezni kell.
