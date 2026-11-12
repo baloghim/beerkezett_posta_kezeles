@@ -4,15 +4,15 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
-A **2.0.1 hibajavító kiadás készül**. Az alábbi link még a korábbi 2.0.0 csomagra mutat; az új linket csak a sikeres kiadás ellenőrzése után állítjuk be.
+Elkészült a **2.0.1 hibajavító kiadás**: megszünteti az automatikus történeti ZIP-keresést, és külön ellenőrzi a munkamappa-lista függetlenségét, valamint a Forrásnap oszlopot.
 
-**[EDPD 2.0 – Windows-verzió letöltése (v2.0.0)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.0.0/EDPD-Manager-Windows-x64.zip)**
+**[EDPD 2.0.1 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.0.1/EDPD-Manager-Windows-x64.zip)**
 
-A korábbi 2.0.0 Windows buildje, tesztcsomagja, kilenc funkcionális EXE-önellenőrzése és DLL-auditja sikeres volt. Az új 2.0.1 kiadás tíz ellenőrzést és külön grafikus regressziós mérést tartalmaz. A közzétett ZIP-et letöltöttük: CRC-ellenőrzése hibátlan, SHA-256 ellenőrző összege egyezik, a teljes szükséges runtime-készlet jelen van.
+A 2.0.1 Windows buildje, **78 automatikus tesztje**, a becsomagolt EXE **tíz funkcionális önellenőrzése** és 107 natív bináris DLL-auditja sikeres. Az 1000 ZIP-es grafikus mérés 14 napnál 14 megnyitást, 14 napi sort és nulla időszakon kívüli megnyitást igazolt, automatikus frissítés után is. A közzétett ZIP-et letöltöttük: CRC-ellenőrzése hibátlan, SHA-256 ellenőrző összege egyezik, a teljes szükséges runtime-készlet jelen van.
 
 A technológiai alap változatlan: Python **3.10.11 x64**, PySide2 **5.15.2.1 / Qt 5.15.2**, PyMuPDF **1.23.26**. A teljes ZIP-et **új helyi mappába** bontsa ki, majd indítsa az `EDPD-Manager.exe` fájlt. Az `_internal` mappát is meg kell tartani. Python vagy Visual C++ fejlesztőeszköz telepítése nem szükséges; a runtime DLL-ek a csomagban vannak.
 
-A 0.2.1 csomagolt EXE a céges Windows 10 **1607 x64, build 14393** gépen sikeres önellenőrzést teljesített. Az új **2.0** kiadás külön célgépes próbája még szükséges. A modern runner sikere ezt nem helyettesíti. [Windows 1607 útmutató](docs/WINDOWS1607.md) · [Ellenőrzési eredmények](docs/VALIDATION.md).
+A 0.2.1 csomagolt EXE a céges Windows 10 **1607 x64, build 14393** gépen sikeres önellenőrzést teljesített. Az új **2.0.1** kiadás külön célgépes próbája még szükséges. A modern runner sikere ezt nem helyettesíti. [Windows 1607 útmutató](docs/WINDOWS1607.md) · [Ellenőrzési eredmények](docs/VALIDATION.md).
 
 A [Windows build](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) sikeres futásának **Artifacts** részében a csomag és SHA-256 ellenőrző összege is elérhető. A `v*` verziócímkével indított sikeres futás GitHub Release-t készít.
 
