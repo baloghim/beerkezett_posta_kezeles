@@ -212,3 +212,20 @@ def test_ui_stays_responsive_while_all_archives_are_scanned(app, folders, tmp_pa
         timer.stop()
     wait(app, lambda: bool(window.days) and not window.jobs)
     window.close()
+
+
+def test_workspace_preview_survives_unavailable_source(app, folders, tmp_path, monkeypatch, pdf_bytes):
+    source, target = folders
+    (target / 'local.pdf').write_bytes(pdf_bytes)
+    settings = Settings(source=str(source / 'unavailable'), target=str(target), shared_data=str(tmp_path / 'shared'))
+    window = MainWindow(settings, today_provider=lambda: TODAY)
+    window.show()
+    wait(app, lambda: window.docs_table.rowCount() == 1 and not window.jobs)
+    assert not window.days and window.access_error
+    assert not window.actions[3].isEnabled()  # Elérés nélkül nincs módosítás.
+    assert window.shared_notice.isVisible()
+    window.docs_table.selectRow(0)
+    wait(app, lambda: window.viewer.pdf is not None and not window.jobs)
+    assert window.viewer.pdf.pages == 3
+    assert (target / 'local.pdf').read_bytes() == pdf_bytes
+    window.close()

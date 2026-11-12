@@ -32,9 +32,10 @@ def validate_shared_directory(value, source, target):
 
 
 class CompletionStore:
-    def __init__(self, directory, source, target, capabilities=Capabilities()):
+    def __init__(self, directory, source, target, capabilities=Capabilities(), zip_service=None):
         self.directory, self.source, self.target = directory, source, target
         self.capabilities = capabilities
+        self.index = zip_service
 
     def _load(self, directory):
         path = directory / 'completed.json'
@@ -70,6 +71,8 @@ class CompletionStore:
         with workspace_lock(directory, filename='.edpd-marks.lock', label='közös állapotfájl'):
             current = ZipService().scan(self.source, dates={day.date})
             if len(current) != 1 or current[0] != day:
+                if self.index is not None:
+                    self.index.invalidate(day.archives)
                 raise EDPDError('A napi csomag megváltozott. Frissítse a listát!')
             marks = self._load(directory)  # Kötelező újraolvasás a közös zár alatt.
             key = day_identity(day)

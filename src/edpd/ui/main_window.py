@@ -10,6 +10,7 @@ from ..config import cache_directory
 from ..completion_service import CompletionStore, day_identity
 from ..file_service import FileService, validate_paths
 from ..models import Capabilities
+from ..paths import directory
 from ..state_service import inventory, day_status
 from ..zip_service import ZipService, read_document, MAX_PDF
 from .pdf_viewer import PDFViewer
@@ -49,6 +50,7 @@ class Snapshot:
     origins: dict
     pending: tuple
     origins_complete: bool
+    access_error: str = ''
 
 
 def row_appearance(state):
@@ -70,7 +72,7 @@ class MainWindow(QMainWindow):
         self.zip = ZipService(cache_dir=cache_directory())
         self.days, self.files, self.sizes, self.completed = [], {}, {}, set()
         self.work_keys, self.entries, self.origin_pending = [], (), ()
-        self.origins_complete, self.shared_error = True, ''
+        self.origins_complete, self.shared_error, self.access_error = True, '', ''
         self.jobs = set()
         self.busy = self.preview_busy = self.origin_busy = False
         self.preview_generation = self.source_generation = 0
@@ -158,12 +160,12 @@ class MainWindow(QMainWindow):
 
     def update_actions(self):
         day = self.current_day()
-        valid = day is not None and not day.error
+        valid = day is not None and not day.error and not self.access_error
         for action in self.actions:
             action.setEnabled(not self.busy)
         self.actions[0].setEnabled(not self.busy and valid)
         self.actions[2].setEnabled(not self.busy and valid and self.capabilities.delete)
-        self.actions[3].setEnabled(not self.busy and self.capabilities.delete)
+        self.actions[3].setEnabled(not self.busy and self.capabilities.delete and not self.access_error)
         self.mark_action.setEnabled(not self.busy and valid and not self.shared_error and self.capabilities.mark_done)
         marked = day is not None and day_identity(day) in self.completed
         self.mark_action.setText('Jelölés visszavonása' if marked else 'Elvégezve jelölés')
@@ -219,19 +221,39 @@ class MainWindow(QMainWindow):
 
     def snapshot(self):
         settings = self.settings
-        source, target = validate_paths(settings.source, settings.target)
-        entries = self.zip.catalogue(source)
-        days = self.zip.scan(source, settings.history_days, today=self.today(), entries=entries)
-        files = inventory(target)
-        sizes = {key: path.stat().st_size for key, path in files.items()}
-        daily = {day.date: day_status(day, files, sizes) for day in days}
+        source_error = target_error = guard_error = ''
+        source = target = None
+        days, entries, files, sizes = [], (), {}, {}
+        try:
+            source = directory(settings.source, 'A forrásarchívum')
+            entries = self.zip.catalogue(source)
+            days = self.zip.scan(source, settings.history_days, today=self.today(), entries=entries)
+        except Exception as exc:
+            source_error = str(exc)
+        try:
+            target = directory(settings.target, 'A munkamappa')
+            files = inventory(target)
+            sizes = {key: path.stat().st_size for key, path in files.items()}
+        except Exception as exc:
+            target_error = 'A munkamappa nem olvasható: ' + str(exc)
+            files, sizes = {}, {}
+        if source is not None and target is not None:
+            try:
+                validate_paths(source, target)
+            except Exception as exc:
+                guard_error = str(exc)
+        access_error = '\n'.join(e for e in (source_error, target_error, guard_error) if e)
+        daily = {day.date: ('Munkamappa nem érhető el' if target_error else day_status(day, files, sizes)) for day in days}
         try:
             completed = self.completion_store(settings).read()
             shared_error = ''
         except Exception as exc:
             completed, shared_error = set(), str(exc)
-        origins, pending, complete = self.zip.origin_state(source, files, entries)
-        return Snapshot(days, files, sizes, daily, completed, shared_error, entries, origins, pending, complete)
+        if source_error:
+            origins, pending, complete = {name: 'Ismeretlen' for name in files}, (), False
+        else:
+            origins, pending, complete = self.zip.origin_state(source, files, entries)
+        return Snapshot(days, files, sizes, daily, completed, shared_error, entries, origins, pending, complete, access_error)
 
     def refresh(self):
         if not self.busy:
@@ -242,11 +264,12 @@ class MainWindow(QMainWindow):
         selected = self.current_day()
         self.source_generation += 1
         self.days, self.files, self.sizes = snapshot.days, snapshot.files, snapshot.sizes
-        self.completed, self.shared_error = snapshot.completed, snapshot.shared_error
+        self.completed, self.shared_error, self.access_error = snapshot.completed, snapshot.shared_error, snapshot.access_error
         self.entries, self.origin_pending = snapshot.entries, snapshot.pending
         self.origins_complete = snapshot.origins_complete
-        self.shared_notice.setText(('Közös jelölések nem érhetők el: ' + self.shared_error) if self.shared_error else '')
-        self.shared_notice.setVisible(bool(self.shared_error))
+        notice = self.access_error or (('Közös jelölések nem érhetők el: ' + self.shared_error) if self.shared_error else '')
+        self.shared_notice.setText(notice)
+        self.shared_notice.setVisible(bool(notice))
         self.day_table.blockSignals(True)
         self.day_table.setRowCount(len(self.days))
         row = 0
@@ -289,7 +312,7 @@ class MainWindow(QMainWindow):
     def show_status(self):
         progress = f'Forrásnap-index: {len(self.entries) - len(self.origin_pending)}/{len(self.entries)} ZIP'
         if not self.origins_complete and not self.origin_pending:
-            progress += ' (hibás ZIP miatt hiányos)'
+            progress += ' (elérési hiba miatt hiányos)' if self.access_error else ' (hibás ZIP miatt hiányos)'
         self.statusBar().showMessage(f'Forrás: {self.settings.source}  |  Cél: {self.settings.target}  |  {len(self.files)} PDF  |  Frissítve: {self.last_refresh:%H:%M:%S}  |  {progress}')
 
     def lookup_origins(self):
@@ -391,18 +414,18 @@ class MainWindow(QMainWindow):
 
     def completion_store(self, settings=None):
         settings = settings or self.settings
-        return CompletionStore(settings.shared_data, settings.source, settings.target, self.capabilities)
+        return CompletionStore(settings.shared_data, settings.source, settings.target, self.capabilities, zip_service=self.zip)
 
     def toggle_done(self):
         day = self.current_day()
-        if not day or self.shared_error or not self.capabilities.mark_done:
+        if not day or self.shared_error or self.access_error or not self.capabilities.mark_done:
             return
         desired, store = day_identity(day) not in self.completed, self.completion_store()
         self.submit(lambda: (store.set_done(day, desired), self.snapshot()), self.operation_done, refresh_on_error=True)
 
     def extract(self):
         day = self.current_day()
-        if not day or day.error:
+        if not day or day.error or self.access_error:
             return
         box = QMessageBox(self)
         box.setWindowTitle('Napi csomag kicsomagolása')
@@ -424,7 +447,7 @@ class MainWindow(QMainWindow):
 
     def delete(self, all_files):
         day = None if all_files else self.current_day()
-        if not self.capabilities.delete or (not all_files and not day):
+        if self.access_error or not self.capabilities.delete or (not all_files and not day):
             return
         service = self.service()
         def prepare():

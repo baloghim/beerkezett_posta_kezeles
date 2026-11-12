@@ -362,3 +362,33 @@ def test_transient_zip_read_error_is_retried_on_refresh_without_file_change(fold
     second = service.scan(source, 14, today=TODAY)
     assert not second[0].error and second[0].documents[0].name == 'a.pdf'
     assert path.stat().st_mtime_ns == stamp and len(calls) == 2
+
+
+def test_local_index_never_writes_inside_source_archive(folders):
+    source, _ = folders
+    path = make_zip(source)
+    index = ZipService(cache_dir=source / 'cache')
+    assert index.scan(source, 14, today=TODAY)[0].documents
+    index.save()
+    assert list(source.iterdir()) == [path]
+
+
+@pytest.mark.parametrize('operation', ['extract', 'mark'])
+def test_detected_source_change_invalidates_index_even_with_preserved_stamp(folders, tmp_path, operation):
+    source, target = folders
+    path = make_zip(source, entries={'a.pdf': b'a'})
+    index = ZipService(cache_dir=tmp_path / 'cache')
+    old = index.scan(source)[0]
+    stamp = path.stat()
+    make_zip(source, entries={'a.pdf': b'b'})
+    os.utime(path, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+    assert path.stat().st_size == stamp.st_size
+    with pytest.raises(EDPDError, match='megváltozott'):
+        if operation == 'extract':
+            FileService(source, target, zip_service=index).extract(old)
+        else:
+            CompletionStore(tmp_path / 'shared', source, target, zip_service=index).set_done(old, True)
+    current = index.scan(source)[0]
+    assert current.documents[0].crc != old.documents[0].crc
+    FileService(source, target, zip_service=index).extract(current)
+    assert (target / 'a.pdf').read_bytes() == b'b'

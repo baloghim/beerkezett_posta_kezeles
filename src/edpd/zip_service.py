@@ -43,9 +43,14 @@ class ZipService:
     def _root(self, root):
         if self.root == root:
             return
-        self._save(force=True)
+        cache = self.cache_dir.resolve() if self.cache_dir is not None else None
+        unsafe = cache is not None and (cache == root or root in cache.parents)
+        if not unsafe:
+            self._save(force=True)
+        else:
+            self.dirty = False
         self.root, self.cache, self.cache_path = root, {}, None
-        if self.cache_dir is None:
+        if self.cache_dir is None or unsafe:
             return
         identity = str(root).casefold() if os.name == 'nt' else str(root)
         key = hashlib.sha256(identity.encode('utf-8')).hexdigest()
@@ -112,6 +117,12 @@ class ZipService:
                     Path(temp).unlink(missing_ok=True)
                 except OSError:
                     pass
+
+    def invalidate(self, paths):
+        with self.mutex:
+            for path in paths:
+                if self.cache.pop(path, None) is not None:
+                    self.dirty = True
 
     def save(self):
         with self.mutex:

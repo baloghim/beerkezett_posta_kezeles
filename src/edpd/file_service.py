@@ -29,6 +29,7 @@ class FileService:
         entries = self.zip.catalogue(source)
         current = ZipService().scan(source, dates={selected.date}, entries=entries)
         if len(current) != 1 or current[0] != selected:
+            self.zip.invalidate(selected.archives)
             raise EDPDError('A napi csomag megváltozott. Frissítse a listát!')
         day = current[0]
         if day.error:

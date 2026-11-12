@@ -81,6 +81,8 @@ def run(report_path, require_windows1607=False):
                 app.processEvents()
                 if errors:
                     raise RuntimeError('\n'.join(errors))
+                if window is not None and (window.access_error or window.shared_error):
+                    raise RuntimeError(window.access_error or window.shared_error)
                 if condition():
                     return
                 time.sleep(0.01)
