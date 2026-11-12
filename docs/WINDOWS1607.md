@@ -19,6 +19,8 @@ Elsőként a kért PySide2-átállást vizsgáltuk. Az 5.15.2.1 PyPI-csomag saj�
 | VC-runtime | Python 3.10.11 és PySide2 wheel saját DLL-jei | A Python vcruntime DLL-jei a rögzített interpreterből, a C++ runtime DLL-ek a Qt wheelből származnak; ezt hash-ellenőrzés kényszeríti ki. |
 | UCRT | Windows 10 beépített változata | Nem másoljuk a modern runner UCRT-jét a csomagba. |
 
+A spec a teljes rögzített VC DLL-készletet is hozzáadja: a DLL-csere után például a régebbi MSVCP140 `CONCRT140.dll` függőségét is biztosítani kell. A statikus ellenőrzés a hiányzó alkalmazás- és runtime-DLL-eket is hibának tekinti, akkor is, ha a modern runner rendszerpéldánya elérhető.
+
 A natív függőségek régebbi verzióinak használata tudatos kompatibilitási kompromisszum. Nem jelent mai upstream karbantartási támogatást. Az újabb natív verziókra frissítés csak újabb célgépes próbával végezhető.
 
 A PDF-képekhez saját tulajdonú Qt-képpuffert készítünk a beépített PPM-dekóderen keresztül. A PySide2 alatt problémás, Python bytes-puffert kölcsönző QImage-konstruktort eltávolítottuk a betekintőből és a nyomtatásból.

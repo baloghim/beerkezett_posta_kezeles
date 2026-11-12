@@ -4,7 +4,7 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
-A **0.2.0** verzió Qt 5.15 / Python 3.10 alapú, Windows 10 **1607 x64 (build 14393)** célplatformhoz készül. Az új kiadás letöltési linkjét csak sikeres build és kiadás után állítjuk be. A korábbi **0.1.0 Qt 6-os csomag ehhez a célgéphez nem megfelelő**.
+A **0.2.1** verzió Qt 5.15 / Python 3.10 alapú, Windows 10 **1607 x64 (build 14393)** célplatformhoz készül. Az új kiadás letöltési linkjét csak sikeres build és kiadás után állítjuk be. A korábbi **0.1.0 Qt 6-os csomag ehhez a célgéphez nem megfelelő**.
 
 A tényleges 1607-es indítás még ellenőrizendő; a modern runner sikere nem ilyen bizonyíték. [Kompatibilitási vizsgálat és helyi EXE-önellenőrzés](docs/WINDOWS1607.md).
 
@@ -96,6 +96,6 @@ A PyInstaller Qt-hookjai gyűjtik a PySide2 modulokat és platformpluginokat. A 
 
 ## Verzió és licencek
 
-Verzió: **0.2.0**. Az új Windows kiadás ellenőrzése folyamatban; az éles hivatali bevezetéshez a dokumentált Windows/SMB/nyomtatási átvételi próba még hátravan.
+Verzió: **0.2.1**. Az új Windows kiadás ellenőrzése folyamatban; az éles hivatali bevezetéshez a dokumentált Windows/SMB/nyomtatási átvételi próba még hátravan.
 
 A projekt saját kódjára nincs megadva felhasználási licenc; ennek kiválasztása a jogtulajdonos feladata. A PySide2 és a PyMuPDF külön licencei érvényesek. A PyMuPDF AGPL/kereskedelmi feltételeit és a Qt terjesztési követelményeit Windows-csomag terjesztése előtt rendezni kell.

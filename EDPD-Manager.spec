@@ -35,6 +35,12 @@ for dest, source, kind in a.binaries:
     if name == 'ucrtbase.dll' or name.startswith('api-ms-win-crt-'):
         continue  # Windows 10 saját UCRT-je; nem a runner új rendszerfájljai.
     cleaned.append((dest, vc.get(name, source), kind))
+# A DLL-csere újabb függőséget is hozhat (pl. a régi MSVCP140 -> CONCRT140).
+# Az Analysis már lefutott, ezért a teljes rögzített VC-készletet expliciten
+# is hozzáadjuk az alkalmazás gyökeréhez, nem hagyatkozunk a runner készletére.
+for name, source in vc.items():
+    if not any(Path(dest).name.lower() == name and Path(dest).parent == Path('.') for dest, _, _ in cleaned):
+        cleaned.append((Path(source).name, source, 'BINARY'))
 a.binaries = cleaned
 pyz = PYZ(a.pure)
 exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='EDPD-Manager',

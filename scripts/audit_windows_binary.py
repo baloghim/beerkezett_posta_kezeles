@@ -73,6 +73,8 @@ def audit(root):
                     continue
             else:
                 available = None
+                if dll.lower().startswith(('msvcp', 'vcruntime', 'concrt', 'vcomp', 'vcamp', 'qt5', 'pyside2', 'shiboken', 'python3', 'mupdf')):
+                    errors.append(f"{entry['path']}: hiányzó csomagolt alkalmazás/runtime DLL: {dll}")
             if available is not None:
                 for symbol in symbols:
                     if not symbol.startswith('ordinal:') and symbol not in available:
