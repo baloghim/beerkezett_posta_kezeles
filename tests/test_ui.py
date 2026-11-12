@@ -109,7 +109,7 @@ def test_packaged_entry_selftest_without_real_folders(tmp_path):
     report = tmp_path / 'result.json'
     result = subprocess.run([sys.executable, '-m', 'edpd.main', '--self-test', '--report', str(report)],
                             capture_output=True, text=True, timeout=60, env=os.environ.copy())
-    assert result.returncode == 0, result.stderr
+    assert result.returncode == 0, (report.read_text(encoding='utf-8') if report.exists() else result.stderr)
     data = json.loads(report.read_text())
     assert data['passed'] and len(data['checks']) == 8
     assert data['versions']['Qt'] == '5.15.2'

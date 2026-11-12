@@ -56,7 +56,7 @@ Az önellenőrzés sikere után a fizikai nyomtató és a kétgépes SMB-megoszt
 
 ## Opcionális automatikus valódi 1607 teszt
 
-A GitHub Actions `workflow_dispatch` bemenetén a `validate_windows1607` kapcsoló külön, `self-hosted, Windows, X64, win10-1607` címkékkel ellátott tesztgépen is ellenőrizheti a kész ZIP-et. Alapból ki van kapcsolva, nincs ilyen gép feltételezve, PR-ból nem fut. Csak erre kijelölt tesztgépre telepíthető runner; a céges munkaállomáson ehhez nincs szükség új szoftverre, ott a mellékelt EXE-önellenőrzés használható. A runner és artifact action verziójának külön támogatnia kell a régi vendég OS-t; ennek hiányában a közvetlen offline EXE-próba használható.
+A GitHub Actions `workflow_dispatch` bemenetén a `validate_windows1607` kapcsoló külön, `self-hosted, Windows, X64, win10-1607` címkékkel ellátott tesztgépen is ellenőrizheti a kész ZIP-et. Alapból ki van kapcsolva, nincs ilyen gép feltételezve, PR-ból nem fut. Csak erre kijelölt tesztgépre telepíthető runner; a céges munkaállomáson ehhez nincs szükség új szoftverre, ott a mellékelt EXE-önellenőrzés használható. A régi gépen futó opcionális job natív Windows PowerShell-lel tölti le és ellenőrzi az aktuális artifactot, nem igényel új Node.js-alapú actiont. A GitHub runner szolgáltatásnak külön támogatnia kell a régi vendég OS-t; ennek hiányában a közvetlen offline EXE-próba használható.
 
 ## Hivatalos források
 
