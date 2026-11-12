@@ -28,9 +28,19 @@ A beágyazott `native-dependencies.json` **107 natív PE-fájlt** vizsgál. Ninc
 - Minden hivatkozott alkalmazás-, Qt-, Python-, MuPDF- és VC-runtime DLL megtalálható a csomagban. A Windows 10 beépített rendszer-DLL-jeit nem másoljuk a runnerből.
 - Nincs Qt 6/PySide6 fájl a csomagban. A célgépes PowerShell-script UTF-8 BOM-ja megmaradt.
 
-## Ami még a céges gépen szükséges
+## Sikeres önellenőrzés a céges Windows 10 1607-es gépen
 
-**Valódi Windows 10 1607 x64 (14393) gépet vagy VM-et a felhőkörnyezetből nem értünk el. A célgépes kompatibilitást ezért még nem állítjuk igazoltnak.** A felhasználó által elérhető céges gépen az [EXE-önellenőrzés](WINDOWS1607.md) futtatható, Python és fejlesztőeszközök telepítése nélkül. A külön 1607-es self-hosted CI-job nem futott.
+A felhasználó által `EDPD-1607.json` néven megküldött célgépes önellenőrzési eredmény:
+
+- Windows **10**, build **14393**, **64 bit**, `product_type: 1` (munkaállomás).
+- `frozen: true`: a csomagolt EXE futott.
+- `passed: true`, **`windows1607_verified: true`**, `error: null`.
+- Python **3.10.11**, PySide2 **5.15.2.1**, Qt **5.15.2**, PyMuPDF **1.23.26**.
+- Mind a nyolc ellenőrzés sikeres: natív importok; hárompaneles GUI és ZIP-listázás; ZIP-ből PDF-megjelenítés, lapozás és nagyítás; munkamappa-fájlzár; kicsomagolás és munkamappából megnyitás; teljes oldalak nyomtatási PDF-kimenete; napi törlés és ürítés; helyi beállítások és elrendezés megőrzése.
+
+**A vizsgált céges Windows 10 1607 x64 gépen a csomagolt EXE indítása és az önellenőrzés által lefedett alapfunkciók működése igazolt.** A bizonyíték forrása a felhasználó által megküldött eredmény; a céges géphez a fejlesztői felhőből nem kapcsolódtunk. A külön 1607-es self-hosted CI-job nem futott. A modern runner fenti eredményében a `windows1607_verified: false` továbbra is helyes; a két külön futás eredményét nem vonjuk össze.
+
+## Fennmaradó átvételi próbák
 
 A fizikai nyomtató és a több munkaállomásos SMB-megosztás próbája a [Windows-átvételi útmutató](WINDOWS-VALIDATION.md) szerint hátravan. Az automatikus tesztek nem használtak valódi NEAK adatot vagy megosztást.
 

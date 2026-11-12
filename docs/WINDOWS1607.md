@@ -32,7 +32,7 @@ A PDF-képekhez saját tulajdonú Qt-képpuffert készítünk a beépített PPM-
 3. A statikus PE-vizsgálat leltározza a csomag minden EXE/DLL/PYD fájlját, azok importjait és hash-ét. Ellenőrzi az x64 architektúrát, a csomagolt DLL-ek közötti név szerinti importok feloldhatóságát, a VC-runtime eredetét, a Qt 6 hiányát és ismert 1607 utáni közvetlen API-importok hiányát. A dinamikus API-feloldás és minden OS API viselkedése ebből nem bizonyítható.
 4. **Csak a tényleges Windows 10 1607 x64 rendszeren sikeresen végzett EXE-próba igazolja ezen a rendszeren az indítást.** Az eredményben a modern runneren `windows1607_verified: false` marad. Windows Server 2016 azonos buildszáma sem kerül Windows 10 munkaállomásként elfogadásra.
 
-A fejlesztői felhőgép Linux. Nem áll rendelkezésre külön, hozzáférhető Windows 1607-es VM. A céges célgép vizsgálata hátravan, amíg annak önellenőrzési eredménye nem áll rendelkezésre.
+A fejlesztői felhőgép Linux, külön Windows 1607-es VM-et nem használtunk. A felhasználó a céges célgépen lefuttatta a csomagolt EXE önellenőrzését, és az `EDPD-1607.json` eredményt megküldte: **Windows 10 x64, build 14393, munkaállomás; mind a nyolc ellenőrzés sikeres, `windows1607_verified: true`, `error: null`.** Ez a vizsgált céges gépen igazolja az indítást és az önellenőrzéssel lefedett funkciókat. A fizikai nyomtató és a többgépes SMB-működés külön átvételi próbát igényel. [Részletes eredmények](VALIDATION.md).
 
 ## Ellenőrzés a céges gépen – telepítés nélkül
 

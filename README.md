@@ -8,7 +8,7 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 A kiadás Python **3.10.11**, PySide2 **5.15.2.1 / Qt 5.15.2** és PyMuPDF **1.23.26** alapú, Windows 10 **1607 x64 (build 14393)** célplatformhoz készült. A teljes ZIP-et új helyi mappába bontsa ki; Python vagy Visual C++ fejlesztőeszköz telepítése nem szükséges. A szükséges alkalmazáslokális runtime DLL-ek a csomagban vannak.
 
-A Windows build, a csomagolt EXE nyolc funkcionális önellenőrzése, a DLL-függőségi vizsgálat és a letöltött ZIP ellenőrző összege sikeres. **A tényleges Windows 10 1607-es céges gépen az indítás még igazolandó**; a modern runner eredménye ezt nem helyettesíti. [Python nélkül futtatható célgépes önellenőrzés](docs/WINDOWS1607.md) · [Részletes eredmények](docs/VALIDATION.md).
+A Windows build, a DLL-függőségi vizsgálat és a letöltött ZIP ellenőrző összege sikeres. **A céges Windows 10 1607 x64 gépen (build 14393) futtatott csomagolt EXE mind a nyolc funkcionális önellenőrzést teljesítette.** A felhasználó által beküldött eredményben `passed: true` és `windows1607_verified: true` szerepel. A fizikai nyomtató és a többgépes SMB-megosztás próbája még szükséges. [Python nélkül futtatható célgépes önellenőrzés](docs/WINDOWS1607.md) · [Részletes eredmények](docs/VALIDATION.md).
 
 A korábbi **v0.1.0 Qt 6-os csomag a 1607-es géphez nem megfelelő**. A **v0.2.0** runtime-készlete hiányos volt; helyette a **v0.2.1** használandó.
 
@@ -100,6 +100,6 @@ A PyInstaller Qt-hookjai gyűjtik a PySide2 modulokat és platformpluginokat. A 
 
 ## Verzió és licencek
 
-Verzió: **0.2.1**. A Windows build és a kiadás elkészült; az éles hivatali bevezetéshez a dokumentált Windows/SMB/nyomtatási átvételi próba még hátravan.
+Verzió: **0.2.1**. A Windows build és a kiadás elkészült, a céges Windows 10 1607-es gépen a csomagolt EXE önellenőrzése sikeres. Az éles hivatali bevezetéshez a dokumentált fizikai nyomtatási és többgépes SMB-próba még hátravan.
 
 A projekt saját kódjára nincs megadva felhasználási licenc; ennek kiválasztása a jogtulajdonos feladata. A PySide2 és a PyMuPDF külön licencei érvényesek. A PyMuPDF AGPL/kereskedelmi feltételeit és a Qt terjesztési követelményeit Windows-csomag terjesztése előtt rendezni kell.
