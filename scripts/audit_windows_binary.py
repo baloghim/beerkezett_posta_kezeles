@@ -23,12 +23,12 @@ def audit(root):
     for path in sorted(root.rglob('*')):
         if path.suffix.lower() not in {'.exe', '.dll', '.pyd'}:
             continue
-        pe = pefile.PE(str(path), fast_load=True)
+        pe = pefile.PE(str(path), fast_load=True, max_symbol_exports=1_000_000)
         pe.parse_data_directories(directories=[pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_IMPORT'],
                                               pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT'],
                                               pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_EXPORT']])
-        exports[path.name.casefold()] = {symbol.name.decode('ascii', errors='replace') if symbol.name else f'ordinal:{symbol.ordinal}'
-                                         for symbol in getattr(getattr(pe, 'DIRECTORY_ENTRY_EXPORT', None), 'symbols', [])}
+        exports[path] = {symbol.name.decode('ascii', errors='replace') if symbol.name else f'ordinal:{symbol.ordinal}'
+                         for symbol in getattr(getattr(pe, 'DIRECTORY_ENTRY_EXPORT', None), 'symbols', [])}
         imports = {}
         for group in ('DIRECTORY_ENTRY_IMPORT', 'DIRECTORY_ENTRY_DELAY_IMPORT'):
             for descriptor in getattr(pe, group, []):
@@ -57,7 +57,18 @@ def audit(root):
         pe.close()
     for entry in entries:
         for dll, symbols in entry['imports'].items():
-            available = exports.get(dll.casefold())
+            owner = root / entry['path']
+            candidates = [(path, names) for path, names in exports.items() if path.name.casefold() == dll.casefold()]
+            local = [names for path, names in candidates if path.parent == owner.parent]
+            if local:
+                available = local[0]
+            elif candidates:
+                available = candidates[0][1]
+                if any(names != available for _, names in candidates):
+                    errors.append(f"{entry['path']}: többértelmű csomagolt DLL: {dll}")
+                    continue
+            else:
+                available = None
             if available is not None:
                 for symbol in symbols:
                     if not symbol.startswith('ordinal:') and symbol not in available:
@@ -76,6 +87,6 @@ if __name__ == '__main__':
     result = audit(args.root)
     args.report.write_text(json.dumps(result, indent=2), encoding='utf-8')
     print(f"PE audit: {len(result['binaries'])} fájl, {len(result['errors'])} hiba")
-    for error in result['errors']:
+    for error in result['errors'][:20]:
         print(error)
     raise SystemExit(0 if result['passed'] else 1)
