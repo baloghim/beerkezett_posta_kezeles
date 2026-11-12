@@ -1,0 +1,54 @@
+name: Windows kiadás
+on:
+  push:
+    branches: [main, work]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Függőségek
+        run: python -m pip install -e ".[dev]"
+      - name: Automatikus tesztek (csak ideiglenes adatok)
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m pytest -q
+      - name: Önálló Windows alkalmazás
+        run: python -m PyInstaller --noconfirm --clean --windowed --onedir --name EDPD-Manager --paths src --collect-all pymupdf run_edpd.py
+      - name: Csomagolás
+        shell: pwsh
+        run: |
+          Copy-Item README.md dist/EDPD-Manager/
+          Copy-Item docs/WINDOWS-VALIDATION.md dist/EDPD-Manager/
+          Compress-Archive -Path dist/EDPD-Manager -DestinationPath EDPD-Manager-Windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EDPD-Manager-Windows-x64
+          path: EDPD-Manager-Windows-x64.zip
+          if-no-files-found: error
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: EDPD-Manager-Windows-x64
+          path: release
+      - name: Verziózott GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_TAG" release/EDPD-Manager-Windows-x64.zip --verify-tag --generate-notes --title "EDPD $RELEASE_TAG"
