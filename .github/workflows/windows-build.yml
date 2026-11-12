@@ -54,6 +54,8 @@ jobs:
           if ($process.ExitCode -ne 0 -or -not (Test-Path $report)) { throw ('Az EXE indítási próbája sikertelen. ExitCode=' + $process.ExitCode + '; report=' + (Test-Path $report)) }
           $result = Get-Content -Raw $report | ConvertFrom-Json
           if (-not $result.passed -or -not $result.host.frozen) { throw ('Hibás csomagolt önellenőrzés: ' + (Get-Content -Raw $report)) }
+          $expectedVersion = python -c "from edpd import __version__; print(__version__)"
+          if ($result.application_version -ne $expectedVersion -or $result.checks.Count -lt 9) { throw 'Eltérő verzió vagy hiányos EDPD 2.0 önellenőrzés' }
           # A modern runner eredménye nem 1607 kompatibilitási bizonyíték.
           if ($result.windows1607_verified) { throw 'Hibás OS-minősítés a modern runneren' }
       - name: Csomagolás
@@ -134,8 +136,5 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          printf '%s\n' 'Windows 10 1607 x64 célplatformhoz készített Qt 5.15.2 / Python 3.10 csomag.' 'A modern runner EXE-önellenőrzése és a statikus DLL-vizsgálat sikeres. Valódi 1607-es futtatás még nincs igazolva; a csomag Test-Windows1607.ps1 ellenőrzője Python nélkül futtatható a célgépen.' > release-notes.txt
-          if [ "$RELEASE_TAG" = "v0.2.1" ]; then
-            gh release edit v0.2.0 --prerelease --notes 'A csomag hiányos: a CONCRT140.dll nem szerepel benne. Használja a 0.2.1 vagy újabb verziót. A modern runner tesztje ezt a rendszerbe telepített DLL miatt elfedte; az új audit ellenőrzi a teljes függőségi zártságot.'
-          fi
+          printf '%s\n' 'EDPD 2.0 – 14/30/90/180 napos ZIP-szűrés, teljes munkamappa-lista forrásnappal, közös Elvégezve jelölés, célzott napi törlés.' 'Változatlan Windows 10 1607 x64 technológiai alap: Python 3.10.11, Qt 5.15.2 / PySide2 5.15.2.1, PyMuPDF 1.23.26; teljes alkalmazáslokális VC-runtime.' 'A Windows build, az automatikus tesztek, a csomagolt EXE kilenc funkcionális önellenőrzése és a statikus DLL-vizsgálat sikeres. A 0.2.1 kiadást korábban valódi 1607-es céges gépen is ellenőrizték; az új 2.0 kiadás célgépes önellenőrzése és többfelhasználós munkahelyi próbája még szükséges. A mellékelt EXE-önellenőrzés Python telepítése nélkül futtatható.' > release-notes.txt
           gh release create "$RELEASE_TAG" release/EDPD-Manager-Windows-x64.zip release/EDPD-Manager-Windows-x64.zip.sha256 --verify-tag --notes-file release-notes.txt --title "EDPD $RELEASE_TAG"

@@ -27,3 +27,9 @@ def folders(tmp_path):
     source.mkdir()
     target.mkdir()
     return source, target
+
+
+@pytest.fixture(autouse=True)
+def isolated_user_profile(tmp_path, monkeypatch):
+    monkeypatch.setenv('APPDATA', str(tmp_path / 'profile'))
+    monkeypatch.setenv('LOCALAPPDATA', str(tmp_path / 'local-profile'))

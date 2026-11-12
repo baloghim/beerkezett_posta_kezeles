@@ -94,7 +94,7 @@ def test_daily_delete_and_clear_only_pdfs(folders):
 
 def test_missing_and_nested_paths(folders):
     source, target = folders
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(EDPDError, match='nem érhető el'):
         validate_paths(source, target / 'missing')
     for a, b in [(source, source), (source, source.parent), (source.parent, target)]:
         with pytest.raises(EDPDError):

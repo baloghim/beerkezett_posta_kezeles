@@ -1,50 +1,9 @@
-# Ellenőrzési eredmények – 0.2.1
+# EDPD 2.0 – ellenőrzési eredmények
 
-Dátum: 2026. november 12.
+A fejlesztés ugyanazokat a Windows 1607-kompatibilis natív függőségeket használja: Python 3.10.11 Windows x64, PySide2 5.15.2.1 / Qt 5.15.2, PyMuPDF 1.23.26 és PyMuPDFb 1.23.22. Új külső függőség nincs.
 
-- Linux, Python 3.10.22: **31 sikeres teszt, 1 szabályosan kihagyott teszt**. A kihagyott teszt valódi Windows Qt DLL-eket vizsgál; a Windows workflow-ban végrehajtódik.
-- Windows 2022 runner, Python 3.10.11 x64: az automatikus tesztcsomag sikeres, beleértve a nagy Qt exporttáblák és a szándékosan eltávolított CONCRT140.dll felismerésének ellenőrzését.
-- [Javított teljes runtime build](https://github.com/baloghim/beerkezett_posta_kezeles/actions/runs/43225220899): **Success**.
-- [v0.2.1 Windows build és GitHub Release](https://github.com/baloghim/beerkezett_posta_kezeles/actions/runs/43225724848): **Success**.
-- [Release](https://github.com/baloghim/beerkezett_posta_kezeles/releases/tag/v0.2.1) · [Windows ZIP](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v0.2.1/EDPD-Manager-Windows-x64.zip) · [SHA-256 fájl](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v0.2.1/EDPD-Manager-Windows-x64.zip.sha256).
+A 2.0 tesztjei, a Windows build és a kiadás ellenőrzése folyamatban. A végleges eredményeket a sikeres futás és a közzétett ZIP letöltés utáni ellenőrzése után rögzítjük.
 
-## A ténylegesen csomagolt EXE próbája
+A korábbi 0.2.1 kiadásról a felhasználó által küldött `EDPD-1607.json` valódi Windows 10 x64, build 14393 munkaállomást, `frozen: true`, nyolc sikeres funkcionális ellenőrzést és `windows1607_verified: true` eredményt igazolt. Ez a technológiai alap referenciája; **nem az új 2.0 célgépes futtatásának eredménye**.
 
-A kiadott ZIP `modern-runner-selftest.json` eredménye:
-
-- Rendszer: Windows Server 2022, build **20348**, 64 bit, `frozen: true`.
-- Python **3.10.11**, PySide2 **5.15.2.1**, Qt **5.15.2**, PyMuPDF **1.23.26**.
-- `passed: true`, `windows1607_verified: false`.
-- Nyolc sikeres funkcionális ellenőrzés: natív importok; hárompaneles GUI és napi ZIP-csoportosítás; ZIP-ből PDF-betekintés, lapozás és nagyítás; közös fájlzár; kicsomagolás és munkamappából megnyitás; két teljes oldal nyomtatási PDF-kimenete; napi törlés és ürítés; helyi beállítások és panelméretek megőrzése.
-
-A beágyazott `native-dependencies.json` **107 natív PE-fájlt** vizsgál. Nincs hiba: x64 architektúra, ismert 1607 utáni közvetlen API-k hiánya, név szerinti belső importok, runtime-eredet és csomagolt alkalmazás/runtime DLL-ek megléte ellenőrizve. A dinamikus API-feloldásból következő OS-követelményeket ez nem bizonyítja.
-
-## A közzétett ZIP letöltés utáni ellenőrzése
-
-- Méret: **61,294,296 bájt**, 198 ZIP-bejegyzés.
-- Teljes ZIP CRC-ellenőrzés: hibátlan.
-- A közzétett SHA-256 fájl és a letöltött ZIP egyezik: `5f8fbdd600cc809e0f1eea7493f5822834f39bdd3fdf3079b387b8327924934d`.
-- Windows EXE, Python310.dll, Qt5Widgets.dll, qwindows.dll, MuPDF DLL, MSVCP140.dll, **CONCRT140.dll**, VCRUNTIME140.dll és VCRUNTIME140_1.dll jelen van.
-- Minden hivatkozott alkalmazás-, Qt-, Python-, MuPDF- és VC-runtime DLL megtalálható a csomagban. A Windows 10 beépített rendszer-DLL-jeit nem másoljuk a runnerből.
-- Nincs Qt 6/PySide6 fájl a csomagban. A célgépes PowerShell-script UTF-8 BOM-ja megmaradt.
-
-## Sikeres önellenőrzés a céges Windows 10 1607-es gépen
-
-A felhasználó által `EDPD-1607.json` néven megküldött célgépes önellenőrzési eredmény:
-
-- Windows **10**, build **14393**, **64 bit**, `product_type: 1` (munkaállomás).
-- `frozen: true`: a csomagolt EXE futott.
-- `passed: true`, **`windows1607_verified: true`**, `error: null`.
-- Python **3.10.11**, PySide2 **5.15.2.1**, Qt **5.15.2**, PyMuPDF **1.23.26**.
-- Mind a nyolc ellenőrzés sikeres: natív importok; hárompaneles GUI és ZIP-listázás; ZIP-ből PDF-megjelenítés, lapozás és nagyítás; munkamappa-fájlzár; kicsomagolás és munkamappából megnyitás; teljes oldalak nyomtatási PDF-kimenete; napi törlés és ürítés; helyi beállítások és elrendezés megőrzése.
-
-**A vizsgált céges Windows 10 1607 x64 gépen a csomagolt EXE indítása és az önellenőrzés által lefedett alapfunkciók működése igazolt.** A bizonyíték forrása a felhasználó által megküldött eredmény; a céges géphez a fejlesztői felhőből nem kapcsolódtunk. A külön 1607-es self-hosted CI-job nem futott. A modern runner fenti eredményében a `windows1607_verified: false` továbbra is helyes; a két külön futás eredményét nem vonjuk össze.
-
-## Fennmaradó átvételi próbák
-
-A fizikai nyomtató és a több munkaállomásos SMB-megosztás próbája a [Windows-átvételi útmutató](WINDOWS-VALIDATION.md) szerint hátravan. Az automatikus tesztek nem használtak valódi NEAK adatot vagy megosztást.
-
-## Korábbi kiadások
-
-- **0.1.0:** Qt 6.8 alapú; a Qt dokumentált Windows minimuma 1809, így nem megfelelő a 1607-es célgéphez.
-- **0.2.0:** a közzétett ZIP utóellenőrzésénél hiányzó CONCRT140.dll függőség derült ki. A modern runner rendszerbe telepített DLL-je ezt elfedte. A kiadás figyelmeztetéssel jelölt; helyette 0.2.1 használandó. A 0.2.1 buildben a teljes rögzített runtime-készletet explicit csomagoljuk, és a hiányzó ilyen DLL már kötelezően sikertelen auditot eredményez.
+A 2.0 új, kilenc ellenőrzéses EXE-önellenőrzése külön vizsgálja a közös Elvégezve jelölés mentését és visszavonását. A fizikai nyomtató, a többgépes SMB-módosítások és a közös állapotfájl valós vállalati hálózati próbája még szükséges. Az automatikus tesztek kizárólag ideiglenes, szintetikus adatokkal dolgoznak, az éles NEAK mappákban semmit nem módosítanak.

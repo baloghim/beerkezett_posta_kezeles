@@ -11,7 +11,9 @@ A [1607-es EXE-önellenőrzést](WINDOWS1607.md) futtassa le a részletes próba
 5. Két külön gépről egyszerre indítson nagyobb kicsomagolást. Egyetlen gép módosíthassa a munkamappát. Leállított kliens után a szervernek fel kell oldania a fájlzárat; hálózati kimaradáskor ennek ideje az SMB-kiszolgálótól függ. A `.edpd-operation.lock` fájlt ne törölje.
 6. Olvasás és írás közben kapcsolja le a tesztmegosztást. Legyen érthető hiba; felülírási hiba esetén a korábbi cél-PDF maradjon ép. A már elkészült fájlok megmaradnak: a napi művelet fájlonként atomikus, nem teljes napi tranzakció.
 7. A ZIP-ből és a célból megnyitott többoldalas, vegyes tájolású PDF-et nyomtassa Microsoft Print to PDF-re és fizikai nyomtatóra. Vizsgálja az oldalintervallumot, példányszámot, fordított sorrendet, margókat és minden oldal teljes tartalmát. A párbeszéd megszakítása ne indítson nyomtatást.
-8. Ellenőrizze 5 és 60 perces frissítéssel, hogy az olvasott PDF nyitva marad. Indítsa újra az alkalmazást, ellenőrizze a beállítások és ablakelrendezés megmaradását.
+8. Ellenőrizze a 14/30/90/180 napos és Összes nézetet. Régi munkamappabeli PDF-et és ismeretlen dokumentumot is hagyjon a célban; a forrásnap háttérben jelenjen meg, ütközésnél többértelmű jelzéssel. A felső nap kijelölése ne szűrje az alsó listát és ne váltson PDF-et.
+9. Két gépen ugyanazt a külön közös teszt-állapotmappát adja meg. Jelöljön elvégzettnek két külön napot a két gépen, majd frissítsen: mindkettő maradjon meg. Próbálja a visszavonást és a jelölések fennmaradását kicsomagolás, napi törlés, teljes ürítés és újraindítás után. Megszakadt hálózati mentésnél ne tűnjenek el korábbi jelölések. A zöld állapot élvezzen elsőbbséget, a kijelölt sor legyen olvasható.
+10. Ellenőrizze 5 és 60 perces frissítéssel, hogy az olvasott PDF nyitva marad. Indítsa újra az alkalmazást, ellenőrizze a beállítások és ablakelrendezés megmaradását.
 
 ## Ismert működési határok
 

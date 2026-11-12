@@ -32,7 +32,7 @@ A PDF-képekhez saját tulajdonú Qt-képpuffert készítünk a beépített PPM-
 3. A statikus PE-vizsgálat leltározza a csomag minden EXE/DLL/PYD fájlját, azok importjait és hash-ét. Ellenőrzi az x64 architektúrát, a csomagolt DLL-ek közötti név szerinti importok feloldhatóságát, a VC-runtime eredetét, a Qt 6 hiányát és ismert 1607 utáni közvetlen API-importok hiányát. A dinamikus API-feloldás és minden OS API viselkedése ebből nem bizonyítható.
 4. **Csak a tényleges Windows 10 1607 x64 rendszeren sikeresen végzett EXE-próba igazolja ezen a rendszeren az indítást.** Az eredményben a modern runneren `windows1607_verified: false` marad. Windows Server 2016 azonos buildszáma sem kerül Windows 10 munkaállomásként elfogadásra.
 
-A fejlesztői felhőgép Linux, külön Windows 1607-es VM-et nem használtunk. A felhasználó a céges célgépen lefuttatta a csomagolt EXE önellenőrzését, és az `EDPD-1607.json` eredményt megküldte: **Windows 10 x64, build 14393, munkaállomás; mind a nyolc ellenőrzés sikeres, `windows1607_verified: true`, `error: null`.** Ez a vizsgált céges gépen igazolja az indítást és az önellenőrzéssel lefedett funkciókat. A fizikai nyomtató és a többgépes SMB-működés külön átvételi próbát igényel. [Részletes eredmények](VALIDATION.md).
+A fejlesztői felhőgép Linux, külön Windows 1607-es VM-et nem használtunk. A felhasználó a céges célgépen a korábbi **0.2.1** csomagolt EXE önellenőrzését lefuttatta, és az `EDPD-1607.json` eredményt megküldte: **Windows 10 x64, build 14393, munkaállomás; mind a nyolc ellenőrzés sikeres, `windows1607_verified: true`, `error: null`.** Ez a 0.2.1 kiadás indítását és az akkori funkciókat igazolja a vizsgált céges gépen. **A 2.0 ugyanazokat a rögzített natív verziókat használja, de az új alkalmazás kilenc ellenőrzéses célgépes próbája még szükséges.** A fizikai nyomtató és a többgépes SMB-működés külön átvételi próbát igényel. [Részletes eredmények](VALIDATION.md).
 
 ## Ellenőrzés a céges gépen – telepítés nélkül
 
@@ -40,11 +40,11 @@ A fejlesztői felhőgép Linux, külön Windows 1607-es VM-et nem használtunk. 
 2. A kibontott `EDPD-Manager` mappában nyisson Parancssort, és futtassa:
 
 ```bat
-EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-Windows1607-result.json"
+EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.0-1607-result.json"
 ```
 
 3. A teszt röviden megnyitja a felületet, kizárólag a felhasználó ideiglenes mappájában készít szintetikus dokumentumokat, majd bezár. Nem olvassa a valódi H:/G: mappát, nem írja felül a felhasználói beállításokat, és nem nyomtat fizikai nyomtatóra.
-4. A JSON-fájlban a `passed`, `windows1607_verified` és `host.frozen` értékeknek egyaránt `true` értéket kell mutatniuk. Az OS-buildnek 14393-nak kell lennie. Sikertelenségnél az `error` mező, illetve a teljes Windows DLL-hibaüzenet segít a javításban.
+4. A JSON-fájl `application_version` mezőjében 2.0.0 szerepeljen, és a kilenc ellenőrzés között a közös jelölés mentése/visszavonása is legyen sikeres. A `passed`, `windows1607_verified` és `host.frozen` értékeknek egyaránt `true` értéket kell mutatniuk. Az OS-buildnek 14393-nak kell lennie. Sikertelenségnél az `error` mező, illetve a teljes Windows DLL-hibaüzenet segít a javításban.
 
 Opcionálisan a mellékelt PowerShell-script is futtatható, ha a vállalati szabályzat engedi:
 

@@ -42,11 +42,11 @@ def test_main_workflow_and_settings(app, folders, pdf_bytes, tmp_path, monkeypat
         z.writestr('sum.csv', 'ignored')
     errors = []
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
-    window = MainWindow(Settings(source=str(source), target=str(target)))
+    window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'), history_days=None))
     window.show()
     wait_for(app, lambda: len(window.days) == 1 and not window.jobs)
-    assert window.docs_table.rowCount() == 1
-    window.docs_table.selectRow(0)
+    assert window.docs_table.rowCount() == 0  # A ZIP tartalma nem a munkamappa.
+    window.open_archive_document(window.days[0].documents[0])
     wait_for(app, lambda: window.viewer.pdf is not None and not window.jobs)
     assert not list(target.iterdir())
     window.viewer.move(1)
@@ -85,7 +85,7 @@ def test_ui_extract_delete_and_clear(app, folders, pdf_bytes, tmp_path, monkeypa
     monkeypatch.setattr(QMessageBox, 'question', lambda *args: QMessageBox.StandardButton.Yes)
     monkeypatch.setattr(QMessageBox, 'exec_', lambda self: 0)
     monkeypatch.setattr(QMessageBox, 'clickedButton', lambda self: next(b for b in self.buttons() if b.text() == 'Meglévők kihagyása'))
-    window = MainWindow(Settings(source=str(source), target=str(target)))
+    window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'), history_days=None))
     window.show()
     wait_for(app, lambda: bool(window.days) and not window.jobs)
     window.extract()
@@ -111,7 +111,7 @@ def test_packaged_entry_selftest_without_real_folders(tmp_path):
                             capture_output=True, text=True, timeout=60, env=os.environ.copy())
     assert result.returncode == 0, (report.read_text(encoding='utf-8') if report.exists() else result.stderr)
     data = json.loads(report.read_text())
-    assert data['passed'] and len(data['checks']) == 8
+    assert data['passed'] and len(data['checks']) == 9
     assert data['versions']['Qt'] == '5.15.2'
     assert not data['host']['frozen']
     if sys.platform != 'win32' or sys.getwindowsversion().build != 14393:

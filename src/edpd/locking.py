@@ -4,12 +4,14 @@ from .models import EDPDError
 
 
 @contextmanager
-def workspace_lock(target):
+def workspace_lock(target, *, filename='.edpd-operation.lock', label='munkamappa'):
     """SMB-n is közös OS fájlzár; összeomláskor az operációs rendszer oldja fel.
 
     A technikai fájlt tilos törölni: a név újralétrehozása megkerülné a zárat.
     """
-    path = target / '.edpd-operation.lock'
+    if filename not in ('.edpd-operation.lock', '.edpd-marks.lock'):
+        raise ValueError('Ismeretlen zárolási fájl.')
+    path = target / filename
     if path.is_symlink():
         raise EDPDError('A zárolási fájl nem lehet hivatkozás.')
     stream = open(path, 'a+b')
@@ -28,7 +30,7 @@ def workspace_lock(target):
                 fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
             locked = True
         except OSError as exc:
-            raise EDPDError('A munkamappa foglalt, vagy a hálózati zárolás nem érhető el. Próbálja újra!') from exc
+            raise EDPDError(f'A(z) {label} foglalt, vagy a hálózati zárolás nem érhető el. Próbálja újra!') from exc
         yield
     finally:
         if locked:

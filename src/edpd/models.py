@@ -28,3 +28,20 @@ class Day:
 class Capabilities:
     overwrite: bool = True
     delete: bool = True
+    mark_done: bool = True
+
+    @classmethod
+    def viewer(cls):
+        return cls(False, False, False)
+
+
+@dataclass(frozen=True)
+class ArchiveEntry:
+    path: Path
+    date: date
+    mtime_ns: int
+    size: int
+
+    @property
+    def stamp(self):
+        return self.mtime_ns, self.size

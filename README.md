@@ -1,105 +1,132 @@
 # EDPD – Postai dokumentumkezelő
 
-Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak áttekintéséhez, a PDF-ek megtekintéséhez, nyomtatásához és az ideiglenes munkamappa kezeléséhez. Nem iktatórendszer. Nincs szerver, adatbázis, telemetria vagy dokumentumfeltöltés.
+Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak kezeléséhez, a munkamappa PDF-jeinek megtekintéséhez és nyomtatásához. Nincs dokumentumfeltöltés, telemetria vagy külön szerver.
 
 ## Windows letöltés
 
-**[EDPD – Windows verzió letöltése (v0.2.1)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v0.2.1/EDPD-Manager-Windows-x64.zip)**
+**Az EDPD 2.0 kiadása készül.** Az alábbi letöltés a korábbi, Windows 1607-en kipróbált **0.2.1** verzió; az új 2.0-funkciók a fejlesztői ágon vannak. A közvetlen linket csak a sikeresen közzétett új ZIP ellenőrzése után frissítjük.
 
-A kiadás Python **3.10.11**, PySide2 **5.15.2.1 / Qt 5.15.2** és PyMuPDF **1.23.26** alapú, Windows 10 **1607 x64 (build 14393)** célplatformhoz készült. A teljes ZIP-et új helyi mappába bontsa ki; Python vagy Visual C++ fejlesztőeszköz telepítése nem szükséges. A szükséges alkalmazáslokális runtime DLL-ek a csomagban vannak.
+**[EDPD – korábbi Windows-verzió letöltése (v0.2.1)](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v0.2.1/EDPD-Manager-Windows-x64.zip)**
 
-A Windows build, a DLL-függőségi vizsgálat és a letöltött ZIP ellenőrző összege sikeres. **A céges Windows 10 1607 x64 gépen (build 14393) futtatott csomagolt EXE mind a nyolc funkcionális önellenőrzést teljesítette.** A felhasználó által beküldött eredményben `passed: true` és `windows1607_verified: true` szerepel. A fizikai nyomtató és a többgépes SMB-megosztás próbája még szükséges. [Python nélkül futtatható célgépes önellenőrzés](docs/WINDOWS1607.md) · [Részletes eredmények](docs/VALIDATION.md).
+A technológiai alap változatlan: Python **3.10.11 x64**, PySide2 **5.15.2.1 / Qt 5.15.2**, PyMuPDF **1.23.26**. A teljes ZIP-et **új helyi mappába** bontsa ki, majd indítsa az `EDPD-Manager.exe` fájlt. Az `_internal` mappát is meg kell tartani. Python vagy Visual C++ fejlesztőeszköz telepítése nem szükséges; a runtime DLL-ek a csomagban vannak.
 
-A korábbi **v0.1.0 Qt 6-os csomag a 1607-es géphez nem megfelelő**. A **v0.2.0** runtime-készlete hiányos volt; helyette a **v0.2.1** használandó.
+A 0.2.1 csomagolt EXE a céges Windows 10 **1607 x64, build 14393** gépen sikeres önellenőrzést teljesített. Az új **2.0** kiadás külön célgépes próbája még szükséges. A modern runner sikere ezt nem helyettesíti. [Windows 1607 útmutató](docs/WINDOWS1607.md) · [Ellenőrzési eredmények](docs/VALIDATION.md).
 
-A [Windows kiadás munkafolyamat](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) sikeres futásának **Artifacts** részében az `EDPD-Manager-Windows-x64` csomag tölthető le. Artifact csak sikeres build után létezik; letöltéséhez GitHub-bejelentkezés szükséges lehet. A `v*` verziócímkével indított sikeres futás verziózott GitHub Release-t és ZIP-mellékletet is létrehoz.
+A [Windows build](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) sikeres futásának **Artifacts** részében a csomag és SHA-256 ellenőrző összege is elérhető. A `v*` verziócímkével indított sikeres futás GitHub Release-t készít.
 
-## Funkciók
+## A 2.0 fő funkciói
 
-- Dátummal kezdődő ZIP-ek csoportosítása nap szerint, a legújabb nappal elöl; ZIP-tartalomjegyzék gyorsítótárazása.
-- Három mozgatható panel: napi csomagok, dokumentumlista, PDF-betekintő.
-- Kizárólag PDF-ek, a belső ZIP-mappaútvonalak és CSV-k kihagyásával.
-- ZIP-ből vagy a munkamappából megtekintés, lapozás, nagyítás, szélességhez és ablakhoz igazítás.
-- Natív Qt/Windows nyomtatási párbeszéd: teljes PDF-oldalak renderelése, oldalintervallum és nyomtatóbeállítások.
-- Teljes napi kicsomagolás, meglévők kihagyása vagy külön választott felülírás.
-- Megerősített napi törlés és a munkamappa közvetlen PDF-jeinek ürítése.
-- Valós mappatartalomból számított státusz, közös operációsrendszer-szintű fájlzár, háttérben futó hálózati műveletek.
-- Helyi felhasználói beállítások és 5–60 perces automatikus frissítés, 15 perces alapértékkel.
+- Három méretezhető panel: **napi csomagok**, **a teljes munkamappa dokumentumai**, **PDF-betekintő**.
+- Induláskor az **elmúlt 14 naptári nap**, a mai nappal együtt. Választható: 14/30/90/180 nap vagy Összes.
+- A ZIP-ek dátumszűrése a tartalomjegyzék megnyitása előtt történik; listázáskor PDF-adatot nem olvasunk.
+- Tartós, helyi ZIP-metaadat-index a változatlan régi ZIP-ek felesleges újranyitásának elkerülésére.
+- Közös **Elvégezve jelölés / Jelölés visszavonása**, a PDF-ek állapotától függetlenül.
+- A napi listában az elvégzett nap zöld, a kicsomagolt nap félkövér fekete, a részben jelen lévő nap külön színt kap. A kijelölt sor kontrasztos marad.
+- A munkamappa-lista minden közvetlen PDF-et mutat: fájlnév, méret, forrásnap. A felső lista kiválasztása nem szűri ezt és nem váltja át az olvasott PDF-et.
+- Lapozás, nagyítás, szélességhez/teljes oldalhoz igazítás, natív Windows nyomtatási párbeszéd és teljes PDF-oldalak nyomtatása.
+- Teljes napi kicsomagolás, meglévők kihagyása vagy külön választott felülírás; megerősített napi törlés és munkamappa-ürítés.
+- Kézi frissítés és 5–60 perces automatikus ellenőrzés, 15 perces alapértékkel. A hálózati műveletek háttérben futnak.
 
-![EDPD felület szintetikus tesztadatokkal](docs/screenshot.png)
+![EDPD 2.0 szintetikus tesztadatokkal](docs/screenshot.png)
 
-## Rendszerkövetelmények és indítás
+## Beállítások és mappák
 
-Célplatform: Windows 10 1607 x64 (build 14393); ajánlott Full HD képernyő, olvasási jogosultság a forráshoz, írási/törlési és hálózati zárolási jogosultság a munkamappához. A teljes kiadási ZIP-et egy helyi mappába kell kibontani, majd az `EDPD-Manager.exe` indítható. A mellette található `_internal` mappát is meg kell tartani. A kiadás használatához nem kell Python.
+Célplatform: Windows 10 1607 x64, ajánlott Full HD kijelző. A forráshoz olvasási, a munkamappához és közös jelölésekhez megfelelő írási/törlési és hálózati zárolási jogosultság szükséges.
 
-## Mappák beállítása
+| Beállítás | Alapérték |
+| --- | --- |
+| Forrásarchívum – kizárólag olvasás | `H:\PostaEDPB\10_Komárom-Esztergom megye` |
+| Ideiglenes munkamappa | `G:\Igazgatas\DMS_One\00_t_meghajtóról érkezők` |
+| Közös jelölések mappája | `G:\Igazgatas\DMS_One\EDPD_appdata` |
+| Napi ZIP-lista időszaka | 14 nap |
+| Automatikus frissítés | 15 perc |
 
-Indításkor a **Beállítások** gombbal adja meg a saját gépén elérhető útvonalakat. Meghajtóbetűjel és UNC-útvonal egyaránt használható. Alapértékek:
+A **Beállítások** panelen minden útvonal módosítható és tallózható. Meghajtóbetűjel és UNC, például `\\szerver\megosztas\mappa` is használható. A program normalizálja az ismételt elválasztójeleket, és megőrzi az UNC kezdő dupla fordított perjelét. A forrást és munkamappát nem hozza létre automatikusan. A közös jelölések mappája mentéskor, illetve az első jelöléskor létrehozható, ha a szülőmappa elérhető és írható.
 
-- Forrás: `H:\PostaEDPB\10_Komárom-Esztergom megye`
-- Cél: `G:\Igazgatas\DMS_One\00_t_meghajtóról érkezők`
+Mindhárom mappa legyen különálló; nem lehetnek egymás részei vagy szülőmappái. A forrásban nem készül próbaírás, technikai fájl vagy napló. Nem elérhető útvonalnál a program érthető hibát jelez és a Beállításokból javítható.
 
-A program nem hozza létre ezeket a hálózati mappákat. A forrás kizárólag olvasható; a cél nem lehet vele azonos, alárendelt vagy fölérendelt mappa. Mentéskor ellenőrizzük az elérhetőséget és a cél írási jogosultságát. Elérhetetlenség esetén módosítsa az útvonalat, vagy használja a **Frissítés** gombot.
+A személyes konfiguráció helye `%APPDATA%\EDPD\settings.json`, az ablak- és panelméretekkel, útvonalakkal, időszakkal és frissítési idővel együtt. A régebbi konfigurációhoz az új mezők alapértékei automatikusan hozzáadódnak.
 
-A beállításfájl `%APPDATA%\EDPD\settings.json`. Az ablak és panelek elrendezése bezáráskor megmarad. A helyi beállítások nem kerülnek a megosztásra.
+## Gyors ZIP-lista és a dokumentumok forrásnapja
+
+A könyvtár fájlneveit és metaadatait beolvassuk, a `YYYYMMDD` dátum alapján kiválasztjuk a napokat, majd csak ezek ZIP-tartalomjegyzékét nyitjuk meg. A sorrend dátum szerint csökkenő. Egy nap több ZIP-je együtt jelenik meg. Az Összes nézet hideg indexnél hosszabb ideig tarthat, a felület közben használható.
+
+A helyi index helye `%LOCALAPPDATA%\EDPD\zip-index` (Linuxon a felhasználói konfiguráció alatt). Csak fájlnevek, méretek, CRC-k és ZIP-időbélyegek szerepelnek benne, PDF-tartalom nem. A ZIP méretét és módosítási idejét minden ellenőrzéskor összevetjük az indexszel; a helyi rekordok ellenőrző összegét is vizsgáljuk. A sérült helyi index újraépíthető, nem üzleti állapot.
+
+A munkamappában régi, a felső időablakból már kiesett PDF is lehet. A korábban ismert megfeleltetéseket az indexből keressük ki. Ha a munkamappa nem üres és hiányos az index, a régebbi ZIP-eket kis adagokban, háttérben térképezzük fel. Az első ilyen feltérképezés nagy archívumban hosszabb lehet; utána a változatlan régi ZIP-eket nem kell újranyitni. Üres munkamappa miatt nem indítunk teljes háttérfeltérképezést.
+
+- Nem azonosítható fájl: **Ismeretlen**.
+- Több ZIP-ben szereplő fájlnév: **Többértelmű**, az ismert napokkal és ZIP-ek számával.
+- Még nem teljes az ütközésvizsgálat: az ismert nap mellett **ellenőrzés alatt** jelzés szerepel. A program nem állít biztos, egyértelmű eredetet hiányos index alapján.
+
+A háttérkeresés állapota az állapotsorban látható. Az időszakon kívüli eredetkeresés nem bővíti ki a felső napi listát.
+
+## Elvégezve jelölés
+
+A felső listában válasszon napot, majd használja az **Elvégezve jelölés** gombot. A gomb ezután **Jelölés visszavonása** feliratot kap. A jelölés sem kicsomagolást, sem törlést nem végez.
+
+A közös mappában a `completed.json` kizárólag az elvégzett napi csomagok azonosítóit és igaz jelöléseit tárolja. Az azonosító a dátumot, az aznapi ZIP-ek neveit és PDF-metaadatait egyesíti, nem a helyi meghajtóbetűjelet. Más hivatal csomagjai elkülönülnek; hozzáadott ZIP vagy megváltozott PDF-tartalom új csomagazonosítót eredményez. Felhasználónév, PDF-tartalom és teljes feldolgozási történet nem kerül a fájlba.
+
+Módosításkor a `.edpd-marks.lock` közös OS-fájlzár alatt újraolvassuk a teljes aktuális állapotot, összeolvasztjuk az adott jelölést, majd ideiglenes fájl és atomikus csere segítségével mentünk. Két külön napi jelölés nem írja felül egymást. Foglaltság vagy hálózati hiba érthető üzenetet ad. Sérült közös állományt nem írunk felül üres állapottal: a felület külön figyelmeztet és letiltja a jelölés módosítását.
+
+Másik gép változtatása a következő kézi vagy automatikus frissítéskor látható. A kicsomagolás, napi törlés és ürítés a jelöléseket nem módosítja. A zöld Elvégezve állapot elsőbbséget élvez a munkamappából számított kicsomagoltsággal szemben.
 
 ## Napi munkafolyamat
 
-1. Válasszon egy napot. Az alsó lista csak az adott napi ZIP-ek PDF-jeit mutatja.
-2. Dokumentumra kattintva megjelenik a PDF; ez nem csomagol ki a munkamappába. Ha ugyanilyen nevű PDF már ott van, a program azt nyitja meg.
-3. A **Kicsomagolás** az egész nap összes PDF-jét közvetlenül a célba helyezi. Válassza a **Meglévők kihagyása** vagy **Meglévők felülírása** lehetőséget. A **Mégse** nem végez műveletet.
-4. A **Nyomtatás** az éppen megnyitott teljes PDF-hez nyit párbeszédet. A lapozógombok csak a megtekintést befolyásolják.
-5. A **Napi adag törlése** kizárólag a kiválasztott naphoz tartozó PDF-eket törli a célból, megerősítés után. Több naphoz tartozó fájlnévnél leáll.
-6. A **Munkamappa ürítése** minden közvetlenül ott található PDF-et töröl, megerősítés után; egyéb fájlt és almappát nem érint.
+1. Válasszon napot a felső listában. A napi műveletek erre a napra vonatkoznak.
+2. A **Kicsomagolás** a nap összes ZIP-jének PDF-jeit közvetlenül a munkamappába teszi. Válasszon kihagyást, felülírást vagy Mégse lehetőséget. CSV és belső ZIP-almappa nem kerül a célba.
+3. Az alsó listában kattintson PDF-re: a program a munkamappából olvassa be. A jobb oldali **Nyomtatás** az éppen megnyitott teljes PDF-hez nyit párbeszédet.
+4. ZIP-ből, kicsomagolás nélkül is lehet betekinteni: duplakattintás a felső napi sorra, majd dokumentum és **Megtekintés kicsomagolás nélkül**. Az alsó panel továbbra is a munkamappa marad.
+5. A **Napi adag törlése** a felső kiválasztás teljes ZIP-listáját veti össze az aktuális munkamappával. Például hat csomagbeli PDF-ből négy jelen lévőnél a párbeszéd kifejezetten négy törlendő PDF-et jelez. Más napok fájljai megmaradnak.
+6. A **Munkamappa ürítése** minden közvetlen PDF-re vonatkozik, megerősítés után. Almappát, ZIP-et, CSV-t, technikai fájlt és közös jelölést nem töröl.
+7. Az ügyintézés befejezését külön az **Elvégezve jelölés** rögzíti. A dokumentumok ettől a munkamappában maradhatnak.
 
-Nincs feldolgozási napló: a „Nincs kicsomagolva”, „Részben kicsomagolva” és „Kicsomagolva” állapot mindig a pillanatnyi célmappán alapul. Hibás csomag és méreteltérés külön jelzést kap. Több ZIP-en belüli azonos lapos fájlnév esetén az adott nap nem csomagolható ki.
+## Többfelhasználós fájlműveletek
 
-## Többfelhasználós működés és biztonság
+A kicsomagolás és törlés a cél `.edpd-operation.lock` fájlján közös operációsrendszer-szintű zárat használ. A zárfájlokat nem szabad törölni. Folyamatkilépéskor az OS oldja a zárat; hálózati kiesés utáni feloldás ideje az SMB-kiszolgálótól is függ.
 
-Minden kliens a célban lévő `.edpd-operation.lock` technikai fájl ugyanazon bájtját zárolja. Windows alatt Windows fájlzárat használunk, amelyet az SMB-kiszolgáló közvetít. A zárfájlt nem szabad törölni; nem állapotnapló. A fájl megléte nem jelent foglaltságot. Folyamatkilépéskor az OS oldja a zárat. Minden módosító művelet a zár megszerzése után ismét ellenőrzi az állapotot.
+A módosító művelet a zár alatt újraolvassa a kijelölt nap tartalomjegyzékét és újraellenőrzi a célfájlokat. Az ütközésvizsgálat a megjelenített időszakon kívüli napokra is kiterjed, a friss ZIP-metaadatokkal ellenőrzött gyorsítótár használatával. Hideg indexnél ez hosszabb ellenőrzést jelenthet, háttérben. Azonos fájlnév több napi csomagban: a napi törlés leáll, a bizonytalan fájl megmarad. A megerősítés óta megváltozott törlendő fájllistához új megerősítés kell.
 
-A normál másolás ellenőrzött ZIP-olvasásból ideiglenes fájlba, majd atomikus átnevezéssel/cserével történik. Egy napi művelet több fájlból áll: hálózati hiba esetén a már sikeresen elkészült fájlok megmaradnak. Frissítés után a hiányzók kicsomagolása biztonságosan újraindítható. Az alapértelmezett kihagyás soha nem ír felül.
+A kicsomagolás ellenőrzött ZIP-olvasásból ideiglenes fájlba, majd atomikus átnevezéssel/cserével történik. Egy napi művelet fájlonként atomikus: megszakadáskor a már elkészült dokumentumok megmaradnak. Frissítés után a hiányzók kihagyásos kicsomagolása újraindítható.
 
-A későbbi Viewer kiadáshoz a `Capabilities` programlogikai szinten is tiltani tudja a felülírást és törlést; ebben a projektben csak a Manager indulóprogram és build készül.
+A működési korlátokat és a fizikai Windows/SMB/nyomtatási próbát a [Windows-átvételi útmutató](docs/WINDOWS-VALIDATION.md) tartalmazza. A jövőbeni Viewerhez a `Capabilities.viewer()` a programlogikai rétegben is tiltja a törlést, felülírást és kézi jelölést; ebben a kiadásban csak a Manager készül.
 
-A működési határokat, a megszakadt műveletek kezelését és a szükséges valós Windows/SMB/nyomtatási átvételi próbákat a [Windows-ellenőrzési útmutató](docs/WINDOWS-VALIDATION.md) tartalmazza. Éles üzem előtt ezeket el kell végezni.
+## Fejlesztői telepítés és tesztek
 
-## Fejlesztői telepítés
-
-Python **3.10** szükséges (PySide2 nem támogatja a 3.11+ verziókat). A Windows kiadás Python **3.10.11 x64** verzióval készül. Windows PowerShell:
+Python **3.10** szükséges; PySide2 nem támogatja a 3.11+ verziókat. Windows PowerShell:
 
 ```powershell
 py -3.10 -m venv .venv
 .venv\Scripts\python -m pip install -e ".[dev]"
 .venv\Scripts\python -m edpd.main
-```
-
-Linuxon ugyanez `.venv/bin/python` útvonallal futtatható. Meglévő izolált checkoutban dolgozzon; új Git worktree nem szükséges. A PySide2 és PyMuPDF verziója rögzített a projektleírásban.
-
-## Tesztek futtatása
-
-```powershell
 $env:QT_QPA_PLATFORM = "offscreen"
 .venv\Scripts\python -m pytest -q
 ```
 
-Linuxon: `QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q`.
+Linuxon a megfelelő környezet `.venv-qt5/bin/python`; például `QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m pytest -q`. A meglévő izolált checkout használható, új Git worktree nem szükséges.
 
-A tesztek kizárólag ideiglenes, szintetikus adatokkal dolgoznak. Valós NEAK hálózati útvonalat nem használnak. A felületpróba, PDF-renderelés és nyomtatási oldalintervallum ellenőrzése nem helyettesíti a fizikai Windows-nyomtatási próbát.
+A tesztek kizárólag szintetikus ZIP/PDF adatokkal, ideiglenes forrás-, cél-, közös állapot- és felhasználói mappákkal dolgoznak. Éles NEAK megosztáson nem végeznek műveletet. A tesztcsomag lefedi a dátumszűrést, a megnyitás előtti kizárást, az indexet és eredetet, a kézi jelölések többfolyamatos mentését, a célzott törlést, a színezést és munkamappa-listát, valamint a PDF-et és a nyomtatási előkészítést.
+
+Önálló ellenőrzés, kizárólag ideiglenes adatokkal:
+
+```bat
+EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.0-1607.json"
+```
+
+A jelentés alkalmazásverziót, OS-buildet és kilenc ellenőrzés eredményét tartalmazza. A `windows1607_verified` kizárólag valódi 14393-as Windows 10 x64 munkaállomáson lehet igaz.
 
 ## Windows EXE készítése
 
-Windows környezetben, telepített fejlesztői függőségekkel:
+Windows alatt Python 3.10.11 x64 és a fejlesztői függőségek telepítése után:
 
 ```powershell
 .venv\Scripts\python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
-Compress-Archive -Path dist/EDPD-Manager -DestinationPath EDPD-Manager-Windows-x64.zip
 ```
 
-A PyInstaller Qt-hookjai gyűjtik a PySide2 modulokat és platformpluginokat. A GitHub Actions Windows runneren telepít, tesztel, csomagol és feltölti az artifactot. Verziózott kiadáshoz `v0.1.0` jellegű címke szükséges. Kiadás előtt a verziószámot a `pyproject.toml` és `src/edpd/__init__.py` fájlokban együtt kell módosítani.
+A spec a Qt és MuPDF komponenseket, a Python saját C-runtime-ját és a teljes rögzített VC-készletet csomagolja. A workflow teszteket, tényleges csomagolt EXE-indítást, statikus DLL-auditot, ZIP-et és SHA-256 fájlt készít. Verziózott kiadáshoz például `v2.0.0` címke használható. A verziószámot a `pyproject.toml` és `src/edpd/__init__.py` fájlokban együtt kell módosítani.
 
 ## Verzió és licencek
 
-Verzió: **0.2.1**. A Windows build és a kiadás elkészült, a céges Windows 10 1607-es gépen a csomagolt EXE önellenőrzése sikeres. Az éles hivatali bevezetéshez a dokumentált fizikai nyomtatási és többgépes SMB-próba még hátravan.
+Fejlesztői verzió: **2.0.0**. A 0.2.1 natív alapja Windows 1607-en kipróbált, az új kiadás célgépes és munkahelyi átvételi próbája még szükséges.
 
-A projekt saját kódjára nincs megadva felhasználási licenc; ennek kiválasztása a jogtulajdonos feladata. A PySide2 és a PyMuPDF külön licencei érvényesek. A PyMuPDF AGPL/kereskedelmi feltételeit és a Qt terjesztési követelményeit Windows-csomag terjesztése előtt rendezni kell.
+A projekt saját kódjára a jogtulajdonos még nem választott terjesztési licencet. A PySide2/Qt és PyMuPDF külön licencei érvényesek; részletek a [LICENSE](LICENSE) fájlban.

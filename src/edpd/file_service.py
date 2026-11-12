@@ -4,35 +4,36 @@ from pathlib import Path
 
 from .locking import workspace_lock
 from .models import Capabilities, EDPDError
+from .paths import directory, overlap
 from .state_service import inventory
 from .zip_service import ZipService, read_document
 
 
 def validate_paths(source, target):
-    source, target = Path(source).resolve(strict=True), Path(target).resolve(strict=True)
-    if not source.is_dir() or not target.is_dir():
-        raise EDPDError('A forrásnak és a célnak létező mappának kell lennie.')
-    # samefile kezeli a Windows meghajtóbetű/UNC aliasokat is.
-    if (any(source.samefile(p) for p in (target, *target.parents))
-            or any(target.samefile(p) for p in (source, *source.parents))):
+    source, target = directory(source, 'A forrásarchívum'), directory(target, 'A munkamappa')
+    if overlap(source, target):
         raise EDPDError('A forrás és a cél nem lehet azonos vagy egymásba ágyazott mappa.')
     return source, target
 
 
 class FileService:
-    def __init__(self, source, target, capabilities=Capabilities()):
+    def __init__(self, source, target, capabilities=Capabilities(), zip_service=None):
         self.source, self.target = Path(source), Path(target)
         self.capabilities = capabilities
+        self.zip = zip_service or ZipService()
 
     def _current(self, selected, source):
-        # Zárolás után újraolvasás, nem a felület elavult listájára támaszkodunk.
-        days = ZipService().scan(source)
-        day = next((d for d in days if d.date == selected.date), None)
-        if day is None or day != selected:
+        # A kiválasztott napi csomagot a zár alatt ténylegesen újraolvassuk.
+        # A többi ZIP-nél a friss méret/időbélyeggel ellenőrzött tartalomjegyzék
+        # használható; a negatív ütközésvizsgálat így az összes napra kiterjed.
+        entries = self.zip.catalogue(source)
+        current = ZipService().scan(source, dates={selected.date}, entries=entries)
+        if len(current) != 1 or current[0] != selected:
             raise EDPDError('A napi csomag megváltozott. Frissítse a listát!')
+        day = current[0]
         if day.error:
             raise EDPDError(day.error)
-        return days
+        return [day if item.date == day.date else item for item in self.zip.scan(source, entries=entries)]
 
     def extract(self, day, mode='skip'):
         if mode not in ('skip', 'overwrite'):
@@ -79,22 +80,34 @@ class FileService:
                     Path(temp).unlink(missing_ok=True)
         return f'{written} PDF kicsomagolva, {skipped} meglévő kihagyva.'
 
+    def _deletion_files(self, day, source, target):
+        files = inventory(target)
+        if day is None:
+            return files
+        # A megjelenített időszakon kívüli ZIP-ek is számítanak az ütközésnél.
+        # A kijelölt csomag friss, a többi tartalomjegyzék időbélyege is ellenőrzött.
+        days = self._current(day, source)
+        if any(other.error for other in days):
+            raise EDPDError('Hibás archívum miatt a napi fájlok tulajdonosa nem állapítható meg biztonságosan.')
+        names = {d.name.casefold() for d in day.documents} & set(files)
+        collisions = names & {d.name.casefold() for other in days if other.date != day.date for d in other.documents}
+        if collisions:
+            raise EDPDError('Több naphoz tartozó fájlnevek miatt a napi törlés leállt: ' + ', '.join(sorted(collisions)))
+        return {k: p for k, p in files.items() if k in names}
+
+    def deletion_plan(self, day=None):
+        if not self.capabilities.delete:
+            raise EDPDError('Ebben a kiadásban a törlés tiltott.')
+        source, target = validate_paths(self.source, self.target)
+        return set(self._deletion_files(day, source, target))
+
     def delete(self, day=None, *, confirmed=False, expected_names=None):
         if not confirmed or not self.capabilities.delete:
             raise EDPDError('A törléshez jogosultság és kifejezett megerősítés szükséges.')
         source, target = validate_paths(self.source, self.target)
         with workspace_lock(target):
             validate_paths(source, target)
-            files = inventory(target)
-            if day is not None:
-                days = self._current(day, source)
-                if any(other.error for other in days):
-                    raise EDPDError('Hibás archívum miatt a napi fájlok tulajdonosa nem állapítható meg biztonságosan.')
-                names = {d.name.casefold() for d in day.documents}
-                collisions = names & {d.name.casefold() for other in days if other.date != day.date for d in other.documents}
-                if collisions:
-                    raise EDPDError('Több naphoz tartozó fájlnevek miatt a napi törlés leállt: ' + ', '.join(sorted(collisions)))
-                files = {k: p for k, p in files.items() if k in names}
+            files = self._deletion_files(day, source, target)
             if expected_names is None or set(files) != set(expected_names):
                 raise EDPDError('A munkamappa tartalma megváltozott. Ellenőrizze, és erősítse meg újra a törlést!')
             errors, removed = [], 0
