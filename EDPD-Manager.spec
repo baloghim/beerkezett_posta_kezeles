@@ -18,6 +18,14 @@ a = Analysis(['run_edpd.py'], pathex=['src'], binaries=fitz_binaries,
 qt_root = Path(PySide2.__file__).parent
 vc = {p.name.lower(): str(p) for p in qt_root.glob('*.dll')
       if p.name.lower().startswith(('msvcp140', 'vcruntime140', 'concrt140', 'vcomp140', 'vcamp140', 'vccorlib140'))}
+# A Python saját C-runtime-ját a vele kiadott 3.10.11 DLL-ekből tartjuk meg.
+# Ezek szintén a régi Windows alapot célozzák, nem a runner System32 DLL-jei.
+for name in ('vcruntime140.dll', 'vcruntime140_1.dll'):
+    candidates = [Path(sys.base_prefix) / name, Path(sys.base_prefix) / 'DLLs' / name]
+    runtime = next((p for p in candidates if p.exists()), None)
+    if runtime is None:
+        raise RuntimeError(f'Hiányzó hivatalos Python-runtime: {name}')
+    vc[name] = str(runtime)
 required_vc = {'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll'}
 if not required_vc.issubset(vc):
     raise RuntimeError('Hiányos PySide2 VC-runtime csomag.')

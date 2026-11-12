@@ -49,9 +49,13 @@ def audit(root):
             errors.append(f'{path.relative_to(root)}: a Windows 10 saját UCRT-je helyett csomagolt rendszer-DLL')
         if sys.platform == 'win32' and path.name.lower().startswith(('msvcp140', 'vcruntime140', 'concrt140', 'vcomp140', 'vcamp140', 'vccorlib140')):
             import PySide2
-            trusted = Path(PySide2.__file__).parent / path.name
+            if path.name.lower().startswith('vcruntime140'):
+                candidates = [Path(sys.base_prefix) / path.name, Path(sys.base_prefix) / 'DLLs' / path.name]
+                trusted = next((p for p in candidates if p.exists()), candidates[0])
+            else:
+                trusted = Path(PySide2.__file__).parent / path.name
             if not trusted.exists() or hashlib.sha256(path.read_bytes()).digest() != hashlib.sha256(trusted.read_bytes()).digest():
-                errors.append(f'{path.relative_to(root)}: nem a rögzített Qt wheel VC-runtime-ja')
+                errors.append(f'{path.relative_to(root)}: nem a rögzített Qt/Python csomag VC-runtime-ja')
         entries.append({'path' : path.relative_to(root).as_posix(), 'minimum_subsystem': minimum,
                         'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'imports': imports})
         pe.close()

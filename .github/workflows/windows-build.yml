@@ -40,20 +40,22 @@ jobs:
         run: python scripts/ci_run.py python -m pytest -q
       - name: Önálló Windows x64 alkalmazás
         run: python scripts/ci_run.py python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
+      - name: Natív DLL-leltár és statikus kompatibilitási ellenőrzés
+        run: python scripts/ci_run.py python scripts/audit_windows_binary.py dist/EDPD-Manager --report native-dependencies.json
       - name: Csomagolt EXE valódi indítása a modern runneren
         shell: powershell
         run: |
+          $ErrorActionPreference = 'Stop'
+          trap { Write-Output ('::error title=EXE önellenőrzési hiba::' + $_.Exception.Message); exit 1 }
           $report = Join-Path $pwd 'modern-runner-selftest.json'
           $process = Start-Process dist/EDPD-Manager/EDPD-Manager.exe -ArgumentList @('--self-test', '--report', ('"' + $report + '"')) -PassThru
           if (-not $process.WaitForExit(90000)) { $process.Kill(); throw 'EXE indítási időtúllépés' }
           $process.Refresh()
-          if ($process.ExitCode -ne 0 -or -not (Test-Path $report)) { throw 'Az EXE indítási próbája sikertelen' }
+          if ($process.ExitCode -ne 0 -or -not (Test-Path $report)) { throw ('Az EXE indítási próbája sikertelen. ExitCode=' + $process.ExitCode + '; report=' + (Test-Path $report)) }
           $result = Get-Content -Raw $report | ConvertFrom-Json
-          if (-not $result.passed -or -not $result.host.frozen) { throw 'Hibás csomagolt önellenőrzés' }
+          if (-not $result.passed -or -not $result.host.frozen) { throw ('Hibás csomagolt önellenőrzés: ' + (Get-Content -Raw $report)) }
           # A modern runner eredménye nem 1607 kompatibilitási bizonyíték.
           if ($result.windows1607_verified) { throw 'Hibás OS-minősítés a modern runneren' }
-      - name: Natív DLL-leltár és statikus kompatibilitási ellenőrzés
-        run: python scripts/ci_run.py python scripts/audit_windows_binary.py dist/EDPD-Manager --report native-dependencies.json
       - name: Csomagolás
         shell: powershell
         run: |
