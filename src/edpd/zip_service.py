@@ -80,7 +80,8 @@ class ZipService:
                 error = record['error']
                 if not isinstance(error, str):
                     raise ValueError('Invalid error')
-                loaded[path] = (stamp, tuple(documents), error)
+                if not error:
+                    loaded[path] = (stamp, tuple(documents), error)
             self.cache = loaded
         except (OSError, ValueError, TypeError, KeyError, AttributeError, EDPDError):
             self.cache = {}  # A gyorsítótár pótolható, nem üzleti állapot.
@@ -94,7 +95,7 @@ class ZipService:
             self.cache_path.parent.mkdir(parents=True, exist_ok=True)
             data = {'schema': 1, 'root': str(self.root), 'archives': {
                 p.name: {'stamp': stamp, 'documents': [(d.member, d.size, d.crc) for d in docs], 'error': error}
-                for p, (stamp, docs, error) in self.cache.items()}}
+                for p, (stamp, docs, error) in self.cache.items() if not error}}
             for name, record in data['archives'].items():
                 record['checksum'] = hashlib.sha256(json.dumps([name, record], sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode('utf-8')).hexdigest()
             fd, temp = tempfile.mkstemp(dir=self.cache_path.parent, prefix='.index-', suffix='.tmp')
@@ -136,7 +137,8 @@ class ZipService:
         with self.mutex:
             self._root(root)
             known = {e.path for e in entries}
-            for path in set(self.cache) - known:
+            invalid = (set(self.cache) - known) | {p for p, value in self.cache.items() if value[2]}
+            for path in invalid:
                 del self.cache[path]
                 self.dirty = True
         return tuple(entries)
@@ -145,7 +147,7 @@ class ZipService:
         with self.mutex:
             self._root(entry.path.parent)
             cached = self.cache.get(entry.path)
-            if cached and cached[0] == entry.stamp:
+            if cached and cached[0] == entry.stamp and not cached[2]:
                 return cached[1], cached[2]
             documents, error = (), ''
             try:

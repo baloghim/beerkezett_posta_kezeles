@@ -343,3 +343,22 @@ def test_common_directory_cannot_be_created_under_source_alias(folders, tmp_path
     with pytest.raises(EDPDError):
         validate_shared_directory(alias / 'new-appdata', source, target)
     assert not (source / 'new-appdata').exists()
+
+
+def test_transient_zip_read_error_is_retried_on_refresh_without_file_change(folders, tmp_path, monkeypatch):
+    source, _ = folders
+    path = make_zip(source)
+    service = ZipService(cache_dir=tmp_path / 'cache')
+    original, calls = zipfile.ZipFile, []
+    def disconnected_once(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 1:
+            raise OSError('Átmeneti hálózati hiba')
+        return original(*args, **kwargs)
+    monkeypatch.setattr(zipfile, 'ZipFile', disconnected_once)
+    first = service.scan(source, 14, today=TODAY)
+    assert first[0].error
+    stamp = path.stat().st_mtime_ns
+    second = service.scan(source, 14, today=TODAY)
+    assert not second[0].error and second[0].documents[0].name == 'a.pdf'
+    assert path.stat().st_mtime_ns == stamp and len(calls) == 2
