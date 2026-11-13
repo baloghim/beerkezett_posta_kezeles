@@ -2,25 +2,25 @@
 
 Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak kezeléséhez, a munkamappa PDF-jeinek megtekintéséhez és nyomtatásához. Nincs dokumentumfeltöltés, telemetria vagy külön szerver.
 
-## Fejlesztői változat: 2.1.2
+## Újdonságok: 2.1.2
 
 A Beállítások **Megjelenés / Qt-stílus** választója a `QStyleFactory.keys()` által helyben elérhető stílusokat kínálja. A stílus sikeres Mentés után azonnal érvényesül és megmarad újraindításkor; a Mégse nem módosítja. Alapérték és hiányzó stílus esetén a visszaállás: Fusion. Linuxon Fusion és Windows tesztelve; WindowsVista csak akkor választható, ha a célrendszer biztosítja.
 
 A dekoratív alkalmazás-, panel-, táblázat- és gomb-QSS, valamint az egyedi kijelölési paletta megszűnt; a napi állapotok cellaszínei és félkövér jelzései megmaradtak. A fő eszköztár jobb szélén ikon nyitja a Névjegyet. Minden új PDF **Szélesség** nézetben nyílik, amely követi a panel méretét; a **Teljes oldal** külön kapcsolható. A felső panel címe **EDPD mappa tartalma**, a célzott törlés neve **Kijelölt nap fájljainak törlése**. A hárompaneles elrendezés és a dokumentumkezelési szabályok változatlanok.
 
-A 2.1.2 Windows EXE és Release még nem készült el. Az alábbi letöltési hivatkozás a korábbi, ténylegesen kiadott 2.0.1 verzióra mutat; csak ellenőrzött új kiadás után cserélhető. A Windows 10 1607 célgépes ellenőrzés továbbra is szükséges.
+A **2.1.2 Windows EXE és Release elkészült**, a közzétett ZIP letöltése, SHA-256 és CRC ellenőrzése sikeres. A Windows 10 1607 célgépes ellenőrzés továbbra is szükséges. [Kiadásellenőrzési jelentés](docs/RELEASE-2.1.2.md).
 
 ## Windows letöltés
 
-Elkészült a **2.0.1 hibajavító kiadás**: megszünteti az automatikus történeti ZIP-keresést, és külön ellenőrzi a munkamappa-lista függetlenségét, valamint a Forrásnap oszlopot.
+Elkészült a **2.1.2 kiadás**: gyári Qt-stílusválasztó, Névjegy, alapértelmezett Szélesség PDF-nézet és pontosított feliratok. A Névjegy ikon kisebb ablaknál is látható marad.
 
-**[EDPD 2.0.1 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.0.1/EDPD-Manager-Windows-x64.zip)**
+**[EDPD 2.1.2 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.1.2/EDPD-Manager-Windows-x64.zip)**
 
-A 2.0.1 Windows buildje, **78 automatikus tesztje**, a becsomagolt EXE **tíz funkcionális önellenőrzése** és 107 natív bináris DLL-auditja sikeres. Az 1000 ZIP-es grafikus mérés 14 napnál 14 megnyitást, 14 napi sort és nulla időszakon kívüli megnyitást igazolt, automatikus frissítés után is. A közzétett ZIP-et letöltöttük: CRC-ellenőrzése hibátlan, SHA-256 ellenőrző összege egyezik, a teljes szükséges runtime-készlet jelen van.
+A 2.1.2 Windows buildje, **88 automatikus tesztje**, a becsomagolt EXE **tíz funkcionális önellenőrzése** és 107 natív bináris DLL-auditja sikeres. A csomagolt program a WindowsVista, Windows és Fusion stílusokat is ellenőrizte. Az 1000 ZIP-es regressziós mérések továbbra is a teljes tesztcsomag részei. A közzétett ZIP CRC-ellenőrzése hibátlan, SHA-256 ellenőrző összege egyezik.
 
 A technológiai alap változatlan: Python **3.10.11 x64**, PySide2 **5.15.2.1 / Qt 5.15.2**, PyMuPDF **1.23.26**. A teljes ZIP-et **új helyi mappába** bontsa ki, majd indítsa az `EDPD-Manager.exe` fájlt. Az `_internal` mappát is meg kell tartani. Python vagy Visual C++ fejlesztőeszköz telepítése nem szükséges; a runtime DLL-ek a csomagban vannak.
 
-A 0.2.1 csomagolt EXE a céges Windows 10 **1607 x64, build 14393** gépen sikeres önellenőrzést teljesített. Az új **2.0.1** kiadás külön célgépes próbája még szükséges. A modern runner sikere ezt nem helyettesíti. [Windows 1607 útmutató](docs/WINDOWS1607.md) · [Ellenőrzési eredmények](docs/VALIDATION.md).
+A 0.2.1 csomagolt EXE a céges Windows 10 **1607 x64, build 14393** gépen sikeres önellenőrzést teljesített. Az új **2.1.2** kiadás külön célgépes próbája még szükséges. A modern runner sikere ezt nem helyettesíti. [Windows 1607 útmutató](docs/WINDOWS1607.md) · [Ellenőrzési eredmények](docs/VALIDATION.md).
 
 A [Windows build](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) sikeres futásának **Artifacts** részében a csomag és SHA-256 ellenőrző összege is elérhető. A `v*` verziócímkével indított sikeres futás GitHub Release-t készít.
 

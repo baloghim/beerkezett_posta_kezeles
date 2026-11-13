@@ -1,5 +1,8 @@
 # EDPD 2.1.0 – felületi ellenőrzés
 
+Ez a kezdeti Linux-ellenőrzés történeti feljegyzése. Az azóta elkészült,
+közzétett Windows-kiadás eredményei: [EDPD 2.1.2](RELEASE-2.1.2.md).
+
 Linux x64, Python 3.10.22, PySide2 5.15.2.1 / Qt 5.15.2, PyMuPDF 1.23.26.
 Nem került be új futásidejű függőség; a Windows build továbbra is Python 3.10.11-et használ.
 
