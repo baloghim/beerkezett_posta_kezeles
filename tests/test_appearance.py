@@ -27,7 +27,7 @@ def test_available_styles_save_and_apply(app, folders, tmp_path, monkeypatch, st
     settings = Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'))
     window = MainWindow(settings)
     window.show()
-    wait_for(app, lambda: not window.jobs)
+    wait_for(app, lambda: window.source_generation > 0 and not window.jobs)
 
     def choose(dialog):
         assert [dialog.style_combo.itemText(i) for i in range(dialog.style_combo.count())] == QStyleFactory.keys()
@@ -112,7 +112,7 @@ def test_failed_settings_save_keeps_running_style(app, folders, tmp_path, monkey
     apply_style('Fusion')
     window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared')))
     window.show()
-    wait_for(app, lambda: not window.jobs)
+    wait_for(app, lambda: window.source_generation > 0 and not window.jobs)
     errors = []
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
 
@@ -137,7 +137,7 @@ def test_about_button_labels_and_dialog(app, folders, tmp_path, monkeypatch):
     source, target = folders
     window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared')))
     window.show()
-    wait_for(app, lambda: not window.jobs)
+    wait_for(app, lambda: window.source_generation > 0 and not window.jobs)
     labels = [label.text() for label in window.findChildren(QLabel)]
     assert 'EDPD mappa tartalma' in labels
     assert 'Napi csomagok (ZIP)' not in labels
