@@ -1,4 +1,4 @@
-# EDPD 2.4 ikontémák
+# EDPD Menedzser – ikontémák
 
 A Beállítások → Megjelenés → Ikontéma választó öt témája: **Crystal SVG**, **Nuvola**, **KDE Modern Classic**, **Papirus**, **We10X**. Az alapérték Crystal SVG. A natív Qt-stílus és az ikontéma külön beállítás. A mentett `icon_theme` mező a változatlan `%APPDATA%\EDPD\settings.json` fájlban található. Mentés után az ikonok újraindítás nélkül frissülnek; egy pusztán megjelenést érintő változtatás nem indít hálózati ellenőrzést vagy ZIP-újraolvasást.
 
@@ -30,4 +30,4 @@ QT_QPA_PLATFORM=offscreen python scripts/generate_theme_assets.py
 
 Az [összehasonlító kép](icon-theme-comparison.png) ugyanazt a 19 szerepet mutatja öt oszlopban, a ténylegesen beépített ikonokkal. A fallbacket felirat jelzi. A csomagellenőrzés minden erőforrás fájlbájtjait és az EXE hét ICO-képkockáját összeveti a forrással. A csomagolt önellenőrzés mind az öt témát tényleges Qt-felületen kapcsolja át.
 
-A PDF-eszköztár öt csoporthatárán további 6 pixeles térköz van. A Nyomtatás és PDF mentése natív gombkeretet használ, az ikon és felirat között kifejezett 8 pixeles hézaggal. A meglévő QActionok, engedélyezési állapotok és PDF-műveletek változatlanok.
+A PDF-eszköztárban hat helyen további 6 pixeles térköz van; a 2.5-től a Szélesség és Teljes oldal között is. A Nyomtatás és PDF mentése natív gombkeretet használ, az ikon és felirat között kifejezett 8 pixeles hézaggal. A meglévő QActionok, engedélyezési állapotok és PDF-műveletek változatlanok.

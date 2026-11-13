@@ -3,6 +3,7 @@ import hashlib
 import os
 import tempfile
 from pathlib import Path
+from . import DISPLAY_NAME
 
 
 class InstanceGuard:
@@ -51,7 +52,7 @@ class InstanceGuard:
         folder = Path(tempfile.gettempdir()) / f'edpd-instance-{os.getuid()}'
         folder.mkdir(mode=0o700, exist_ok=True)
         if folder.stat().st_uid != os.getuid():
-            raise PermissionError('Az EDPD példánykönyvtára más felhasználóé.')
+            raise PermissionError(f'Az {DISPLAY_NAME} példánykönyvtára más felhasználóé.')
         self.socket_path = folder / (self.key + '.sock')
         self.stream = (folder / (self.key + '.lock')).open('a+b')
         try:
@@ -133,7 +134,7 @@ class InstanceGuard:
         x = (self.user.GetSystemMetrics(0) - width) // 2
         y = (self.user.GetSystemMetrics(1) - height) // 2
         hwnd = self.user.CreateWindowExW(0x88, 'STATIC',
-            'EDPD – Postai dokumentumkezelő\nAz EDPD már indul…',
+            f'{DISPLAY_NAME}\nAz {DISPLAY_NAME} már indul…',
             0x90000001, x, y, width, height, None, None, None, None)
         if not hwnd:
             return

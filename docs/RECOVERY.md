@@ -1,4 +1,4 @@
-# Kicsomagolás megszakítása és helyreállítása – EDPD 2.3
+# EDPD Menedzser – kicsomagolás megszakítása és helyreállítása
 
 A Mégse, az Escape és a folyamatablak bezárási kísérlete megszakítási kérelmet
 küld a háttérszálnak. Nem állítjuk le erőszakkal a szálat. A folyamatablak addig

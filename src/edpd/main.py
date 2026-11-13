@@ -1,11 +1,12 @@
 import sys
 import time
+from . import DISPLAY_NAME
 
 
 def main():
     started = time.perf_counter_ns()
     import argparse
-    parser = argparse.ArgumentParser(description='EDPD – Postai dokumentumkezelő')
+    parser = argparse.ArgumentParser(description=DISPLAY_NAME)
     parser.add_argument('--self-test', action='store_true', help='Izolált indítási és működési próba')
     parser.add_argument('--report', help='Az önellenőrzés JSON-eredménye')
     parser.add_argument('--require-windows1607', action='store_true')
@@ -66,6 +67,7 @@ def main():
         from PySide2.QtWidgets import QApplication, QSplashScreen, QMessageBox
         from PySide2.QtGui import QPixmap, QPainter, QColor, QFont
         app = QApplication(sys.argv)
+        app.setApplicationDisplayName(DISPLAY_NAME)
         trace.add('qt_widgets_application_ms', (time.perf_counter() - before) * 1000)
         before = time.perf_counter()
         from .ui.icons import icon, set_theme
@@ -77,7 +79,7 @@ def main():
         painter.drawPixmap(208, 12, icon('app').pixmap(64, 64))
         painter.setPen(QColor('black'))
         painter.setFont(QFont(app.font().family(), 14, QFont.Bold))
-        painter.drawText(10, 85, 460, 35, Qt.AlignCenter, 'EDPD – Postai dokumentumkezelő')
+        painter.drawText(10, 85, 460, 35, Qt.AlignCenter, DISPLAY_NAME)
         painter.setFont(QFont(app.font().family(), 11))
         painter.drawText(10, 125, 460, 30, Qt.AlignCenter, 'A program indítása…')
         painter.end()
@@ -111,7 +113,8 @@ def main():
         window.show()
         splash.finish(window)
         trace.mark('main_window_visible')
-        trace.publish('visible', configuration_error=configuration_error, icon_theme=settings.icon_theme)
+        trace.publish('visible', configuration_error=configuration_error, icon_theme=settings.icon_theme,
+                      display_name=DISPLAY_NAME, window_title=window.windowTitle())
         activation_timer = QTimer(window)
         activation_timer.timeout.connect(lambda: guard.poll_activation(window))
         activation_timer.start(100)

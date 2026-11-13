@@ -1,12 +1,12 @@
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QTextBrowser, QDialogButtonBox
-from .. import __version__
+from .. import __version__, DISPLAY_NAME
 from .icons import icon
 
 
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle('Névjegy')
+        self.setWindowTitle(f'{DISPLAY_NAME} – Névjegy')
         self.resize(640, 540)
         self.setWindowIcon(icon('app'))
         layout = QVBoxLayout(self)
@@ -15,7 +15,7 @@ class AboutDialog(QDialog):
         layout.addWidget(self.app_icon)
         self.info = QTextBrowser()
         self.info.setHtml(
-            f'<h2>EDPD – Postai dokumentumkezelő</h2><p>Verzió: {__version__}</p>'
+            f'<h2>{DISPLAY_NAME}</h2><p>Verzió: {__version__}</p>'
             '<p>A Magyar Posta EDPD szolgáltatásán keresztül érkező, digitalizált postai '
             'dokumentumok napi ZIP-csomagjainak kezelése, kicsomagolása, megtekintése és nyomtatása.</p>'
             '<p>Helyben futó, telemetria nélküli alkalmazás.<br>'
@@ -26,7 +26,7 @@ class AboutDialog(QDialog):
             'a komponens feltételei szerint.<br>PyMuPDF / MuPDF: GNU AGPLv3 vagy Artifex kereskedelmi licenc.'
             '<br>PyInstaller: GPLv2, a terjesztett alkalmazásra vonatkozó kivétellel.</p>'
             '<p>Crystal Remix ikonok: Everaldo Coelho; modern átdolgozás: Viet Dang (Đặng Việt Dũng). '
-            'GNU LGPL (az upstream nem jelöl verziót). Az EDPD színezett és kombinált változatokat is használ. '
+            f'GNU LGPL (az upstream nem jelöl verziót). Az {DISPLAY_NAME} színezett és kombinált változatokat is használ. '
             'A források és licencszövegek a csomag assets és licenses mappáiban találhatók.</p>'
             '<p>Választható belső ikonok:<br>Crystal SVG: Everaldo Coelho, Viet Dang; GNU LGPL (verziójelölés nélkül).<br>'
             'Nuvola: David Vignoni; LGPL-2.1-or-later.<br>'

@@ -95,7 +95,7 @@ def test_all_visible_roles_switch_without_reloading_data(app,folders,monkeypatch
     assert icon('app').cacheKey()==app_id
     assert window.source_generation==generation
     spaces=window.viewer.toolbar.findChildren(QWidget,'pdf-group-space')
-    assert len(spaces)==5 and all(s.width()==6 for s in spaces)
+    assert len(spaces)==6 and all(s.width()==6 for s in spaces)
     for action in (window.viewer.print_action,window.viewer.save_action):
         button=window.viewer.toolbar.widgetForAction(action)
         assert isinstance(button,SpacedToolButton)

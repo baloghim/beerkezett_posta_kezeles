@@ -89,6 +89,7 @@ class PDFViewer(QWidget):
         self.add_group_space()
         self.width_action = self.toolbar.addAction(icon('width'), 'Szélesség', lambda: self.fit('width'))
         self.width_action.setToolTip('Az oldal igazítása a betekintő szélességéhez')
+        self.add_group_space()
         self.page_action = self.toolbar.addAction(icon('page'), 'Teljes oldal', lambda: self.fit('page'))
         self.page_action.setToolTip('A teljes oldal igazítása a látható területhez')
         for action in (self.width_action, self.page_action):
@@ -110,6 +111,9 @@ class PDFViewer(QWidget):
         self.fit_timer = QTimer(self)
         self.fit_timer.setSingleShot(True)
         self.fit_timer.timeout.connect(self.render)
+        self.scroll_reset_timer = QTimer(self)
+        self.scroll_reset_timer.setSingleShot(True)
+        self.scroll_reset_timer.timeout.connect(self.reset_scroll_position)
         layout.addWidget(self.scroll)
         roles = {'Első oldal':'first', 'Előző oldal':'previous', 'Következő oldal':'next',
                  'Utolsó oldal':'last', 'Kicsinyítés':'zoom_out', 'Nagyítás':'zoom_in',
@@ -161,6 +165,14 @@ class PDFViewer(QWidget):
         if self.pdf:
             self.page = min(max(0, page), self.pdf.pages - 1)
             self.render()
+            self.reset_scroll_position()
+            # Qt may update scrollbar ranges in a deferred layout after resize.
+            # Only navigation requests this reset; zoom/fit/repaint keep their state.
+            self.scroll_reset_timer.start(0)
+
+    def reset_scroll_position(self):
+        for bar in (self.scroll.horizontalScrollBar(), self.scroll.verticalScrollBar()):
+            bar.setValue(bar.minimum())
 
     def zoom(self, factor):
         self.fit_mode = None

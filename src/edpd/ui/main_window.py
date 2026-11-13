@@ -4,8 +4,8 @@ import time
 from pathlib import Path
 from dataclasses import dataclass
 from PySide2.QtCore import Qt, QTimer, QObject, Signal, QSize, QRunnable, QThreadPool, QByteArray
-from PySide2.QtGui import QColor, QBrush, QPalette, QFontMetrics
-from .. import __version__
+from PySide2.QtGui import QColor, QBrush, QPalette, QFontMetrics, QFontInfo
+from .. import __version__, DISPLAY_NAME
 from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView,
                               QDialog, QPushButton, QAction, QSizePolicy, QToolButton, QHBoxLayout)
@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
         self.extracting = False
         self.extraction_dialog = None
         self.cancel_extraction = threading.Event()
-        self.setWindowTitle(f'EDPD {__version__} – Postai dokumentumkezelő')
+        self.setWindowTitle(f'{DISPLAY_NAME} {__version__}')
         self.setWindowIcon(icon('app'))
         self.resize(1600, 900)
         toolbar = QToolBar('Műveletek')
@@ -115,6 +115,9 @@ class MainWindow(QMainWindow):
         toolbar.setMovable(False)
         toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.addToolBar(toolbar)
+        main_font = toolbar.font()
+        main_font.setPointSizeF(QFontInfo(main_font).pointSizeF() + 2)
+        toolbar.setFont(main_font)
         self.main_toolbar = toolbar
         self.toolbar_controls = QWidget()
         self.toolbar_controls.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
@@ -123,6 +126,8 @@ class MainWindow(QMainWindow):
         toolbar.addWidget(self.toolbar_controls)
         # Only operation buttons may overflow; About always keeps its own space.
         toolbar = QToolBar('Műveleti gombok')
+        toolbar.setFont(main_font)
+        self.operation_toolbar = toolbar
         toolbar.layout().setSpacing(6)
         toolbar.setIconSize(QSize(40, 40))
         toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -289,7 +294,7 @@ class MainWindow(QMainWindow):
 
     def error(self, text):
         self.statusBar().showMessage('Hiba: ' + text)
-        QMessageBox.warning(self, 'EDPD – Hiba', text)
+        QMessageBox.warning(self, f'{DISPLAY_NAME} – Hiba', text)
 
     def current_day(self):
         row = self.day_table.currentRow()

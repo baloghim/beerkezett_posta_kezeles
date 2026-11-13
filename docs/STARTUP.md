@@ -1,8 +1,8 @@
-# EDPD 2.4 indítás és egyetlen példány
+# EDPD Menedzser – indítás és egyetlen példány
 
 ## Az indítás változásai és mérése
 
-A 2.3-as belépési pont a PDF- és nyomtatási modulokat, majd a teljes főablakot a QApplication és bármilyen látható visszajelzés előtt töltötte be. Az ikonlekérések ugyanazokat a fájlokat soronként újra ellenőrizték és új QIcon objektumokat készítettek. A 2.4 először megszerzi a példányzárat, elindítja a Qt-t, és megmutatja az egyszerű Crystal megjelenésű „EDPD – Postai dokumentumkezelő / A program indítása…” indítóképernyőt. A PDF/nyomtatás importja és a főablak létrehozása ezután következik. A splash a főablak megjelenésekor eltűnik. A témakezelő ugyanazt az ikont szerepenként csak egyszer tölti be egy témában.
+A 2.3-as belépési pont a PDF- és nyomtatási modulokat, majd a teljes főablakot a QApplication és bármilyen látható visszajelzés előtt töltötte be. Az ikonlekérések ugyanazokat a fájlokat soronként újra ellenőrizték és új QIcon objektumokat készítettek. Az aktuális EDPD Menedzser először megszerzi a példányzárat, elindítja a Qt-t, és megmutatja az egyszerű Crystal megjelenésű „EDPD Menedzser / A program indítása…” indítóképernyőt. A PDF/nyomtatás importja és a főablak létrehozása ezután következik. A splash a főablak megjelenésekor eltűnik. A témakezelő ugyanazt az ikont szerepenként csak egyszer tölti be egy témában.
 
 A mappák hálózati elérése, a helyi ZIP-index betöltése, az időszakon belüli ZIP-ek feldolgozása és a munkamappa felsorolása háttérfeladatban marad. Az első frissítést a főablak megmutatása után ütemezzük. A státusz ekkor „Dokumentumok és napi csomagok betöltése…”, majd az eredmény automatikusan megjelenik. A 2.3-ban már meglévő időszakszűrés és index változatlanul elkerüli a teljes történeti ZIP-állomány megnyitását. Pusztán ikon/Qt-stílus váltásakor nincs hálózati útvonalellenőrzés és új ZIP-olvasás.
 
@@ -16,9 +16,9 @@ A kiadás tényleges Windows-mérései és a leglassabb fázisok a ZIP `startup-
 
 ## Felhasználónként és Windows-munkamenetenként egy példány
 
-A `Local\EDPD.Manager.<azonosító>` névvel ellátott Windows mutex a Qt importja előtt létrejön. Az azonosító a bejelentkezett felhasználót és egy állandó alkalmazásprotokoll-nevet használ; nincs benne EXE-útvonal, telepítési mappa vagy verziószám. A külön mappába másolt 2.4-es alkalmazások ugyanazt a példányt találják meg. Másik felhasználó vagy másik Windows-munkamenet külön példányt használhat.
+A `Local\EDPD.Manager.<azonosító>` névvel ellátott Windows mutex a Qt importja előtt létrejön. Az azonosító a bejelentkezett felhasználót és egy állandó alkalmazásprotokoll-nevet használ; nincs benne EXE-útvonal, telepítési mappa vagy verziószám. A külön mappába másolt 2.4-es és újabb alkalmazások ugyanazt a példányt találják meg. Másik felhasználó vagy másik Windows-munkamenet külön példányt használhat.
 
-A futó főablakot Win32 ablakproperty azonosítja. A második indítás nem tölt Qt-t és nem épít második főablakot; helyreállítja a minimalizált ablakot és előtérbe hozza, ha a Windows engedi. Az előtérbe kerülést a Windows fókuszvédelme megakadályozhatja. Ha még nincs főablak, rövid natív „Az EDPD már indul…” jelzés jelenik meg, majd a második folyamat kilép. A második indítás nem írja át a beállításokat.
+A futó főablakot Win32 ablakproperty azonosítja. A második indítás nem tölt Qt-t és nem épít második főablakot; helyreállítja a minimalizált ablakot és előtérbe hozza, ha a Windows engedi. Az előtérbe kerülést a Windows fókuszvédelme megakadályozhatja. Ha még nincs főablak, rövid natív „Az EDPD Menedzser már indul…” jelzés jelenik meg, majd a második folyamat kilép. A második indítás nem írja át a beállításokat.
 
 Normál kilépés felszabadítja a mutexet. Folyamatkilövéskor a Windows megszünteti/elhagyottnak jelöli a tulajdonjogot, így nincs kézzel törlendő, tartós zár. Linux-fejlesztői tesztben felhasználói/sessionazonosítóval védett flock és helyi Unix socket szolgál ugyanerre. A normál beállításútvonal változatlan: `%APPDATA%\EDPD\settings.json`.
 

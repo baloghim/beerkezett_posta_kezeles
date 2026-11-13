@@ -1,4 +1,4 @@
-# Windows és hálózati átvételi próba
+# EDPD Menedzser – Windows és hálózati átvételi próba
 
 Éles bevezetés előtt elsőként a tényleges Windows 10 1607 x64 (build 14393) célgépen, kizárólag külön tesztmegosztással végezze el. Valós hivatali dokumentumokat ne másoljon a tesztkörnyezetbe.
 
@@ -29,3 +29,7 @@ A [1607-es EXE-önellenőrzést](WINDOWS1607.md) futtassa le a részletes próba
 ## 2.4 átvételi kiegészítés
 
 A [részletes indítási ellenőrzéseket](STARTUP.md) végezze el valódi Windows 10 1607 célgépen is: friss rendszerindítás utáni első indítás, gyors dupla indítás, indulás alatti második indítás, külön mappák, lassú/hiányzó H: és G:, hibás settings.json, normál bezárás és folyamatkilövés utáni újraindítás. A modern Windows CI-ben végrehajtott EXE-próba és annak időadatai a ZIP startup-validation.json fájljában vannak. Próbálja végig az öt ikontémát mindhárom panelen és a PDF-eszköztáron, valamint a Névjegy és a helyi menük ikonjait.
+
+## 2.5 felületi átvétel
+
+Ellenőrizze az EDPD Menedzser nevet a címsorban, a Névjegyben, az indítóképernyőn és az indulás alatti második indítás jelzésében. Korábbi profillal is ugyanaz a beállításfájl töltődjön be. A fő eszköztár feliratai az alaphoz képest két ponttal nagyobbak legyenek; a PDF-eszköztár betűmérete maradjon az eredeti. Nagyítson be egy többoldalas szintetikus PDF-et, görgessen mindkét irányban, és használja az Első/Előző/Következő/Utolsó gombokat: az új oldal felül, vízszintesen balról jelenjen meg. Ismételje meg Szélesség és Teljes oldal nézetben. A Szélesség–Teljes oldal és Nyomtatás–PDF mentése párok között azonos térköz legyen.

@@ -24,7 +24,7 @@ def host_info():
 def run(report_path, require_windows1607=False):
     result = {'schema': 1, 'host': host_info(), 'passed': False, 'checks': [],
               'windows1607_verified': False, 'error': None}
-    from . import __version__
+    from . import __version__, DISPLAY_NAME
     result['application_version'] = __version__
     report = Path(report_path).absolute()
     root = None
@@ -41,6 +41,7 @@ def run(report_path, require_windows1607=False):
         import fitz
         import PySide2
         from PySide2.QtCore import qVersion
+        from PySide2.QtGui import QFontInfo
         from PySide2.QtWidgets import QApplication, QMessageBox, QStyleFactory
         from PySide2.QtPrintSupport import QPrinter
         from .config import Settings
@@ -74,6 +75,7 @@ def run(report_path, require_windows1607=False):
             archive.writestr('historical.pdf', data)
         (source / 'invalid_date.zip').write_bytes(b'not a valid ZIP')
         app = QApplication([])
+        app.setApplicationDisplayName(DISPLAY_NAME)
         app.setStyle('Fusion')
         errors = []
         original_warning = QMessageBox.warning
@@ -110,6 +112,20 @@ def run(report_path, require_windows1607=False):
                 result['qt_styles'].append(style)
             apply_style(window.settings.qt_style)
             result['checks'].append('three_panel_gui_and_zip_scan')
+            from .ui.about_dialog import AboutDialog
+            about = AboutDialog(window)
+            normal_pt = QFontInfo(app.font()).pointSizeF()
+            main_pt = window.operation_toolbar.widgetForAction(window.actions[0]).font().pointSizeF()
+            pdf_pt = QFontInfo(window.viewer.toolbar.font()).pointSizeF()
+            if (window.windowTitle() != f'{DISPLAY_NAME} {__version__}' or
+                    DISPLAY_NAME not in about.windowTitle() or DISPLAY_NAME not in about.info.toPlainText() or
+                    main_pt != normal_pt + 2 or pdf_pt != normal_pt):
+                raise RuntimeError('Hibás programnév vagy eszköztár-betűméret.')
+            result['branding'] = {'display_name': DISPLAY_NAME, 'window_title': window.windowTitle(),
+                                  'about_title': about.windowTitle(), 'normal_font_pt': normal_pt,
+                                  'main_toolbar_font_pt': main_pt, 'pdf_toolbar_font_pt': pdf_pt}
+            about.reject()
+            result['checks'].append('display_name_and_main_toolbar_font')
             headers = [window.docs_table.horizontalHeaderItem(i).text() for i in range(window.docs_table.columnCount())]
             if headers != ['Dátum', 'Fájlnév', 'Méret'] or window.workspace_panel.title_label.text() != 'A munkamappa dokumentumai':
                 raise RuntimeError('A becsomagolt felület munkamappa-táblája hibás.')
@@ -144,7 +160,40 @@ def run(report_path, require_windows1607=False):
             window.viewer.fit('width')
             if window.viewer.pdf.pages != 3 or window.viewer.label.pixmap().isNull() or list(target.iterdir()):
                 raise RuntimeError('Hibás ZIP-betekintés vagy PDF-renderelés.')
+            app.processEvents()
+            buttons = [window.viewer.toolbar.widgetForAction(action) for action in
+                       (window.viewer.width_action, window.viewer.page_action,
+                        window.viewer.print_action, window.viewer.save_action)]
+            fit_gap = buttons[1].geometry().left() - buttons[0].geometry().right() - 1
+            save_gap = buttons[3].geometry().left() - buttons[2].geometry().right() - 1
+            if fit_gap < 6 or fit_gap != save_gap:
+                raise RuntimeError('Nem egységes a PDF-eszköztár térköze.')
+            result['pdf_toolbar'] = {'fit_gap_px': fit_gap, 'print_save_gap_px': save_gap}
+            result['checks'].append('pdf_fit_toolbar_spacing')
             result['checks'].append('zip_pdf_preview_paging_zoom')
+            viewer = window.viewer
+            viewer.move(1)
+            viewer.zoom(2.0 / viewer.scale)
+            app.processEvents()
+            navigation = {action.property('icon_role'): action for action in viewer.toolbar.actions() if action.text()}
+            result['pdf_navigation'] = []
+            for role, expected_page in [('next', 2), ('previous', 1), ('first', 0), ('last', 2)]:
+                bars = viewer.scroll.horizontalScrollBar(), viewer.scroll.verticalScrollBar()
+                for bar in bars:
+                    bar.setValue(bar.maximum())
+                if not all(bar.value() > 0 for bar in bars):
+                    raise RuntimeError('A lapozási próba nem görgetett PDF-et.')
+                navigation[role].trigger()
+                app.processEvents()
+                if viewer.page != expected_page or any(bar.value() != 0 for bar in bars):
+                    raise RuntimeError('Lapozáskor nem a PDF teteje/bal széle jelenik meg.')
+                if viewer.scale != 2.0 or viewer.fit_mode is not None:
+                    raise RuntimeError('Lapozáskor elveszett a nagyítás vagy a nézetmód.')
+                result['pdf_navigation'].append({'action': role, 'page': viewer.page,
+                                                  'horizontal': bars[0].value(), 'vertical': bars[1].value(),
+                                                  'scale': viewer.scale, 'fit_mode': viewer.fit_mode})
+            viewer.fit('width')
+            result['checks'].append('pdf_paging_resets_scroll_preserves_zoom')
             with workspace_lock(target):
                 try:
                     with workspace_lock(target):
