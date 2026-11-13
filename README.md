@@ -4,9 +4,9 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
-**[EDPD 2.1.2 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.1.2/EDPD-Manager-Windows-x64.zip)**
+**[EDPD 2.2.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.2.0/EDPD-Manager-Windows-x64.zip)**
 
-A fejlesztői változat **2.2.0**; ennek új Windows-kiadása még folyamatban van. A fenti hivatkozás a korábbi, ellenőrzött kiadásra mutat. Új link csak a ZIP tényleges közzététele és ellenőrzése után kerül ide.
+**A 2.2.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** A Windows runneren 92 teszt, a csomagolt EXE mind a 10 önellenőrzése, a 107 natív bináris auditja, az ICO hét képkockája és 199 csomagolt erőforrás ellenőrzése sikeres. A közzétett ZIP SHA-256 és CRC-ellenőrzése hibátlan. [Kiadásellenőrzési jelentés](docs/RELEASE-2.2.0.md).
 
 A teljes ZIP-et új helyi mappába bontsa ki, az `_internal` mappát is tartsa meg. Python telepítése nem szükséges. A Windows buildet a meglévő [GitHub Actions workflow](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) készíti.
 
