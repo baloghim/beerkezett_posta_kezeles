@@ -36,7 +36,8 @@ jobs:
           python -m pip install -e ".[dev]"
       - name: Automatikus tesztek (csak ideiglenes adatok)
         env:
-          QT_QPA_PLATFORM: offscreen
+          # Native Windows font/DPI and toolbar geometry; offscreen reports invalid font metrics here.
+          QT_QPA_PLATFORM: windows
         run: python scripts/ci_run.py python -m pytest -q --junitxml=test-results.xml
       - name: Önálló Windows x64 alkalmazás
         run: python scripts/ci_run.py python -m PyInstaller --noconfirm --clean EDPD-Manager.spec

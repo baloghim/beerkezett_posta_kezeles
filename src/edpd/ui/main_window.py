@@ -4,7 +4,7 @@ import time
 from pathlib import Path
 from dataclasses import dataclass
 from PySide2.QtCore import Qt, QTimer, QObject, Signal, QSize, QRunnable, QThreadPool, QByteArray
-from PySide2.QtGui import QColor, QBrush, QPalette, QFontMetrics, QFontInfo
+from PySide2.QtGui import QColor, QBrush, QPalette, QFontMetrics
 from .. import __version__, DISPLAY_NAME
 from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView,
@@ -116,7 +116,11 @@ class MainWindow(QMainWindow):
         toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.addToolBar(toolbar)
         main_font = toolbar.font()
-        main_font.setPointSizeF(QFontInfo(main_font).pointSizeF() + 2)
+        base_points = main_font.pointSizeF()
+        if base_points <= 0:  # A pixel-sized application font still needs +2 points.
+            dpi = toolbar.logicalDpiY()
+            base_points = main_font.pixelSize() * 72 / (dpi if dpi > 0 else 96)
+        main_font.setPointSizeF(base_points + 2)
         toolbar.setFont(main_font)
         self.main_toolbar = toolbar
         self.toolbar_controls = QWidget()

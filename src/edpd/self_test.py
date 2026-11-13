@@ -41,7 +41,6 @@ def run(report_path, require_windows1607=False):
         import fitz
         import PySide2
         from PySide2.QtCore import qVersion
-        from PySide2.QtGui import QFontInfo
         from PySide2.QtWidgets import QApplication, QMessageBox, QStyleFactory
         from PySide2.QtPrintSupport import QPrinter
         from .config import Settings
@@ -114,12 +113,12 @@ def run(report_path, require_windows1607=False):
             result['checks'].append('three_panel_gui_and_zip_scan')
             from .ui.about_dialog import AboutDialog
             about = AboutDialog(window)
-            normal_pt = QFontInfo(app.font()).pointSizeF()
+            normal_pt = app.font().pointSizeF()
             main_pt = window.operation_toolbar.widgetForAction(window.actions[0]).font().pointSizeF()
-            pdf_pt = QFontInfo(window.viewer.toolbar.font()).pointSizeF()
+            pdf_pt = window.viewer.toolbar.font().pointSizeF()
             if (window.windowTitle() != f'{DISPLAY_NAME} {__version__}' or
                     DISPLAY_NAME not in about.windowTitle() or DISPLAY_NAME not in about.info.toPlainText() or
-                    main_pt != normal_pt + 2 or pdf_pt != normal_pt):
+                    normal_pt <= 0 or main_pt != normal_pt + 2 or pdf_pt != normal_pt):
                 raise RuntimeError('Hibás programnév vagy eszköztár-betűméret.')
             result['branding'] = {'display_name': DISPLAY_NAME, 'window_title': window.windowTitle(),
                                   'about_title': about.windowTitle(), 'normal_font_pt': normal_pt,

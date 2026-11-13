@@ -1,6 +1,5 @@
 import json
 import pytest
-from PySide2.QtGui import QFontInfo
 from PySide2.QtCore import QEventLoop, QTimer
 from PySide2.QtWidgets import QWidget
 from edpd import DISPLAY_NAME, __version__
@@ -12,7 +11,7 @@ from edpd.ui.pdf_viewer import PDFViewer
 
 def test_user_facing_name_and_only_main_toolbar_font_grows(app,folders):
     source,target=folders
-    base=QFontInfo(app.font()).pointSizeF()
+    base=app.font().pointSizeF()
     window=MainWindow(Settings(source=str(source),target=str(target)),auto_refresh=False)
     window.show()
     app.processEvents()
@@ -27,12 +26,12 @@ def test_user_facing_name_and_only_main_toolbar_font_grows(app,folders):
         for action in window.actions:
             button=window.operation_toolbar.widgetForAction(action)
             assert button.font().pointSizeF()==pytest.approx(base+2)
-        assert QFontInfo(window.viewer.toolbar.font()).pointSizeF()==pytest.approx(base)
+        assert window.viewer.toolbar.font().pointSizeF()==pytest.approx(base)
         for action in window.viewer.toolbar.actions():
             if action.text():
                 button=window.viewer.toolbar.widgetForAction(action)
-                assert QFontInfo(button.font()).pointSizeF()==pytest.approx(base)
-        assert QFontInfo(window.docs_table.font()).pointSizeF()==pytest.approx(base)
+                assert button.font().pointSizeF()==pytest.approx(base)
+        assert window.docs_table.font().pointSizeF()==pytest.approx(base)
         # Reapplying a native style must not repeatedly add two points.
         from edpd.ui.appearance import apply_style
         apply_style(app.style().objectName())
