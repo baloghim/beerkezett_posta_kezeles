@@ -160,19 +160,33 @@ def run(report_path, require_windows1607=False):
             if window.viewer.pdf.pages != 3 or window.viewer.label.pixmap().isNull() or list(target.iterdir()):
                 raise RuntimeError('Hibás ZIP-betekintés vagy PDF-renderelés.')
             app.processEvents()
+            # Measure visible controls, not coordinates of overflow-menu widgets.
+            toolbar = window.viewer.toolbar
+            toolbar_width = sum(toolbar.widgetForAction(action).sizeHint().width()
+                                for action in toolbar.actions()) + 128
+            toolbar.setMinimumWidth(toolbar_width)
+            window.setMinimumWidth(toolbar_width + window.left.minimumSizeHint().width() + 128)
+            app.processEvents()
+            from PySide2.QtCore import QEventLoop, QTimer
+            settle = QEventLoop()
+            QTimer.singleShot(30, settle.quit)
+            settle.exec_()
             buttons = [window.viewer.toolbar.widgetForAction(action) for action in
                        (window.viewer.width_action, window.viewer.page_action,
                         window.viewer.print_action, window.viewer.save_action)]
             fit_gap = buttons[1].geometry().left() - buttons[0].geometry().right() - 1
             save_gap = buttons[3].geometry().left() - buttons[2].geometry().right() - 1
-            if fit_gap < 6 or fit_gap != save_gap:
+            result['pdf_toolbar'] = {'fit_gap_px': fit_gap, 'print_save_gap_px': save_gap,
+                                     'toolbar_width_px': toolbar.width(),
+                                     'buttons_visible': [button.isVisible() for button in buttons]}
+            if fit_gap < 6 or fit_gap != save_gap or not all(button.isVisible() for button in buttons):
                 raise RuntimeError('Nem egységes a PDF-eszköztár térköze.')
-            result['pdf_toolbar'] = {'fit_gap_px': fit_gap, 'print_save_gap_px': save_gap}
             result['checks'].append('pdf_fit_toolbar_spacing')
             result['checks'].append('zip_pdf_preview_paging_zoom')
             viewer = window.viewer
             viewer.move(1)
             viewer.zoom(2.0 / viewer.scale)
+            zoom_scale = viewer.scale
             app.processEvents()
             navigation = {action.property('icon_role'): action for action in viewer.toolbar.actions() if action.text()}
             result['pdf_navigation'] = []
@@ -186,7 +200,7 @@ def run(report_path, require_windows1607=False):
                 app.processEvents()
                 if viewer.page != expected_page or any(bar.value() != 0 for bar in bars):
                     raise RuntimeError('Lapozáskor nem a PDF teteje/bal széle jelenik meg.')
-                if viewer.scale != 2.0 or viewer.fit_mode is not None:
+                if viewer.scale != zoom_scale or viewer.fit_mode is not None:
                     raise RuntimeError('Lapozáskor elveszett a nagyítás vagy a nézetmód.')
                 result['pdf_navigation'].append({'action': role, 'page': viewer.page,
                                                   'horizontal': bars[0].value(), 'vertical': bars[1].value(),

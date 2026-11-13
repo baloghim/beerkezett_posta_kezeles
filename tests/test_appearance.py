@@ -182,8 +182,12 @@ def test_pdf_fit_width_reopen_resize_and_full_page(app, pdf_bytes, monkeypatch):
     from PySide2.QtWidgets import QMessageBox
     errors = []
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
+    container = QWidget()
+    container.setFixedSize(1500, 1000)
     viewer = PDFViewer()
+    viewer.setParent(container)
     viewer.resize(1000, 700)
+    container.show()
     viewer.show()
     app.processEvents()
     viewer.open_data(pdf_bytes)
@@ -191,7 +195,8 @@ def test_pdf_fit_width_reopen_resize_and_full_page(app, pdf_bytes, monkeypatch):
     assert viewer.fit_mode == 'width' and viewer.width_action.isChecked()
     initial = viewer.label.pixmap().width()
     viewer.resize(1200, 800)
-    wait_for(app, lambda: viewer.label.pixmap().width() > initial)
+    wait_for(app, lambda: viewer.label.pixmap().width() > initial and
+             abs(viewer.label.pixmap().width() - (viewer.scroll.viewport().width() - 24)) <= 2)
     rect = viewer.pdf.document[0].rect
     assert viewer.label.pixmap().width() == pytest.approx(viewer.scroll.viewport().width() - 24, abs=2)
     assert viewer.label.pixmap().width() / viewer.label.pixmap().height() == pytest.approx(rect.width / rect.height, abs=0.01)
@@ -214,5 +219,6 @@ def test_pdf_fit_width_reopen_resize_and_full_page(app, pdf_bytes, monkeypatch):
     assert viewer.width_action.toolTip() and viewer.page_action.toolTip()
     viewer.pdf.close()
     viewer.close()
+    container.close()
     app.processEvents()
     assert not errors

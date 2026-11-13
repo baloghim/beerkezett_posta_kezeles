@@ -1,7 +1,7 @@
 import json
 import pytest
 from PySide2.QtCore import QEventLoop, QTimer
-from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QWidget, QTableWidget
 from edpd import DISPLAY_NAME, __version__
 from edpd.config import Settings, settings_path
 from edpd.ui.about_dialog import AboutDialog
@@ -12,6 +12,7 @@ from edpd.ui.pdf_viewer import PDFViewer
 def test_user_facing_name_and_only_main_toolbar_font_grows(app,folders):
     source,target=folders
     base=app.font().pointSizeF()
+    table_base=QTableWidget().font().pointSizeF()
     window=MainWindow(Settings(source=str(source),target=str(target)),auto_refresh=False)
     window.show()
     app.processEvents()
@@ -31,7 +32,7 @@ def test_user_facing_name_and_only_main_toolbar_font_grows(app,folders):
             if action.text():
                 button=window.viewer.toolbar.widgetForAction(action)
                 assert button.font().pointSizeF()==pytest.approx(base)
-        assert window.docs_table.font().pointSizeF()==pytest.approx(base)
+        assert window.docs_table.font().pointSizeF()==pytest.approx(table_base)
         # Reapplying a native style must not repeatedly add two points.
         from edpd.ui.appearance import apply_style
         apply_style(app.style().objectName())
@@ -111,12 +112,15 @@ def test_every_page_action_resets_scroll_without_losing_view_state(app,pdf_bytes
 
 def test_fit_buttons_use_the_same_visible_gap_as_print_and_save(app):
     viewer=PDFViewer()
-    viewer.resize(1300,450)
+    width=sum(viewer.toolbar.widgetForAction(a).sizeHint().width() for a in viewer.toolbar.actions())+128
+    viewer.setMinimumWidth(width)
+    viewer.resize(width,450)
     viewer.show()
     app.processEvents()
     try:
         widgets=[viewer.toolbar.widgetForAction(a) for a in
                  (viewer.width_action,viewer.page_action,viewer.print_action,viewer.save_action)]
+        assert all(widget.isVisible() for widget in widgets)
         def gap(first,second):return second.geometry().left()-first.geometry().right()-1
         assert gap(widgets[0],widgets[1])==gap(widgets[2],widgets[3])
         assert gap(widgets[0],widgets[1])>=6
