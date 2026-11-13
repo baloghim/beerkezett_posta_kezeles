@@ -2,17 +2,17 @@
 
 Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak kezeléséhez, a munkamappa PDF-jeinek megtekintéséhez és nyomtatásához. Nincs dokumentumfeltöltés, telemetria vagy külön szerver.
 
-A 2.4-es forrás öt, futás közben váltható belső ikontémát kínál: **Crystal SVG, Nuvola, KDE Modern Classic, Papirus, We10X** (Beállítások → Megjelenés → Ikontéma). A választás a meglévő settings.json fájlban marad meg; a Qt-stílus külön választható, az EXE saját ikonja állandó. [Eredet, licencek és fallback](docs/ICON-THEMES.md), [összehasonlító kép](docs/icon-theme-comparison.png).
+A 2.4-es verzió öt, futás közben váltható belső ikontémát kínál: **Crystal SVG, Nuvola, KDE Modern Classic, Papirus, We10X** (Beállítások → Megjelenés → Ikontéma). A választás a meglévő settings.json fájlban marad meg; a Qt-stílus külön választható, az EXE saját ikonja állandó. [Eredet, licencek és fallback](docs/ICON-THEMES.md), [összehasonlító kép](docs/icon-theme-comparison.png).
 
 Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a főablak után, háttérben fut. A munkamenetenkénti példányvédelem a külön mappákból indított 2.4-es másolatokat is összefogja. [Mérések, példányvédelem és tesztelés](docs/STARTUP.md). Az alsó lista felirata Dátum; a dátumok képzése és rendezése változatlan.
 
 ## Windows letöltés
 
-**[EDPD 2.3.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.3.0/EDPD-Manager-Windows-x64.zip)**
+**[EDPD 2.4.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.4.0/EDPD-Manager-Windows-x64.zip)**
 
-**A 2.3.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** A csomagban 127 sikeres Windows-teszt, 13 sikeres EXE-önellenőrzés, 107 auditált natív bináris és 207 ellenőrzött erőforrás szerepel. Az ICO mind a hét képkockájának vizsgálata sikeres, a közzétett ZIP SHA-256 és CRC-ellenőrzése hibátlan. [Kiadásellenőrzési jelentés](docs/RELEASE-2.3.0.md).
+**A 2.4.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** A csomagban 138 sikeres Windows-teszt, 14 sikeres EXE-önellenőrzés, 11 valódi indítási ellenőrzés, 109 auditált natív bináris, 433 ellenőrzött erőforrás és 18 licencfájl szerepel. Az ICO hét képkockája változatlan; a közzétett ZIP SHA-256 és CRC-ellenőrzése hibátlan. A runneren az EXE körülbelül 350 ms alatt indítóképernyőt, 523 ms alatt főablakot mutatott. [Kiadásellenőrzési jelentés és mérési korlátok](docs/RELEASE-2.4.0.md).
 
-## Újdonságok a 2.3 változatban
+## A 2.3-ban bevezetett, megőrzött funkciók
 
 - 40 pixeles fő eszköztár, kisebb PDF-eszköztár. Félkövér, kissé nagyobb panelcímek, kényelmesebb táblázatsorok. A gyári Qt-stílusok megmaradtak, nincs dekoratív QSS.
 - Arányos, kézzel átméretezhető oszlopok. Kiindulóarányok fent: 18/44/10/28%. Lent: **Dátum – Fájlnév – Méret**, 21/64/15%, olvashatóságot védő minimális szélességekkel. A Dátum az eredeti ZIP dátuma (`ÉÉÉÉ.HH.NN.`); a sorrend dátum szerint csökkenő, azon belül fájlnév szerint növekvő. Ismeretlen és többértelmű eredet a dátumos tételek után marad. A munkamappa továbbra is kizárólag a célmappa közvetlen PDF-jeiből áll; a felső kijelölés nem szűri.
@@ -85,7 +85,7 @@ Linuxon: `QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m pytest -q`. A meglé
 A csomagolt EXE önellenőrzése:
 
 ```bat
-EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.3.0-1607.json"
+EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.4.0-1607.json"
 ```
 
 A Windows workflow natív DLL-auditot, EXE-ikonerőforrás-vizsgálatot, a csomagolt ikonfájlok összehasonlítását és az EXE tizenhárom funkcionális önellenőrzését is végzi. A `v*` címkéhez sikeres build után Release-t készít. [Windows 1607 útmutató](docs/WINDOWS1607.md). A modern runner sikere nem helyettesíti a valódi 1607-es célgépes próbát; a korábban ott ellenőrzött 0.2.1 kiadás sikere az új változatot nem minősíti.
