@@ -4,14 +4,14 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 ## Windows letöltés
 
-**[EDPD 2.2.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.2.0/EDPD-Manager-Windows-x64.zip)**
+**[EDPD 2.3.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.3.0/EDPD-Manager-Windows-x64.zip)**
 
-A fejlesztői változat **2.3.0**. A Windows-build és az új kiadás ellenőrzése folyamatban van; a fenti link egyelőre a korábbi, ellenőrzött 2.2.0 verziót tölti le.
+**A 2.3.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** A csomagban 127 sikeres Windows-teszt, 13 sikeres EXE-önellenőrzés, 107 auditált natív bináris és 207 ellenőrzött erőforrás szerepel. Az ICO mind a hét képkockájának vizsgálata sikeres, a közzétett ZIP SHA-256 és CRC-ellenőrzése hibátlan. [Kiadásellenőrzési jelentés](docs/RELEASE-2.3.0.md).
 
 ## Újdonságok a 2.3 változatban
 
 - 40 pixeles fő eszköztár, kisebb PDF-eszköztár. Félkövér, kissé nagyobb panelcímek, kényelmesebb táblázatsorok. A gyári Qt-stílusok megmaradtak, nincs dekoratív QSS.
-- Arányos, kézzel átméretezhető oszlopok. Fent: 18/44/10/28%. Lent: **Nap – Fájlnév – Méret**, 21/64/15%. A Nap az eredeti ZIP dátuma (`ÉÉÉÉ.HH.NN.`); a sorrend dátum szerint csökkenő, azon belül fájlnév szerint növekvő. Ismeretlen és többértelmű eredet a dátumos tételek után marad. A munkamappa továbbra is kizárólag a célmappa közvetlen PDF-jeiből áll; a felső kijelölés nem szűri.
+- Arányos, kézzel átméretezhető oszlopok. Kiindulóarányok fent: 18/44/10/28%. Lent: **Nap – Fájlnév – Méret**, 21/64/15%, olvashatóságot védő minimális szélességekkel. A Nap az eredeti ZIP dátuma (`ÉÉÉÉ.HH.NN.`); a sorrend dátum szerint csökkenő, azon belül fájlnév szerint növekvő. Ismeretlen és többértelmű eredet a dátumos tételek után marad. A munkamappa továbbra is kizárólag a célmappa közvetlen PDF-jeiből áll; a felső kijelölés nem szűri.
 - A További forráskeresés gomb csak további ZIP-ek esetén látszik, a keresés végén eltűnik.
 - A kicsomagolás külön **modális folyamatablakban** fut, Crystal ikonnal, dátummal, valós fájlszámmal és Mégse gombbal. A Qt eseményciklusa működik, a főablakot a művelet fogja.
 - Először az összes szükséges PDF ellenőrzött ideiglenes területre kerül, biztonsági másolatokkal; utána ellenőrzött véglegesítés következik. Megszakítás és hiba esetén a saját új fájlokat visszavonjuk, a felülírtak eredeti tartalmát helyreállítjuk. A hálózati zár a teljes művelet alatt megmarad. Részleges helyreállításnál a program név szerint jelzi a problémákat és megőrzi a naplót/másolatokat. [Helyreállítás és korlátai](docs/RECOVERY.md).
