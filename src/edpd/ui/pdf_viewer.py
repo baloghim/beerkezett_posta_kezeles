@@ -19,7 +19,7 @@ class SpacedToolButton(QToolButton):
     def paintEvent(self, event):
         option = QStyleOptionToolButton()
         self.initStyleOption(option)
-        text, image = option.text, option.icon
+        text, image = option.text, QIcon(option.icon)
         option.text, option.icon = '', QIcon()
         painter = QStylePainter(self)
         painter.drawComplexControl(QStyle.CC_ToolButton, option)

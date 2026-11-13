@@ -101,3 +101,22 @@ def test_all_visible_roles_switch_without_reloading_data(app,folders,monkeypatch
         assert isinstance(button,SpacedToolButton)
         assert button.defaultAction() is action
     window.close()
+
+
+def test_spaced_buttons_actually_paint_the_icon(app):
+    from PySide2.QtCore import Qt, QSize
+    from PySide2.QtGui import QIcon
+    button=SpacedToolButton()
+    button.setText('Nyomtatás')
+    button.setIconSize(QSize(22,22))
+    button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+    button.setIcon(icon('print'))
+    button.setFixedSize(180,40)
+    button.show()
+    app.processEvents()
+    with_icon=button.grab().toImage()
+    button.setIcon(QIcon())
+    app.processEvents()
+    without_icon=button.grab().toImage()
+    assert with_icon!=without_icon
+    button.close()
