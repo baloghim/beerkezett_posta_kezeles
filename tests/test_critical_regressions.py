@@ -87,9 +87,9 @@ def test_thousand_archives_actual_qt_rows_and_all_zip_opens(app, thousand_archiv
         actual_dates = [window.day_table.item(row, 0).text() for row in range(window.day_table.rowCount())]
         assert actual_dates == [d.strftime('%Y.%m.%d.') for d in expected_dates]
         assert window.docs_table.rowCount() == 1
-        assert window.docs_table.item(0, 0).text() == 'unknown.pdf'
-        assert [window.docs_table.horizontalHeaderItem(i).text() for i in range(3)] == ['Fájlnév', 'Méret', 'Forrásnap']
-        assert window.docs_table.item(0, 2).text() == 'Ismeretlen'
+        assert window.docs_table.item(0, 1).text() == 'unknown.pdf'
+        assert [window.docs_table.horizontalHeaderItem(i).text() for i in range(3)] == ['Nap', 'Fájlnév', 'Méret']
+        assert window.docs_table.item(0, 0).text() == 'Ismeretlen'
         for row in (0, len(expected) - 1):
             window.day_table.selectRow(row)
         # Az automatikus frissítés is csak a beállított időszakot érintheti.
@@ -111,7 +111,7 @@ def test_thousand_archives_actual_qt_rows_and_all_zip_opens(app, thousand_archiv
 
 
 def table_files(window):
-    return {window.docs_table.item(i, 0).text() for i in range(window.docs_table.rowCount())}
+    return {window.docs_table.item(i, 1).text() for i in range(window.docs_table.rowCount())}
 
 
 def test_three_days_workspace_model_and_real_ui_mutations(app, folders, tmp_path, monkeypatch, pdf_bytes):
@@ -153,7 +153,7 @@ def test_three_days_workspace_model_and_real_ui_mutations(app, folders, tmp_path
         second_day = window.current_day()
         window.actions[0].trigger()
         wait(app, lambda: table_files(window) == first_names | second_names and not window.jobs)
-        assert all(window.docs_table.item(i, 2).text() in ('2026.11.09.', '2026.11.10.') for i in range(12))
+        assert all(window.docs_table.item(i, 0).text() in ('2026.11.09.', '2026.11.10.') for i in range(12))
         window.actions[1].trigger()
         wait(app, lambda: table_files(window) == first_names and not window.jobs)
         window.actions[2].trigger()
@@ -181,14 +181,14 @@ def test_old_origins_only_after_user_click_unknown_still_opens(app, folders, tmp
     try:
         wait(app, lambda: bool(window.days) and not window.jobs)
         idle(app, 0.65)
-        assert opened == [recent] and window.docs_table.item(0, 2).text() == 'Ismeretlen'
+        assert opened == [recent] and window.docs_table.item(0, 0).text() == 'Ismeretlen'
         window.docs_table.selectRow(0)
         wait(app, lambda: window.viewer.pdf is not None and not window.jobs)
         assert window.viewer.pdf.pages == 3 and opened == [recent]
         window.origin_button.click()
         wait(app, lambda: not window.origin_pending and not window.jobs)
         assert opened == [recent, old]
-        assert window.docs_table.item(0, 2).text() == '2026.08.04.'
+        assert window.docs_table.item(0, 0).text() == '2026.08.04.'
         assert not errors
     finally:
         window.close()
@@ -217,7 +217,7 @@ def test_cached_old_and_ambiguous_origins_in_actual_workspace_table(app, folders
     try:
         wait(app, lambda: window.docs_table.rowCount() == 3 and not window.jobs)
         assert len(window.days) == 2 and table_files(window) == {'old.pdf', 'both.pdf', 'unknown.pdf'}
-        values = {window.docs_table.item(i, 0).text(): window.docs_table.item(i, 2).text() for i in range(3)}
+        values = {window.docs_table.item(i, 1).text(): window.docs_table.item(i, 0).text() for i in range(3)}
         assert values == {'old.pdf': '2026.08.04.', 'both.pdf': 'Több lehetséges nap', 'unknown.pdf': 'Ismeretlen'}
         assert opened == []
         window.docs_table.selectRow(window.work_keys.index('unknown.pdf'))
@@ -239,9 +239,9 @@ def test_source_column_stays_visible_with_long_filename(app, folders, tmp_path, 
     try:
         wait(app, lambda: window.docs_table.rowCount() == 1 and not window.jobs)
         app.processEvents()
-        assert window.docs_table.horizontalHeaderItem(2).text() == 'Forrásnap'
-        assert not window.docs_table.isColumnHidden(2)
-        assert window.docs_table.columnViewportPosition(2) + window.docs_table.columnWidth(2) <= window.docs_table.viewport().width()
-        assert window.docs_table.item(0, 0).toolTip() == name
+        assert window.docs_table.horizontalHeaderItem(0).text() == 'Nap'
+        assert not window.docs_table.isColumnHidden(0)
+        assert window.docs_table.columnViewportPosition(0) + window.docs_table.columnWidth(0) <= window.docs_table.viewport().width()
+        assert window.docs_table.item(0, 1).toolTip() == name
     finally:
         window.close()

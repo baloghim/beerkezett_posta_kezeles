@@ -10,6 +10,7 @@ import zipfile
 from datetime import date, datetime, timedelta
 from pathlib import Path, PurePosixPath
 
+from .extraction_transaction import check_cancel
 from .models import ArchiveEntry, Day, Document, EDPDError
 
 MAX_PDF = 256 * 1024 * 1024
@@ -182,7 +183,7 @@ class ZipService:
             self.dirty = True
             return documents, error
 
-    def scan(self, source, history_days=None, *, today=None, dates=None, entries=None):
+    def scan(self, source, history_days=None, *, today=None, dates=None, entries=None, cancel=None):
         if history_days not in (None, 14, 30, 90, 180):
             raise ValueError('Érvénytelen időszak')
         today = today or date.today()
@@ -190,6 +191,7 @@ class ZipService:
         entries = self.catalogue(source) if entries is None else entries
         grouped = {}
         for entry in entries:
+            check_cancel(cancel)
             # A dátumszűrés minden ZIP-megnyitás és tartalomjegyzék-olvasás ELŐTT történik.
             if dates is not None and entry.date not in dates:
                 continue
@@ -200,6 +202,7 @@ class ZipService:
         for day, items in sorted(grouped.items(), reverse=True):
             documents, errors = [], []
             for entry in sorted(items, key=lambda e: e.path.name):
+                check_cancel(cancel)
                 docs, error = self._read(entry)
                 documents.extend(docs)
                 if error:

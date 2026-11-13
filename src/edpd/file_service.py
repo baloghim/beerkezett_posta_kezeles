@@ -1,5 +1,4 @@
 import os
-import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -8,6 +7,7 @@ from .models import Capabilities, EDPDError
 from .paths import directory, overlap
 from .state_service import inventory
 from .zip_service import ZipService, read_document
+from .extraction_transaction import run as transactional_extract, check_cancel, ExtractionCancelled
 
 
 def validate_paths(source, target):
@@ -61,17 +61,32 @@ class FileService:
         return tuple(sorted((doc.name.casefold(), file_stamp(files[doc.name.casefold()]))
                             for doc in day.documents if doc.name.casefold() in files))
 
+    @staticmethod
+    def check_recovery(target):
+        pending = list(Path(target).glob('.edpd-recovery-*'))
+        if pending:
+            raise EDPDError('Korábbi művelet helyreállítása szükséges. Megőrzött adatok:\n' + '\n'.join(map(str, pending)))
+
     def extraction_plan(self, day):
         source, target = validate_paths(self.source, self.target)
+        self.check_recovery(target)
         self._selected(day, source, self.zip.catalogue(source))
         return ExtractionPlan(self._existing(day, target), len(day.documents))
 
-    def extract(self, day, mode='skip', *, expected_existing=None, progress=None):
+    def extract(self, day, mode='skip', *, expected_existing=None, progress=None, cancel=None):
+        try:
+            return self._extract(day, mode, expected_existing=expected_existing, progress=progress, cancel=cancel)
+        except ExtractionCancelled:
+            return 'A kicsomagolás megszakítva; nem történt módosítás.'
+
+    def _extract(self, day, mode='skip', *, expected_existing=None, progress=None, cancel=None):
         notify = progress or (lambda text, done, total: None)
         if mode not in ('skip', 'overwrite'):
             raise EDPDError('Érvénytelen kicsomagolási mód.')
         if mode == 'overwrite' and (not self.capabilities.overwrite or expected_existing is None):
             raise EDPDError('A felülíráshoz jogosultság és friss célállapotra adott jóváhagyás szükséges.')
+        if cancel is not None and cancel.is_set():
+            return 'A kicsomagolás megszakítva; nem történt módosítás.'
         notify('Hálózati zárolás megszerzése…', 0, 0)
         source, target = validate_paths(self.source, self.target)
         written = skipped = 0
@@ -87,55 +102,15 @@ class FileService:
                 return 'A kiválasztott nap dokumentumai már megtalálhatók a munkamappában.'
             # Hideg indexnél ez az összes történeti tartalomjegyzéket ellenőrzi.
             # Nélküle az időablakon kívüli névütközések nem zárhatók ki.
-            days = self.zip.scan(source, entries=entries)
+            days = self.zip.scan(source, entries=entries, cancel=cancel)
             if any(other.error for other in days):
                 raise EDPDError('Hibás archívum miatt a fájlütközések nem ellenőrizhetők biztonságosan.')
             for doc in day.documents:
                 if any(other.date != day.date and any(d.name.casefold() == doc.name.casefold()
                        and (d.crc, d.size) != (doc.crc, doc.size) for d in other.documents) for other in days):
                     raise EDPDError(f'Más napi csomag eltérő dokumentuma azonos nevet használ: {doc.name}')
-            approved = dict(existing)
-            total = len(day.documents) - (len(existing) if mode == 'skip' else 0)
-            completed = 0
-            notify('PDF-ek kicsomagolása', completed, total)
-            for doc in day.documents:
-                files = inventory(target)
-                key = doc.name.casefold()
-                destination = files.get(key, target / doc.name)
-                if destination.exists() and mode == 'skip':
-                    skipped += 1
-                    continue
-                if mode == 'overwrite':
-                    stamp = file_stamp(destination) if destination.exists() else None
-                    if stamp != approved.get(key):
-                        raise EDPDError('A célfájl megváltozott. Erősítse meg újra a felülírást: ' + doc.name)
-                data = read_document(doc)
-                fd, temp = tempfile.mkstemp(prefix='.edpd-', suffix='.tmp', dir=target)
-                try:
-                    with os.fdopen(fd, 'wb') as stream:
-                        stream.write(data)
-                        stream.flush()
-                        os.fsync(stream.fileno())
-                    if mode == 'overwrite' and key in approved:
-                        if file_stamp(destination) != approved[key]:
-                            raise EDPDError('A célfájl megváltozott: ' + doc.name)
-                        os.replace(temp, destination)
-                    else:
-                        # Új fájlt felülírási módban sem írhatunk felül véletlenül.
-                        try:
-                            if os.name == 'nt':
-                                os.rename(temp, destination)
-                            else:
-                                os.link(temp, destination)
-                        except FileExistsError:
-                            skipped += 1
-                            continue
-                    written += 1
-                    completed += 1
-                    notify('PDF-ek kicsomagolása', completed, total)
-                finally:
-                    Path(temp).unlink(missing_ok=True)
-        return f'{written} PDF kicsomagolva, {skipped} meglévő kihagyva.'
+            return transactional_extract(target, day.documents, mode, dict(existing),
+                                         read_document, file_stamp, notify, cancel)
 
     def _deletion_files(self, day, source, target):
         files = inventory(target)
@@ -156,6 +131,7 @@ class FileService:
         if not self.capabilities.delete:
             raise EDPDError('Ebben a kiadásban a törlés tiltott.')
         source, target = validate_paths(self.source, self.target)
+        self.check_recovery(target)
         return set(self._deletion_files(day, source, target))
 
     def delete(self, day=None, *, confirmed=False, expected_names=None):
@@ -164,6 +140,7 @@ class FileService:
         source, target = validate_paths(self.source, self.target)
         with workspace_lock(target):
             validate_paths(source, target)
+            self.check_recovery(target)
             files = self._deletion_files(day, source, target)
             if expected_names is None or set(files) != set(expected_names):
                 raise EDPDError('A munkamappa tartalma megváltozott. Ellenőrizze, és erősítse meg újra a törlést!')

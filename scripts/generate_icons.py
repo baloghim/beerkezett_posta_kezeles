@@ -67,7 +67,7 @@ def build():
         entries+=struct.pack('<BBBBHHII',size%256,size%256,0,0,1,32,len(data),offset)
         body+=data;offset+=len(data)
     (ASSETS/'edpd.ico').write_bytes(header+entries+body)
-    labels={'extract':'Kicsomagolás','delete':'Kijelölt nap törlése','clear':'Munkamappa ürítése','refresh':'Frissítés','settings':'Beállítások','about':'Névjegy','first':'Első oldal','previous':'Előző oldal','next':'Következő oldal','last':'Utolsó oldal','zoom_in':'Nagyítás','zoom_out':'Kicsinyítés','width':'Szélesség','page':'Teljes oldal','print':'Nyomtatás','zip':'ZIP-csomag','pdf':'PDF-dokumentum','warning':'Hiba / figyelmeztetés','app':'EDPD alkalmazásikon'}
+    labels={'extract':'Kicsomagolás','delete':'Kijelölt nap törlése','clear':'Munkamappa ürítése','refresh':'Frissítés','settings':'Beállítások','about':'Névjegy','first':'Első oldal','previous':'Előző oldal','next':'Következő oldal','last':'Utolsó oldal','zoom_in':'Nagyítás','zoom_out':'Kicsinyítés','width':'Szélesség','page':'Teljes oldal','print':'Nyomtatás','zip':'ZIP-csomag','pdf':'PDF-dokumentum','warning':'Hiba / figyelmeztetés','app':'EDPD alkalmazásikon','save':'PDF mentése'}
     sheet=QImage(1000,((len(labels)+3)//4)*145,QImage.Format_ARGB32);sheet.fill(Qt.white)
     painter=QPainter(sheet);painter.setFont(QFont('DejaVu Sans',11))
     for i,(name,label) in enumerate(labels.items()):

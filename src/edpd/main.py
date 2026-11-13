@@ -7,7 +7,23 @@ def main():
     parser.add_argument('--self-test', action='store_true', help='Izolált indítási és működési próba')
     parser.add_argument('--report', help='Az önellenőrzés JSON-eredménye')
     parser.add_argument('--require-windows1607', action='store_true')
+    parser.add_argument('--recover-extraction', help='Megőrzött .edpd-recovery-* mappa helyreállítása')
     args = parser.parse_args()
+    if args.recover_extraction:
+        if args.self_test or args.report or args.require_windows1607:
+            parser.error('A helyreállítás külön művelet.')
+        from .extraction_transaction import recover
+        from PySide2.QtWidgets import QApplication, QMessageBox
+        app = QApplication([])
+        try:
+            from .config import Settings
+            settings = Settings.load()
+            recover(args.recover_extraction, settings.source, settings.target)
+        except Exception as exc:
+            QMessageBox.warning(None, 'Helyreállítás nem teljes', str(exc))
+            sys.exit(1)
+        QMessageBox.information(None, 'Helyreállítás', 'A helyreállítás sikeres.')
+        sys.exit(0)
     if args.self_test:
         if not args.report:
             parser.error('Az önellenőrzéshez --report útvonal szükséges.')

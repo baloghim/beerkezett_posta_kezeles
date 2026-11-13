@@ -189,7 +189,7 @@ def test_failed_replace_preserves_original_and_cleans_temp(folders, monkeypatch)
     def fail(*args):
         raise OSError('Hálózati kapcsolat megszakadt')
     monkeypatch.setattr(os, 'replace', fail)
-    with pytest.raises(OSError):
+    with pytest.raises(EDPDError):
         service.extract(day, 'overwrite', expected_existing=service.extraction_plan(day).existing)
     assert destination.read_bytes() == b'old'
     assert not list(target.glob('.edpd-*.tmp'))

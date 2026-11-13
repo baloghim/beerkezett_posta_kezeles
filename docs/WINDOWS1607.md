@@ -44,7 +44,7 @@ EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Deskt
 ```
 
 3. A teszt röviden megnyitja a felületet, kizárólag a felhasználó ideiglenes mappájában készít szintetikus dokumentumokat, majd bezár. Nem olvassa a valódi H:/G: mappát, nem írja felül a felhasználói beállításokat, és nem nyomtat fizikai nyomtatóra.
-4. A JSON-fájl `application_version` mezőjében 2.2.0 szerepeljen, és a tíz ellenőrzés között a Crystal ikonok betöltése is legyen sikeres. A `passed`, `windows1607_verified` és `host.frozen` értékeknek egyaránt `true` értéket kell mutatniuk. Az OS-buildnek 14393-nak kell lennie. Sikertelenségnél az `error` mező, illetve a teljes Windows DLL-hibaüzenet segít a javításban.
+4. A JSON-fájl `application_version` mezőjében 2.3.0 szerepeljen, és a tizenhárom ellenőrzés között a megszakítás/visszaállítás, az eredeti PDF mentése, a helyi feldolgozási jelölés és a Crystal ikonok betöltése is legyen sikeres. A `passed`, `windows1607_verified` és `host.frozen` értékeknek egyaránt `true` értéket kell mutatniuk. Az OS-buildnek 14393-nak kell lennie. Sikertelenségnél az `error` mező, illetve a teljes Windows DLL-hibaüzenet segít a javításban.
 
 Opcionálisan a mellékelt PowerShell-script is futtatható, ha a vállalati szabályzat engedi:
 

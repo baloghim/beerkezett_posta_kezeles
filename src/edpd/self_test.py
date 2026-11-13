@@ -111,7 +111,7 @@ def run(report_path, require_windows1607=False):
             apply_style(window.settings.qt_style)
             result['checks'].append('three_panel_gui_and_zip_scan')
             headers = [window.docs_table.horizontalHeaderItem(i).text() for i in range(window.docs_table.columnCount())]
-            if headers != ['Fájlnév', 'Méret', 'Forrásnap'] or window.workspace_panel.title_label.text() != 'A munkamappa dokumentumai':
+            if headers != ['Nap', 'Fájlnév', 'Méret'] or window.workspace_panel.title_label.text() != 'A munkamappa dokumentumai':
                 raise RuntimeError('A becsomagolt felület munkamappa-táblája hibás.')
             for row in range(window.day_table.rowCount()):
                 window.day_table.selectRow(row)
@@ -120,11 +120,11 @@ def run(report_path, require_windows1607=False):
             (target / 'workspace_only.pdf').write_bytes(data)
             window.refresh()
             wait(lambda: not window.jobs)
-            if window.docs_table.rowCount() != 1 or window.docs_table.item(0, 0).text() != 'workspace_only.pdf':
+            if window.docs_table.rowCount() != 1 or window.docs_table.item(0, 1).text() != 'workspace_only.pdf':
                 raise RuntimeError('Az alsó tábla nem a tényleges munkamappát mutatja.')
             result['ui_contract'] = {'window_title': window.windowTitle(), 'workspace_title': window.workspace_panel.title_label.text(),
                                      'workspace_headers': headers, 'history_days': window.settings.history_days,
-                                     'workspace_files_after_upper_selection': [window.docs_table.item(i, 0).text() for i in range(window.docs_table.rowCount())]}
+                                     'workspace_files_after_upper_selection': [window.docs_table.item(i, 1).text() for i in range(window.docs_table.rowCount())]}
             if window.origin_requested or window.origin_timer.isActive():
                 raise RuntimeError('Automatikus történeti forráskeresés indult.')
             (target / 'workspace_only.pdf').unlink()
@@ -166,6 +166,28 @@ def run(report_path, require_windows1607=False):
             window.docs_table.selectRow(0)
             wait(lambda: not window.jobs)
             result['checks'].append('extract_and_workspace_preview')
+            from .pdf_export import save_pdf
+            exported = base / 'exported.pdf'
+            save_pdf(window.viewer.pdf.data, exported, source, target)
+            if exported.read_bytes() != data or window.viewer.filename not in ('a.pdf', 'b.pdf'):
+                raise RuntimeError('Az eredeti PDF-bájtok mentése hibás.')
+            result['checks'].append('pdf_export_original_bytes')
+            from .processed_store import ProcessedStore, packet_id
+            window.mark_day(day)
+            wait(lambda: not window.jobs)
+            if packet_id(source, day) not in ProcessedStore(source, target).read() or not window.day_table.item(0, 3).text().startswith('Feldolgozva'):
+                raise RuntimeError('A helyi feldolgozási jelölés nem maradt meg.')
+            result['checks'].append('local_processed_marks')
+            import threading
+            cancel = threading.Event()
+            before = {p.name: p.read_bytes() for p in target.glob('*.pdf')}
+            def cancelled(text, done, total):
+                if text == 'PDF-ek véglegesítése' and done == 1:
+                    cancel.set()
+            service.extract(day, 'overwrite', expected_existing=service.extraction_plan(day).existing, progress=cancelled, cancel=cancel)
+            if before != {p.name: p.read_bytes() for p in target.glob('*.pdf')} or list(target.glob('.edpd-recovery-*')):
+                raise RuntimeError('A megszakított tranzakció visszavonása hibás.')
+            result['checks'].append('transaction_cancel_rollback')
             pdf = PDFService(data)
             printer = QPrinter(QPrinter.PrinterMode.HighResolution)
             printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)

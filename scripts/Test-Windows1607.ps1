@@ -30,7 +30,7 @@ try {
     if (-not $result.passed -or -not $result.windows1607_verified -or -not $result.host.frozen) {
         throw "Az eredmény nem igazolja a 1607-es csomagolt futtatást: $ReportPath"
     }
-    if (-not $result.application_version -or -not ($result.checks -contains 'crystal_icons_and_application_icon') -or -not ($result.checks -contains 'independent_workspace_table_and_source_day_column')) {
+    if ($result.checks.Count -lt 13 -or -not ($result.checks -contains 'transaction_cancel_rollback') -or -not ($result.checks -contains 'pdf_export_original_bytes') -or -not ($result.checks -contains 'local_processed_marks') -or -not $result.application_version -or -not ($result.checks -contains 'crystal_icons_and_application_icon') -or -not ($result.checks -contains 'independent_workspace_table_and_source_day_column')) {
         throw 'A jelentés nem az EDPD aktuális teljes önellenőrzéséből származik.'
     }
     Write-Host "Sikeres Windows 1607 EXE-önellenőrzés: $ReportPath"

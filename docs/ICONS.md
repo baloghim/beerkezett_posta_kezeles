@@ -19,7 +19,7 @@ Az eredetik: `src/edpd/assets/original/<méret>/<név>.png`.
 A táblázat méretei az upstream `<méret>x<méret>/` könyvtárakra vonatkoznak;
 csak ténylegesen létező képeket másoltunk. A 22, 32, 48, 64 és 128 pixeles
 változatok közül az elérhetőket megőriztük. Nagyobb megjelenítéshez Qt-skálázás
-használatos. A fő eszköztár 32, a PDF-eszköztár 22 pixeles rasztert használ.
+használatos. A 2.3 fő eszköztára 40, a PDF-eszköztár 22 pixeles megjelenítést használ; a Qt az elérhető raszterekből méretez.
 
 | Funkció / belső név | Upstream fájl a méretkönyvtáron belül | Meglévő méretek | Beépített célfájl |
 | --- | --- | --- | --- |
@@ -42,6 +42,8 @@ használatos. A fő eszköztár 32, a PDF-eszköztár 22 pixeles rasztert haszn�
 | `pdf` | `mimetypes/application-pdf.png` | 22, 32, 48, 64, 128 | `assets/icons/<méret>/pdf.png` |
 | `warning` | `status/dialog-warning.png` | 22, 32, 48, 64, 128 | `assets/icons/<méret>/warning.png` |
 | `mail` | `actions/mail-message.png` | 22, 32 | `assets/icons/<méret>/mail.png` |
+
+A 2.3 PDF mentési ikonja: `actions/document-save-as.png`, a tényleges upstream 22×22 és 32×32 változatokból. Az eredetik: `assets/original/22/save.png` és `assets/original/32/save.png`; beépített változatok: `assets/icons/<méret>/save.png`.
 
 ## Dokumentált EDPD-módosítások
 

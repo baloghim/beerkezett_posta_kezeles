@@ -20,8 +20,8 @@ def test_every_bundled_crystal_icon_decodes_and_renders(app):
 
 def test_pdf_toolbar_has_nine_real_icons_and_smaller_size(app):
     viewer=PDFViewer();actions=[a for a in viewer.toolbar.actions() if a.text()]
-    assert len(actions)==9
-    assert {a.text() for a in actions}=={'Első oldal','Előző oldal','Következő oldal','Utolsó oldal','Nagyítás','Kicsinyítés','Szélesség','Teljes oldal','Nyomtatás'}
+    assert len(actions)==10
+    assert {a.text() for a in actions}=={'Első oldal','Előző oldal','Következő oldal','Utolsó oldal','Nagyítás','Kicsinyítés','Szélesség','Teljes oldal','Nyomtatás','PDF mentése'}
     for action in actions:
         assert not action.icon().pixmap(22,22).isNull()
         assert action.toolTip()

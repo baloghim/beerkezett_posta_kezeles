@@ -6,19 +6,30 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 
 **[EDPD 2.2.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.2.0/EDPD-Manager-Windows-x64.zip)**
 
-**A 2.2.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** A Windows runneren 92 teszt, a csomagolt EXE mind a 10 önellenőrzése, a 107 natív bináris auditja, az ICO hét képkockája és 199 csomagolt erőforrás ellenőrzése sikeres. A közzétett ZIP SHA-256 és CRC-ellenőrzése hibátlan. [Kiadásellenőrzési jelentés](docs/RELEASE-2.2.0.md).
+A fejlesztői változat **2.3.0**. A Windows-build és az új kiadás ellenőrzése folyamatban van; a fenti link egyelőre a korábbi, ellenőrzött 2.2.0 verziót tölti le.
+
+## Újdonságok a 2.3 változatban
+
+- 40 pixeles fő eszköztár, kisebb PDF-eszköztár. Félkövér, kissé nagyobb panelcímek, kényelmesebb táblázatsorok. A gyári Qt-stílusok megmaradtak, nincs dekoratív QSS.
+- Arányos, kézzel átméretezhető oszlopok. Fent: 18/44/10/28%. Lent: **Nap – Fájlnév – Méret**, 21/64/15%. A Nap az eredeti ZIP dátuma (`ÉÉÉÉ.HH.NN.`); a sorrend dátum szerint csökkenő, azon belül fájlnév szerint növekvő. Ismeretlen és többértelmű eredet a dátumos tételek után marad. A munkamappa továbbra is kizárólag a célmappa közvetlen PDF-jeiből áll; a felső kijelölés nem szűri.
+- A További forráskeresés gomb csak további ZIP-ek esetén látszik, a keresés végén eltűnik.
+- A kicsomagolás külön **modális folyamatablakban** fut, Crystal ikonnal, dátummal, valós fájlszámmal és Mégse gombbal. A Qt eseményciklusa működik, a főablakot a művelet fogja.
+- Először az összes szükséges PDF ellenőrzött ideiglenes területre kerül, biztonsági másolatokkal; utána ellenőrzött véglegesítés következik. Megszakítás és hiba esetén a saját új fájlokat visszavonjuk, a felülírtak eredeti tartalmát helyreállítjuk. A hálózati zár a teljes művelet alatt megmarad. Részleges helyreállításnál a program név szerint jelzi a problémákat és megőrzi a naplót/másolatokat. [Helyreállítás és korlátai](docs/RECOVERY.md).
+- A PDF-eszköztár Szélesség, Teljes oldal és Nyomtatás gombjai ikont és feliratot is mutatnak. Az új **PDF mentése** az eredeti, teljes PDF bájtjait menti, nem a renderelt képet; ZIP-betekintésből is működik. A Mentés másként az eredeti nevet ajánlja, megerősítteti a felülírást, és atomikus `QSaveFile` írást használ. A forrásarchívumba és a munkamappába nem exportálhat, így ezek állapotát nem módosítja.
+- A napi lista célzott jobb gombos menüje **Feldolgozva / Feldolgozás visszavonása** helyi jelölést ad. Tárolás: `%LOCALAPPDATA%\EDPD\local-state\processed.json`; nincs közös hálózati állapotmappa. Az azonosító a forrásmappát és a napi csomagot is tartalmazza. A teljes zöld sor elsőbbséget élvez a félkövér jelzéssel szemben, az állapotoszlop a tényleges kicsomagoltságot is mutatja. A jelölés nem végez PDF-műveletet, és új verzió telepítésekor is megmarad. A Betekintő képességkészlet nem engedi ezt a funkciót.
+
 
 A teljes ZIP-et új helyi mappába bontsa ki, az `_internal` mappát is tartsa meg. Python telepítése nem szükséges. A Windows buildet a meglévő [GitHub Actions workflow](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) készíti.
 
-## Újdonságok a 2.2.0 változatban
+## Megőrzött alapműködés
 
 - A Kicsomagolás gomb és a napi lista dupla kattintása ugyanazt a műveletet indítja. Egy kattintás csak kijelöl.
 - Ha a kijelölt napból nincs PDF a célban, a kicsomagolás kérdés nélkül indul.
 - Ha minden PDF jelen van, rövid tájékoztatást kap; nincs új kicsomagolás vagy felülírási ajánlat.
 - Részleges adagnál megjelenik a meglévő és hiányzó fájlok száma. Választható a hiányzók kicsomagolása (alapérték), a meglévők felülírása vagy a Mégse.
-- A folyamatjelző ellenőrzéskor határozatlan, íráskor a ténylegesen elkészült PDF-ek számát mutatja. A művelet háttérszálon fut; a PDF-betekintő közben használható. A sikeres kicsomagolás eredménye a státuszsorban jelenik meg.
-- A kézi közös jelölési rendszer teljesen megszűnt. A régi `shared_data` kulcsot betöltéskor figyelmen kívül hagyjuk, új mentésbe nem kerül. A korábbi hálózati mappát és fájljait nem töröljük és nem nyitjuk meg.
-- Valódi Crystal Remix ikonok: 32 pixeles fő eszköztár, kisebb 22 pixeles PDF-eszköztár, ZIP/PDF-listaikonok és hétméretes EDPD ICO. [Ikonforrások, licencek és módosítások](docs/ICONS.md).
+- A folyamatjelző előkészítéskor/ellenőrzéskor határozatlan, PDF-feldolgozáskor a tényleges darabszámot mutatja. A művelet háttérszálon fut; a főablakot a modális ablak fogja. A sikeres kicsomagolás eredménye a státuszsorban jelenik meg.
+- Közös hálózati jelölési rendszer továbbra sincs. A régi `shared_data` kulcsot betöltéskor figyelmen kívül hagyjuk, új mentésbe nem kerül. A korábbi hálózati mappát és fájljait nem töröljük és nem nyitjuk meg.
+- Valódi Crystal Remix ikonok: 40 pixeles fő eszköztár, kisebb 22 pixeles PDF-eszköztár, ZIP/PDF-listaikonok és hétméretes EDPD ICO. [Ikonforrások, licencek és módosítások](docs/ICONS.md).
 - A Qt-stílusválasztó megmarad, a `WindowsVista` megjelenített neve **Vista**, a tárolt tényleges stílusnév változatlan. A választékot a `QStyleFactory.keys()` adja. Sikeres mentés után azonnali váltás; Mégse esetén nincs módosítás. Hiányzó stílusnál Fusion az alapérték. Nincs globális dekoratív QSS.
 
 ![A ténylegesen beépített ikonok](docs/icon-comparison.png)
@@ -70,10 +81,10 @@ Linuxon: `QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m pytest -q`. A meglé
 A csomagolt EXE önellenőrzése:
 
 ```bat
-EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.2.0-1607.json"
+EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.3.0-1607.json"
 ```
 
-A Windows workflow natív DLL-auditot, EXE-ikonerőforrás-vizsgálatot, a csomagolt ikonfájlok összehasonlítását és az EXE tíz funkcionális önellenőrzését is végzi. A `v*` címkéhez sikeres build után Release-t készít. [Windows 1607 útmutató](docs/WINDOWS1607.md). A modern runner sikere nem helyettesíti a valódi 1607-es célgépes próbát; a korábban ott ellenőrzött 0.2.1 kiadás sikere az új változatot nem minősíti.
+A Windows workflow natív DLL-auditot, EXE-ikonerőforrás-vizsgálatot, a csomagolt ikonfájlok összehasonlítását és az EXE tizenhárom funkcionális önellenőrzését is végzi. A `v*` címkéhez sikeres build után Release-t készít. [Windows 1607 útmutató](docs/WINDOWS1607.md). A modern runner sikere nem helyettesíti a valódi 1607-es célgépes próbát; a korábban ott ellenőrzött 0.2.1 kiadás sikere az új változatot nem minősíti.
 
 ## Licencek
 

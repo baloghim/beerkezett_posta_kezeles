@@ -173,6 +173,13 @@
         22,
         32
       ]
+    },
+    "save": {
+      "source": "actions/document-save-as.png",
+      "sizes": [
+        22,
+        32
+      ]
     }
   }
 }

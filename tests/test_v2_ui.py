@@ -55,7 +55,7 @@ def test_whole_workspace_origins_day_navigation_and_pdf_retained(app, folders, t
         (target / name).write_bytes(pdf_bytes)
     window, errors = setup_window(app, folders, tmp_path, monkeypatch)
     assert window.origin_pending and not window.origin_requested
-    assert window.docs_table.item(window.work_keys.index('old.pdf'), 2).text() == 'Ismeretlen'
+    assert window.docs_table.item(window.work_keys.index('old.pdf'), 0).text() == 'Ismeretlen'
     window.origin_button.click()
     wait(app, lambda: not window.origin_pending and not window.jobs)
     assert len(window.days) == 2
@@ -68,8 +68,8 @@ def test_whole_workspace_origins_day_navigation_and_pdf_retained(app, folders, t
     window.day_table.selectRow(1)
     assert window.docs_table.rowCount() == 4
     assert window.viewer.pdf is document and window.viewer.page == 2
-    assert window.docs_table.item(window.work_keys.index('old.pdf'), 2).text() == '2026.08.04.'
-    assert window.docs_table.item(window.work_keys.index('unknown.pdf'), 2).text() == 'Ismeretlen'
+    assert window.docs_table.item(window.work_keys.index('old.pdf'), 0).text() == '2026.08.04.'
+    assert window.docs_table.item(window.work_keys.index('unknown.pdf'), 0).text() == 'Ismeretlen'
     window.refresh()
     wait(app, lambda: not window.jobs)
     assert window.viewer.pdf is document and window.viewer.page == 2

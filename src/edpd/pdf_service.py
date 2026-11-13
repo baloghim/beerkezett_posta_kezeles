@@ -5,6 +5,7 @@ from .models import EDPDError
 
 class PDFService:
     def __init__(self, data):
+        self.data = bytes(data)
         self.cache = OrderedDict()
         try:
             self.document = pymupdf.open(stream=data, filetype='pdf')
