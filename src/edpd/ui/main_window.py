@@ -6,7 +6,7 @@ from PySide2.QtGui import QColor, QBrush, QPalette
 from .. import __version__
 from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView,
-                              QStyle, QDialog, QPushButton, QAction, QSizePolicy, QToolButton)
+                              QStyle, QDialog, QPushButton, QAction, QSizePolicy, QToolButton, QHBoxLayout)
 from ..config import cache_directory
 from ..completion_service import CompletionStore, day_identity
 from ..file_service import FileService, validate_paths
@@ -97,6 +97,17 @@ class MainWindow(QMainWindow):
         toolbar.setMovable(False)
         toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.addToolBar(toolbar)
+        self.main_toolbar = toolbar
+        self.toolbar_controls = QWidget()
+        self.toolbar_controls.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        controls_layout = QHBoxLayout(self.toolbar_controls)
+        controls_layout.setContentsMargins(0, 0, 0, 0)
+        toolbar.addWidget(self.toolbar_controls)
+        # Only operation buttons may overflow; About always keeps its own space.
+        toolbar = QToolBar('Műveleti gombok')
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        controls_layout.addWidget(toolbar, 1)
         self.actions = []
         for title, icon, callback in [
             ('Kicsomagolás', QStyle.StandardPixmap.SP_ArrowDown, self.extract),
@@ -107,17 +118,13 @@ class MainWindow(QMainWindow):
             ('Beállítások', QStyle.StandardPixmap.SP_FileDialogContentsView, self.configure)]:
             self.actions.append(toolbar.addAction(self.style().standardIcon(icon), title, callback))
         self.mark_action = self.actions[1]
-        self.main_toolbar = toolbar
-        spacer = QWidget()
-        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        toolbar.addWidget(spacer)
         self.about_button = QToolButton()
         self.about_button.setIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
         self.about_button.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.about_button.setToolTip('Névjegy')
         self.about_button.setAccessibleName('Névjegy')
         self.about_button.clicked.connect(self.show_about)
-        toolbar.addWidget(self.about_button)
+        controls_layout.addWidget(self.about_button)
         self.split = QSplitter(Qt.Orientation.Horizontal)
         self.left = QSplitter(Qt.Orientation.Vertical)
         self.day_table = self.table(['Dátum', 'Csomag azonosítója / ZIP neve', 'PDF-ek', 'Állapot'])

@@ -144,7 +144,8 @@ def test_about_button_labels_and_dialog(app, folders, tmp_path, monkeypatch):
     assert window.actions[2].text() == 'Kijelölt nap fájljainak törlése'
     assert window.actions[2].toolTip() == 'Kijelölt nap fájljainak törlése'
     toolbar = window.main_toolbar
-    assert toolbar.widgetForAction(toolbar.actions()[-1]) is window.about_button
+    assert toolbar.widgetForAction(toolbar.actions()[-1]) is window.toolbar_controls
+    assert window.toolbar_controls.layout().itemAt(1).widget() is window.about_button
     assert window.about_button.toolButtonStyle() == Qt.ToolButtonIconOnly
     assert not window.about_button.icon().isNull()
     assert window.about_button.toolTip() == 'Névjegy'
@@ -162,7 +163,11 @@ def test_about_button_labels_and_dialog(app, folders, tmp_path, monkeypatch):
     monkeypatch.setattr(AboutDialog, 'exec_', inspect)
     window.about_button.click()
     assert len(opened) == 1
-    assert window.about_button.geometry().right() > toolbar.width() - 40
+    for width in (800, 1600):
+        window.resize(width, 900)
+        app.processEvents()
+        assert window.about_button.isVisible()
+        assert window.about_button.geometry().right() > window.toolbar_controls.width() - 40
     window.close()
 
 
