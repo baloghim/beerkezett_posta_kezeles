@@ -41,7 +41,7 @@ def run(report_path, require_windows1607=False):
         import fitz
         import PySide2
         from PySide2.QtCore import qVersion
-        from PySide2.QtWidgets import QApplication, QMessageBox
+        from PySide2.QtWidgets import QApplication, QMessageBox, QStyleFactory
         from PySide2.QtPrintSupport import QPrinter
         from .config import Settings
         from .completion_service import CompletionStore, day_identity
@@ -101,6 +101,15 @@ def run(report_path, require_windows1607=False):
                 raise RuntimeError('Induláskor időszakon kívüli ZIP-et dolgozott fel.')
             result['startup_archives'] = {'total_valid_zips': len(window.entries), 'in_period_zips': sum(len(d.archives) for d in window.days),
                                           'upper_rows': window.day_table.rowCount(), 'historical_zip_opened': False}
+            from .ui.appearance import apply_style
+            result['qt_styles'] = []
+            for style in QStyleFactory.keys():
+                apply_style(style)
+                app.processEvents()
+                if app.style().objectName().lower() != style.lower() or app.styleSheet():
+                    raise RuntimeError('A gyári Qt-stílus nem alkalmazható: ' + style)
+                result['qt_styles'].append(style)
+            apply_style(window.settings.qt_style)
             result['checks'].append('three_panel_gui_and_zip_scan')
             headers = [window.docs_table.horizontalHeaderItem(i).text() for i in range(window.docs_table.columnCount())]
             if headers != ['Fájlnév', 'Méret', 'Forrásnap'] or window.workspace_panel.title_label.text() != 'A munkamappa dokumentumai':
@@ -126,6 +135,11 @@ def run(report_path, require_windows1607=False):
             result['checks'].append('independent_workspace_table_and_source_day_column')
             window.open_archive_document(window.days[0].documents[0])
             wait(lambda: window.viewer.pdf is not None and not window.jobs)
+            if window.viewer.fit_mode != 'width':
+                raise RuntimeError('Az új PDF nem Szélesség nézetben nyílt meg.')
+            window.viewer.page_action.trigger()
+            if window.viewer.fit_mode != 'page':
+                raise RuntimeError('A Teljes oldal nézet nem aktiválható.')
             window.viewer.move(2)
             window.viewer.zoom(1.25)
             window.viewer.fit('width')

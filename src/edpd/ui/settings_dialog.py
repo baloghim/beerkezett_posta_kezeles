@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPushButton,
-                              QDialogButtonBox, QHBoxLayout, QFileDialog, QSlider, QLabel, QComboBox)
+                              QDialogButtonBox, QHBoxLayout, QFileDialog, QSlider, QLabel, QComboBox, QStyleFactory, QGroupBox, QApplication)
 from ..file_service import validate_paths
 from ..completion_service import validate_shared_directory
 from ..paths import normalize_path
@@ -47,6 +47,16 @@ class SettingsDialog(QDialog):
         row.addWidget(reset)
         form.addRow('Automatikus frissítés', row)
         layout.addWidget(QLabel('A közös jelölések mappája legyen külön a forrástól és a munkamappától.\nMentéskor háttérben ellenőrizzük az útvonalakat és az írási jogosultságot.'))
+        appearance = QGroupBox('Megjelenés')
+        appearance_form = QFormLayout(appearance)
+        self.style_combo = QComboBox()
+        self.style_combo.addItems(QStyleFactory.keys())
+        current = QApplication.instance().style().objectName()
+        selected = next((i for i in range(self.style_combo.count())
+                         if self.style_combo.itemText(i).lower() == current.lower()), 0)
+        self.style_combo.setCurrentIndex(selected)
+        appearance_form.addRow('Qt-stílus', self.style_combo)
+        layout.addWidget(appearance)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         buttons.button(QDialogButtonBox.StandardButton.Save).setText('Mentés')
         buttons.button(QDialogButtonBox.StandardButton.Cancel).setText('Mégse')
@@ -65,7 +75,7 @@ class SettingsDialog(QDialog):
     def result_settings(self):
         return replace(self.original, source=normalize_path(self.source.text()), target=normalize_path(self.target.text()),
                        shared_data=normalize_path(self.shared_data.text()), history_days=self.history.currentData(),
-                       refresh_minutes=self.slider.value() * 5)
+                       refresh_minutes=self.slider.value() * 5, qt_style=self.style_combo.currentText())
 
 
 def check_settings(settings):

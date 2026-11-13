@@ -2,6 +2,14 @@
 
 Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak kezeléséhez, a munkamappa PDF-jeinek megtekintéséhez és nyomtatásához. Nincs dokumentumfeltöltés, telemetria vagy külön szerver.
 
+## Fejlesztői változat: 2.1.0
+
+A Beállítások **Megjelenés / Qt-stílus** választója a `QStyleFactory.keys()` által helyben elérhető stílusokat kínálja. A stílus sikeres Mentés után azonnal érvényesül és megmarad újraindításkor; a Mégse nem módosítja. Alapérték és hiányzó stílus esetén a visszaállás: Fusion. Linuxon Fusion és Windows tesztelve; WindowsVista csak akkor választható, ha a célrendszer biztosítja.
+
+A dekoratív alkalmazás-, panel-, táblázat- és gomb-QSS, valamint az egyedi kijelölési paletta megszűnt; a napi állapotok cellaszínei és félkövér jelzései megmaradtak. A fő eszköztár jobb szélén ikon nyitja a Névjegyet. Minden új PDF **Szélesség** nézetben nyílik, amely követi a panel méretét; a **Teljes oldal** külön kapcsolható. A felső panel címe **EDPD mappa tartalma**, a célzott törlés neve **Kijelölt nap fájljainak törlése**. A hárompaneles elrendezés és a dokumentumkezelési szabályok változatlanok.
+
+A 2.1.0 Windows EXE és Release még nem készült el. Az alábbi letöltési hivatkozás a korábbi, ténylegesen kiadott 2.0.1 verzióra mutat; csak ellenőrzött új kiadás után cserélhető. A Windows 10 1607 célgépes ellenőrzés továbbra is szükséges.
+
 ## Windows letöltés
 
 Elkészült a **2.0.1 hibajavító kiadás**: megszünteti az automatikus történeti ZIP-keresést, és külön ellenőrzi a munkamappa-lista függetlenségét, valamint a Forrásnap oszlopot.
@@ -81,7 +89,7 @@ Másik gép változtatása a következő kézi vagy automatikus frissítéskor l
 2. A **Kicsomagolás** a nap összes ZIP-jének PDF-jeit közvetlenül a munkamappába teszi. Válasszon kihagyást, felülírást vagy Mégse lehetőséget. CSV és belső ZIP-almappa nem kerül a célba.
 3. Az alsó listában kattintson PDF-re: a program a munkamappából olvassa be. A jobb oldali **Nyomtatás** az éppen megnyitott teljes PDF-hez nyit párbeszédet.
 4. ZIP-ből, kicsomagolás nélkül is lehet betekinteni: jobb kattintás a felső napi sorra, **ZIP-csomag PDF-jeinek megtekintése…**, majd dokumentum és **Megtekintés kicsomagolás nélkül**. A napra történő kattintás vagy duplakattintás önmagában nem nyit ZIP-dokumentumlistát. Az alsó panel továbbra is a munkamappa marad.
-5. A **Napi adag törlése** a felső kiválasztás teljes ZIP-listáját veti össze az aktuális munkamappával. Például hat csomagbeli PDF-ből négy jelen lévőnél a párbeszéd kifejezetten négy törlendő PDF-et jelez. Más napok fájljai megmaradnak.
+5. A **Kijelölt nap fájljainak törlése** a felső kiválasztás teljes ZIP-listáját veti össze az aktuális munkamappával. Például hat csomagbeli PDF-ből négy jelen lévőnél a párbeszéd kifejezetten négy törlendő PDF-et jelez. Más napok fájljai megmaradnak.
 6. A **Munkamappa ürítése** minden közvetlen PDF-re vonatkozik, megerősítés után. Almappát, ZIP-et, CSV-t, technikai fájlt és közös jelölést nem töröl.
 7. Az ügyintézés befejezését külön az **Elvégezve jelölés** rögzíti. A dokumentumok ettől a munkamappában maradhatnak.
 
@@ -127,10 +135,10 @@ Windows alatt Python 3.10.11 x64 és a fejlesztői függőségek telepítése ut
 .venv\Scripts\python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
 ```
 
-A spec a Qt és MuPDF komponenseket, a Python saját C-runtime-ját és a teljes rögzített VC-készletet csomagolja. A workflow teszteket, tényleges csomagolt EXE-indítást, statikus DLL-auditot, ZIP-et és SHA-256 fájlt készít. Verziózott kiadáshoz például `v2.0.1` címke használható. A verziószámot a `pyproject.toml` és `src/edpd/__init__.py` fájlokban együtt kell módosítani.
+A spec a Qt és MuPDF komponenseket, a Python saját C-runtime-ját és a teljes rögzített VC-készletet csomagolja. A workflow teszteket, tényleges csomagolt EXE-indítást, statikus DLL-auditot, ZIP-et és SHA-256 fájlt készít. Verziózott kiadáshoz például `v2.1.0` címke használható. A verziószámot a `pyproject.toml` és `src/edpd/__init__.py` fájlokban együtt kell módosítani.
 
 ## Verzió és licencek
 
-Fejlesztői verzió: **2.0.1**. A 0.2.1 natív alapja Windows 1607-en kipróbált, az új kiadás célgépes és munkahelyi átvételi próbája még szükséges.
+Fejlesztői verzió: **2.1.0**. A 0.2.1 natív alapja Windows 1607-en kipróbált, az új kiadás célgépes és munkahelyi átvételi próbája még szükséges.
 
 A projekt saját kódjára a jogtulajdonos még nem választott terjesztési licencet. A PySide2/Qt és PyMuPDF külön licencei érvényesek; részletek a [LICENSE](LICENSE) fájlban.

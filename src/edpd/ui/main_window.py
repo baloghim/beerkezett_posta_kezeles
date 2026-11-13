@@ -6,7 +6,7 @@ from PySide2.QtGui import QColor, QBrush, QPalette
 from .. import __version__
 from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView,
-                              QStyle, QDialog, QPushButton, QAction)
+                              QStyle, QDialog, QPushButton, QAction, QSizePolicy, QToolButton)
 from ..config import cache_directory
 from ..completion_service import CompletionStore, day_identity
 from ..file_service import FileService, validate_paths
@@ -101,14 +101,23 @@ class MainWindow(QMainWindow):
         for title, icon, callback in [
             ('Kicsomagolás', QStyle.StandardPixmap.SP_ArrowDown, self.extract),
             ('Elvégezve jelölés', QStyle.StandardPixmap.SP_DialogApplyButton, self.toggle_done),
-            ('Napi adag törlése', QStyle.StandardPixmap.SP_TrashIcon, lambda: self.delete(False)),
+            ('Kijelölt nap fájljainak törlése', QStyle.StandardPixmap.SP_TrashIcon, lambda: self.delete(False)),
             ('Munkamappa ürítése', QStyle.StandardPixmap.SP_DialogDiscardButton, lambda: self.delete(True)),
             ('Frissítés', QStyle.StandardPixmap.SP_BrowserReload, self.refresh),
             ('Beállítások', QStyle.StandardPixmap.SP_FileDialogContentsView, self.configure)]:
             self.actions.append(toolbar.addAction(self.style().standardIcon(icon), title, callback))
         self.mark_action = self.actions[1]
-        for action in self.actions[2:4]:
-            toolbar.widgetForAction(action).setStyleSheet('color: #ad2525')
+        self.main_toolbar = toolbar
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        toolbar.addWidget(spacer)
+        self.about_button = QToolButton()
+        self.about_button.setIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
+        self.about_button.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.about_button.setToolTip('Névjegy')
+        self.about_button.setAccessibleName('Névjegy')
+        self.about_button.clicked.connect(self.show_about)
+        toolbar.addWidget(self.about_button)
         self.split = QSplitter(Qt.Orientation.Horizontal)
         self.left = QSplitter(Qt.Orientation.Vertical)
         self.day_table = self.table(['Dátum', 'Csomag azonosítója / ZIP neve', 'PDF-ek', 'Állapot'])
@@ -118,10 +127,9 @@ class MainWindow(QMainWindow):
         self.docs_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.docs_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.docs_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
-        top = self.panel('Napi csomagok (ZIP)', self.day_table)
+        top = self.panel('EDPD mappa tartalma', self.day_table)
         self.shared_notice = QLabel()
         self.shared_notice.setWordWrap(True)
-        self.shared_notice.setStyleSheet('color: #ad2525; padding: 4px')
         top.layout().insertWidget(1, self.shared_notice)
         self.left.addWidget(top)
         self.workspace_panel = self.panel('A munkamappa dokumentumai', self.docs_table)
@@ -164,20 +172,12 @@ class MainWindow(QMainWindow):
         table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         table.horizontalHeader().setStretchLastSection(True)
         table.setAlternatingRowColors(True)
-        # A kijelölés minden saját sorszín fölött jól olvasható marad.
-        palette = table.palette()
-        for group in (QPalette.Active, QPalette.Inactive):
-            palette.setColor(group, QPalette.Highlight, QColor('#245b86'))
-            palette.setColor(group, QPalette.HighlightedText, QColor('white'))
-        table.setPalette(palette)
-        table.setStyleSheet('QTableWidget::item:selected { background: #245b86; color: white; }')
         return table
 
     def panel(self, title, table):
         panel = QWidget()
         layout = QVBoxLayout(panel)
         label = QLabel(title)
-        label.setStyleSheet('font-size: 16px; font-weight: 600; color: #19476b; padding: 8px')
         panel.title_label = label
         layout.addWidget(label)
         layout.addWidget(table)
@@ -527,7 +527,7 @@ class MainWindow(QMainWindow):
         def prepare():
             return service.deletion_plan(day)
         def confirm(names):
-            title = 'Teljes munkamappa ürítése' if all_files else f'{day.date:%Y.%m.%d.} napi adag törlése'
+            title = 'Teljes munkamappa ürítése' if all_files else 'Kijelölt nap fájljainak törlése'
             if all_files:
                 text = f'A munkamappában jelenleg {len(names)} PDF található. Biztosan törli ezt a {len(names)} PDF-et?'
             else:
@@ -542,6 +542,10 @@ class MainWindow(QMainWindow):
         self.apply_snapshot(snapshot)
         QMessageBox.information(self, 'Művelet eredménye', message)
 
+    def show_about(self):
+        from .about_dialog import AboutDialog
+        AboutDialog(self).exec_()
+
     def configure(self):
         dialog = SettingsDialog(self.settings, self)
         if dialog.exec_():
@@ -554,6 +558,8 @@ class MainWindow(QMainWindow):
                 self.origin_requested = False
                 self.origin_timer.stop()
                 self.settings = value
+                from .appearance import apply_style
+                apply_style(value.qt_style)
                 self.preview_generation += 1
                 self.source_generation += 1
                 self.update_timer()

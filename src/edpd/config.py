@@ -16,6 +16,7 @@ class Settings:
     geometry: str = ''
     panels: str = ''
     left_panels: str = ''
+    qt_style: str = 'Fusion'
 
     def __post_init__(self):
         for key in ('source', 'target', 'shared_data'):
