@@ -32,7 +32,8 @@ def safe_name(info):
 
 
 class ZipService:
-    def __init__(self, cache_dir=None):
+    def __init__(self, cache_dir=None, startup_trace=None):
+        self.trace = startup_trace
         self.cache = {}
         self.mutex = threading.RLock()
         self.cache_dir = Path(cache_dir) if cache_dir is not None else None
@@ -147,7 +148,10 @@ class ZipService:
                 entries.append(ArchiveEntry(root / entry.name, day, stamp.st_mtime_ns, stamp.st_size))
         entries.sort(key=lambda item: (item.date, item.path.name), reverse=True)
         with self.mutex:
+            started = time.perf_counter()
             self._root(root)
+            if self.trace:
+                self.trace.add('zip_index_load_ms', (time.perf_counter() - started) * 1000)
             known = {e.path for e in entries}
             invalid = (set(self.cache) - known) | {p for p, value in self.cache.items() if value[2]}
             for path in invalid:

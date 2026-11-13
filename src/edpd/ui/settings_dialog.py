@@ -5,6 +5,7 @@ from PySide2.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPu
                               QDialogButtonBox, QHBoxLayout, QFileDialog, QSlider, QLabel, QComboBox, QStyleFactory, QGroupBox, QApplication)
 from ..file_service import validate_paths
 from ..paths import normalize_path
+from .icons import THEME_NAMES
 
 
 class SettingsDialog(QDialog):
@@ -54,6 +55,10 @@ class SettingsDialog(QDialog):
                          if self.style_combo.itemData(i).lower() == current.lower()), 0)
         self.style_combo.setCurrentIndex(selected)
         appearance_form.addRow('Qt-stílus', self.style_combo)
+        self.icon_combo = QComboBox()
+        self.icon_combo.addItems(THEME_NAMES)
+        self.icon_combo.setCurrentText(settings.icon_theme if settings.icon_theme in THEME_NAMES else 'Crystal SVG')
+        appearance_form.addRow('Ikontéma', self.icon_combo)
         layout.addWidget(appearance)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         buttons.button(QDialogButtonBox.StandardButton.Save).setText('Mentés')
@@ -73,7 +78,7 @@ class SettingsDialog(QDialog):
     def result_settings(self):
         return replace(self.original, source=normalize_path(self.source.text()), target=normalize_path(self.target.text()),
                        history_days=self.history.currentData(),
-                       refresh_minutes=self.slider.value() * 5, qt_style=self.style_combo.currentData())
+                       refresh_minutes=self.slider.value() * 5, qt_style=self.style_combo.currentData(), icon_theme=self.icon_combo.currentText())
 
 
 def check_settings(settings):

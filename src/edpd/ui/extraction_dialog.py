@@ -1,6 +1,6 @@
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QLabel, QProgressBar, QPushButton
-from .icons import icon
+from .icons import icon, manager
 
 
 class ExtractionDialog(QDialog):
@@ -16,9 +16,9 @@ class ExtractionDialog(QDialog):
         self.finished_operation = False
         self.cancel_pending = False
         layout = QVBoxLayout(self)
-        image = QLabel()
-        image.setPixmap(icon('extract').pixmap(40, 40))
-        layout.addWidget(image)
+        self.image = QLabel()
+        self.image.setPixmap(icon('extract').pixmap(40, 40))
+        layout.addWidget(self.image)
         layout.addWidget(QLabel(f'{day.date:%Y.%m.%d.} napi dokumentumok kicsomagolása'))
         self.label = QLabel('Kicsomagolás előkészítése…')
         self.label.setWordWrap(True)
@@ -29,6 +29,7 @@ class ExtractionDialog(QDialog):
         self.cancel_button = QPushButton('Mégse')
         self.cancel_button.clicked.connect(self.reject)
         layout.addWidget(self.cancel_button)
+        manager().subscribe(self)
 
     def update_progress(self, text, done, total):
         if not self.cancel_pending or 'visszaállítás' in text.lower():
@@ -56,3 +57,7 @@ class ExtractionDialog(QDialog):
             self.bar.setRange(0, 100)
             self.bar.setValue(100)
         self.accept()
+
+    def refresh_icons(self):
+        self.setWindowIcon(icon('extract'))
+        self.image.setPixmap(icon('extract').pixmap(40,40))

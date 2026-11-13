@@ -33,7 +33,7 @@ def verify(bundle, source):
             verified.add(width)
     assert verified=={16,24,32,48,64,128,256},verified
     packaged=bundle/'_internal/edpd/assets'
-    files=list(source.rglob('*.png'))+[source/'edpd.ico',source/'manifest.json']
+    files=[p for p in source.rglob('*') if p.is_file()]
     for path in files:
         target=packaged/path.relative_to(source)
         assert target.is_file(),target

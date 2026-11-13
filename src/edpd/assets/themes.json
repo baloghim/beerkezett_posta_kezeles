@@ -1,0 +1,419 @@
+{
+  "themes": {
+    "Crystal SVG": {
+      "id": "crystal",
+      "license": "GNU LGPL (upstream version unspecified)",
+      "source": "https://github.com/dangvd/crystal-remix-icon-theme",
+      "icons": {}
+    },
+    "Nuvola": {
+      "id": "nuvola",
+      "source": "https://github.com/spartrekus/nuvola-icon-theme",
+      "commit": "fb94aa21035d19c2ec68d69ec0ab21697a73e7c2",
+      "archive": "nuvola-icon.tar.gz",
+      "archive_sha256": "41c3b60a8673b70b4dcb986a35b32a20a793098deb6f2db91a78df1d42901a06",
+      "license": "LGPL-2.1-or-later (Nuvola-specific Debian copyright entry)",
+      "icons": {
+        "extract": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/apps/utilities-file-archiver.png",
+          "original": "extract.png",
+          "sha256": "6f17c5124de992943b04b5db1b5fc1cc3b4a85a7e14faf22515ace813ce3ad6f"
+        },
+        "delete": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/edit-delete.png",
+          "original": "delete.png",
+          "sha256": "ac414879cbc418ec499e4497d9f16ab9194135a084e2deab8227fdab1cea11f5"
+        },
+        "clear": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/edit-clear-history.png",
+          "original": "clear.png",
+          "sha256": "ad8ff23c5a4a81a6810348123c5494299bf34ad9fd5e50dc3c1fd582253824ab"
+        },
+        "refresh": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/view-refresh.png",
+          "original": "refresh.png",
+          "sha256": "eb258c1b22152469ac124ea2499c747e7b56e9e28b74ebf7b632551b5873080c"
+        },
+        "settings": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/configure.png",
+          "original": "settings.png",
+          "sha256": "9dff9f1d7c979cbff094cd0cbe2383c7067b8bff55bdf4f2a2b8fadae2394870"
+        },
+        "about": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/status/dialog-information.png",
+          "original": "about.png",
+          "sha256": "8395ad951043f957b2879e952b33e02b75fe522d0cc45df402c18b452a516f9e"
+        },
+        "first": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/go-first.png",
+          "original": "first.png",
+          "sha256": "818c0830534465db50fc97f0beb95191e7fa00a654ad077758009deec5c24fce"
+        },
+        "previous": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/go-previous.png",
+          "original": "previous.png",
+          "sha256": "3b5bc73ad04bf296a9cf298b424ce4a5cada42d0bcd23500ebc664a4d7e785ee"
+        },
+        "next": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/go-next.png",
+          "original": "next.png",
+          "sha256": "872438860dd3f0006d8d4305a338866f075870b65eb99651fb45faf8e79731c8"
+        },
+        "last": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/go-last.png",
+          "original": "last.png",
+          "sha256": "ef90863ea2280489d9ba75bf47ea85743fc973620b9d32adac3254979497ddef"
+        },
+        "zoom_in": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/zoom-in.png",
+          "original": "zoom_in.png",
+          "sha256": "171503bfbb184fbb099a30efa80106010cfc9b70930c8321f3bfb45047fa8f89"
+        },
+        "zoom_out": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/zoom-out.png",
+          "original": "zoom_out.png",
+          "sha256": "66819990bdf2becd40f4b154ca7d5d29debf27778af19bde4a334ab2e5f01f90"
+        },
+        "page": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/zoom-fit-best.png",
+          "original": "page.png",
+          "sha256": "9304e9bd64f19ab395025021b9eb162b79b580d440251fce6533b45abf4ad9dc"
+        },
+        "print": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/document-print.png",
+          "original": "print.png",
+          "sha256": "7c468a996a901ca7fc82dd3df99a90dd65c87e0ca573a83ab2d0679bcfbc20fc"
+        },
+        "zip": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/mimetypes/application-x-zip.png",
+          "original": "zip.png",
+          "sha256": "e0a9237acbbe84180fe6d8397453a16bd1732dd396e9de8b68b3aea27f111b54"
+        },
+        "pdf": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/mimetypes/application-pdf.png",
+          "original": "pdf.png",
+          "sha256": "7aaa28b93745b57d098e56493cd1f8c8233a982df01667eb49da110a1a5abf5c"
+        },
+        "warning": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/status/dialog-warning.png",
+          "original": "warning.png",
+          "sha256": "3d864ff6c5fb635fe8f0da7bd79018bb8f057a65c68732d09cf4f45fb2ceafb4"
+        },
+        "save": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/32x32/actions/document-save-as.png",
+          "original": "save.png",
+          "sha256": "976662f5ebd347ff44b6d5396d19089b72389d79580110e056b1876f42e6e69c"
+        }
+      }
+    },
+    "KDE Modern Classic": {
+      "id": "modern-classic",
+      "source": "https://github.com/nzoomed/kde-modern-classic",
+      "commit": "466f093bf391f80c67cef60a24d4013be2536707",
+      "license": "LGPL-3.0-or-later",
+      "icons": {
+        "extract": {
+          "source": "KDE-Modern-Classic/scalable/actions/archive-extract.svg",
+          "original": "extract.svg",
+          "sha256": "6a908da459a912b686c4f2507a45b07215da3370ace2135c0ec09dc13b52e78c"
+        },
+        "delete": {
+          "source": "KDE-Modern-Classic/scalable/actions/edit-delete.svg",
+          "original": "delete.svg",
+          "sha256": "aec3daaec5114c653b60802686021c101c3826a8af0e1169a116c5d94bfde5e7"
+        },
+        "clear": {
+          "source": "KDE-Modern-Classic/scalable/actions/edit-clear.svg",
+          "original": "clear.svg",
+          "sha256": "800eeda766e47756783a00d77042a70ae3e4686f75a827efb87132ba850b6f06"
+        },
+        "refresh": {
+          "source": "KDE-Modern-Classic/scalable/actions/view-refresh.svg",
+          "original": "refresh.svg",
+          "sha256": "1f08984c9975b179deb5bcc4252a3b4c622ef6c23ac824f2bd47b95ba5580795"
+        },
+        "settings": {
+          "source": "KDE-Modern-Classic/scalable/actions/configure.svg",
+          "original": "settings.svg",
+          "sha256": "10fee7150eb3dcd0eff5bea4fa569d3eda5299957caab36045dfac810432f938"
+        },
+        "about": {
+          "source": "KDE-Modern-Classic/scalable/apps/dialog-information.svg",
+          "original": "about.svg",
+          "sha256": "2a61fa792636d2d41304904d0bd20b6b8686a367c52165ee4890a1b4489b9877"
+        },
+        "first": {
+          "source": "KDE-Modern-Classic/scalable/actions/go-first.svg",
+          "original": "first.svg",
+          "sha256": "e58f972a107aa2333e515c9891982184c942f5658b2250b34565f679e033d0c7"
+        },
+        "previous": {
+          "source": "KDE-Modern-Classic/scalable/actions/go-previous.svg",
+          "original": "previous.svg",
+          "sha256": "1ca7982aa9e740f2668868964a24f1c2199997dde49ba1f20e457c5b8314536e"
+        },
+        "next": {
+          "source": "KDE-Modern-Classic/scalable/actions/go-next.svg",
+          "original": "next.svg",
+          "sha256": "7f8386c9c28e5b038882ecadca2a982ad03e09976226d747356c77931a1de034"
+        },
+        "last": {
+          "source": "KDE-Modern-Classic/scalable/actions/go-last.svg",
+          "original": "last.svg",
+          "sha256": "39926886fc9bb8eb727a5b28688f0a09506ab3178f590f681fcacb3ae924681b"
+        },
+        "zoom_in": {
+          "source": "KDE-Modern-Classic/scalable/actions/zoom-in.svg",
+          "original": "zoom_in.svg",
+          "sha256": "efcfe4f16e5d4648118df4813526223fccb9f9400d5fc72e76e7f105bf4f214f"
+        },
+        "zoom_out": {
+          "source": "KDE-Modern-Classic/scalable/actions/zoom-out.svg",
+          "original": "zoom_out.svg",
+          "sha256": "054bc3e6e09f94cdc05bf4db2f9622946675471b83f11dbeecc5af9b2b212c31"
+        },
+        "width": {
+          "source": "KDE-Modern-Classic/scalable/actions/zoom-fit-width.svg",
+          "original": "width.svg",
+          "sha256": "2c115006d118edf6a9cb83305536bf8f7792104d9f9eb926a2ddcd3b9c291b1b"
+        },
+        "page": {
+          "source": "KDE-Modern-Classic/scalable/actions/zoom-fit-best.svg",
+          "original": "page.svg",
+          "sha256": "2e93010d2cd36cdf74abacef4001c9b508bc2a8ab5b2edf20efb7f21ad1fb6d2"
+        },
+        "print": {
+          "source": "KDE-Modern-Classic/scalable/devices/document-print.svg",
+          "original": "print.svg",
+          "sha256": "e70b4f276f34805de2dfec879e6e4f79469032b1a5e92b2d4f025f4655ef3cc7"
+        },
+        "zip": {
+          "source": "KDE-Modern-Classic/scalable/mimetypes/application-zip.svg",
+          "original": "zip.svg",
+          "sha256": "d1d0a5d0009eb7ea03b64820c74fd04058eccc3972a133ee12fc57fa59e026bd"
+        },
+        "pdf": {
+          "source": "KDE-Modern-Classic/scalable/mimetypes/application-pdf.svg",
+          "original": "pdf.svg",
+          "sha256": "d4d69f6a2d500f097a5f1664805adc2ebf6fe196d2b79db50d7025b5904f7c32"
+        },
+        "warning": {
+          "source": "KDE-Modern-Classic/scalable/status/dialog-warning.svg",
+          "original": "warning.svg",
+          "sha256": "eec9fda8cf75fe795cf9b22d8041002e05d95ab1bc271cc85aa648fe5262466b"
+        },
+        "save": {
+          "source": "KDE-Modern-Classic/scalable/actions/document-save-as.svg",
+          "original": "save.svg",
+          "sha256": "d894e60b32824a16b842a76f7e601745b1c41e8ef3c81b16e56fc32c0605cb28"
+        }
+      }
+    },
+    "Papirus": {
+      "id": "papirus",
+      "source": "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme",
+      "commit": "33d971eb2d0c8454bac58246687de78e58f960c8",
+      "license": "GPL-3.0",
+      "icons": {
+        "extract": {
+          "source": "Papirus/22x22/actions/archive-extract.svg",
+          "original": "extract.svg",
+          "sha256": "40720f2a2e7c03e53a5cdccbda57f4d838f2833802686a16e515873d46165b24"
+        },
+        "delete": {
+          "source": "Papirus/22x22/actions/edit-delete.svg",
+          "original": "delete.svg",
+          "sha256": "78c4bce0d0113b1d26319fbdb52c39abd12864a68c39a4d47d5bc66cb27e7a05"
+        },
+        "clear": {
+          "source": "Papirus/22x22/actions/edit-clear.svg",
+          "original": "clear.svg",
+          "sha256": "206f5c8fedfe23bb71ce14685bd8f9de250ca242aa2a01a1d099c7a27faf0251"
+        },
+        "refresh": {
+          "source": "Papirus/22x22/actions/view-refresh.svg",
+          "original": "refresh.svg",
+          "sha256": "7519010b857b414da9601f7655f3a74ea1317fb9f3a5fdbcc3e95fdb3f3ed71a"
+        },
+        "settings": {
+          "source": "Papirus/22x22/actions/configure.svg",
+          "original": "settings.svg",
+          "sha256": "7fbfe03892baecb251eefb471257039f1cf2ac6cd8c11d8a20e3b9e514c35a12"
+        },
+        "about": {
+          "source": "Papirus/32x32/status/dialog-information.svg",
+          "original": "about.svg",
+          "sha256": "b6c5d0e31c5785f4676cba4818bb4e4bf8b7242446b24fe404b1d8456e3a37d8"
+        },
+        "first": {
+          "source": "Papirus/22x22/actions/go-first.svg",
+          "original": "first.svg",
+          "sha256": "c5ac7e3492ec419577b20886f6d3162dca4b36aad210ed49daad4052bc313dac"
+        },
+        "previous": {
+          "source": "Papirus/22x22/actions/go-previous.svg",
+          "original": "previous.svg",
+          "sha256": "0fdbbfe4a0acebcd639a4267401d6bad5a8167179473ea1c61912f47a02d5045"
+        },
+        "next": {
+          "source": "Papirus/22x22/actions/go-next.svg",
+          "original": "next.svg",
+          "sha256": "a115b282647af03a6051d200218cb27217e834197286a75ed3704ec709e544d3"
+        },
+        "last": {
+          "source": "Papirus/22x22/actions/go-last.svg",
+          "original": "last.svg",
+          "sha256": "34b2f37381d16ce6b12c56d10c235b7e222e47cac86de19e7df898f2688f4cae"
+        },
+        "zoom_in": {
+          "source": "Papirus/22x22/actions/zoom-in.svg",
+          "original": "zoom_in.svg",
+          "sha256": "cc42340d25917954b6e8ad5898603c0a52f11b0dfb4a8db580aaa1e2a4d57e5d"
+        },
+        "zoom_out": {
+          "source": "Papirus/22x22/actions/zoom-out.svg",
+          "original": "zoom_out.svg",
+          "sha256": "197986b3f5517ff49e17e3b0a8a22b02be3dc01ae3d5f76268b9b67a0e7cfc68"
+        },
+        "width": {
+          "source": "Papirus/22x22/actions/zoom-fit-width.svg",
+          "original": "width.svg",
+          "sha256": "361a4d05c95ae5231e4d2cf7064e62978b45fc68eeac514cd5c2a934a9fcf5c3"
+        },
+        "page": {
+          "source": "Papirus/22x22/actions/zoom-fit-best.svg",
+          "original": "page.svg",
+          "sha256": "ff6f6893295b82d4ee32440f7f107e32d75e7d199780b7eef748e11dda2e6be0"
+        },
+        "print": {
+          "source": "Papirus/22x22/actions/document-print.svg",
+          "original": "print.svg",
+          "sha256": "c9e294db45dda8715e5c737d8d79964d43dba428b77335a22e9767c404a01bdc"
+        },
+        "zip": {
+          "source": "Papirus/32x32/mimetypes/application-zip.svg",
+          "original": "zip.svg",
+          "sha256": "6e6515d491f9ca26724e0a10093e0830ee1728861a3ddae11c85046e9e51472d"
+        },
+        "pdf": {
+          "source": "Papirus/32x32/mimetypes/application-pdf.svg",
+          "original": "pdf.svg",
+          "sha256": "30c178736339cc873720150d2db75fc56b89aa7838ba4c4d9c1461f23301277f"
+        },
+        "warning": {
+          "source": "Papirus/32x32/status/dialog-warning.svg",
+          "original": "warning.svg",
+          "sha256": "82321b2d1604b4c6f0d23e3d432a2ee87b066605718f9d58cf2842540ad136d0"
+        },
+        "save": {
+          "source": "Papirus/22x22/actions/document-save-as.svg",
+          "original": "save.svg",
+          "sha256": "73df8c511d3c2e1185ce0e1ac441ed474083abdf5a85dbf0abdff56e4093dd74"
+        }
+      }
+    },
+    "We10X": {
+      "id": "we10x",
+      "source": "https://github.com/yeyushengfan258/We10X-icon-theme",
+      "commit": "0f52ff2dce554146f8f76ab2c7a5968fd773400d",
+      "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)",
+      "icons": {
+        "extract": {
+          "source": "src/actions/32/archive-extract.svg",
+          "original": "extract.svg",
+          "sha256": "4782db5347271bff1482631834e424b7281ffcb473123ae3c0c1422a9a1255ed"
+        },
+        "delete": {
+          "source": "src/actions/32/edit-delete.svg",
+          "original": "delete.svg",
+          "sha256": "64f9003d981bf8fbd0384dbc204bb317d1f904c61685470e23c027175ea83814"
+        },
+        "clear": {
+          "source": "src/places/22/folder-trash.svg",
+          "original": "clear.svg",
+          "sha256": "4c1e7e7f7c56922874eea7dfefbb5dee6d1dd13ed8a8817da28d778e1bb11169"
+        },
+        "refresh": {
+          "source": "src/actions/32/view-refresh.svg",
+          "original": "refresh.svg",
+          "sha256": "df2bb48891c45310ce974aa4781f6744f2c4329cfeb53f6463cc0fda08b3dd79"
+        },
+        "settings": {
+          "source": "src/actions/32/configure.svg",
+          "original": "settings.svg",
+          "sha256": "d7a3bb4afb35c59568f374017de78515d16ba858de61bfbd1ab446f5d0b855f6"
+        },
+        "about": {
+          "source": "src/status/32/dialog-information.svg",
+          "original": "about.svg",
+          "sha256": "9363a5a6f8a0ce47e293a5cf3a069c2f88756afc4c995fe771f4eff9cea4b1c7"
+        },
+        "first": {
+          "source": "src/actions/32/go-first.svg",
+          "original": "first.svg",
+          "sha256": "f6174773cf0716f276fec00584880d580354612de16d137d387c3e1773d587e8"
+        },
+        "previous": {
+          "source": "src/actions/32/go-previous.svg",
+          "original": "previous.svg",
+          "sha256": "75aa028f85f3fe54d167aa993715b3badbd4eb15794a72784ea92147f4720490"
+        },
+        "next": {
+          "source": "src/actions/32/go-next.svg",
+          "original": "next.svg",
+          "sha256": "4a96f6d77605b38da3506ebb5ef04e55b3e548cf09e67d863ffc5e766fb425d0"
+        },
+        "last": {
+          "source": "src/actions/32/go-last.svg",
+          "original": "last.svg",
+          "sha256": "674c8229a24ecfc61e4ca716699f07829c77ceae6d474829f5eda7de1f8a899f"
+        },
+        "zoom_in": {
+          "source": "src/actions/32/zoom-in.svg",
+          "original": "zoom_in.svg",
+          "sha256": "82654237e7bfa68c4672353d38898ef1e1323aba6f3286a180c9dc14e5e47a06"
+        },
+        "zoom_out": {
+          "source": "src/actions/32/zoom-out.svg",
+          "original": "zoom_out.svg",
+          "sha256": "acfc5742ee924ff578d0cdefe507e740b4ca61cab9776b6c340528d79417a202"
+        },
+        "width": {
+          "source": "src/actions/32/zoom-fit-width.svg",
+          "original": "width.svg",
+          "sha256": "05c971bb1d482cc316d2677e93670714b8f953246d9044f2fe60d0e8292988a8"
+        },
+        "page": {
+          "source": "src/actions/32/zoom-fit-best.svg",
+          "original": "page.svg",
+          "sha256": "f011133e66419401eaff89a19e0cbbb70b39bbd2c3cca056d1bc5a0a050fd6ec"
+        },
+        "print": {
+          "source": "src/actions/32/document-print.svg",
+          "original": "print.svg",
+          "sha256": "e237ebdc3a668f9a0bae9cf718d57da2f6edc9e52056ec932dec339fbf74bceb"
+        },
+        "zip": {
+          "source": "src/mimes/22/application-zip.svg",
+          "original": "zip.svg",
+          "sha256": "66894660bf23a190474598b737c72e362280963734ecdae0dba0a9101093c001"
+        },
+        "pdf": {
+          "source": "src/mimes/scalable/application-pdf.svg",
+          "original": "pdf.svg",
+          "sha256": "344eb4e9a1b261f81062c6948ba6c8899d54e865ff9b3e5cfbc1bcef6c75fb7b"
+        },
+        "warning": {
+          "source": "src/status/32/dialog-warning.svg",
+          "original": "warning.svg",
+          "sha256": "aa7a62094a250141c8e3c4f098175aba0cab96f8d35ccd65479a91eb45602af2"
+        },
+        "save": {
+          "source": "src/actions/32/document-save-as.svg",
+          "original": "save.svg",
+          "sha256": "53fb68e23549eee58bebda0b1106371d086c248f54b25e272d0bea526eba2fc0"
+        }
+      }
+    }
+  }
+}

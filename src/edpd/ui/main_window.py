@@ -1,5 +1,6 @@
 from datetime import date, datetime
 import threading
+import time
 from pathlib import Path
 from dataclasses import dataclass
 from PySide2.QtCore import Qt, QTimer, QObject, Signal, QSize, QRunnable, QThreadPool, QByteArray
@@ -7,7 +8,7 @@ from PySide2.QtGui import QColor, QBrush, QPalette, QFontMetrics
 from .. import __version__
 from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView,
-                              QDialog, QPushButton, QAction, QSizePolicy, QToolButton, QHBoxLayout, QMenu)
+                              QDialog, QPushButton, QAction, QSizePolicy, QToolButton, QHBoxLayout)
 from ..config import cache_directory
 from ..file_service import FileService, validate_paths
 from ..models import Capabilities
@@ -15,7 +16,7 @@ from ..paths import directory
 from ..state_service import inventory, day_status
 from ..zip_service import ZipService, read_document, MAX_PDF
 from .pdf_viewer import PDFViewer
-from .icons import icon
+from .icons import icon, manager, set_theme, ThemedMenu as QMenu
 from .settings_dialog import SettingsDialog, check_settings
 from .proportional_table import ProportionalTable
 from .extraction_dialog import ExtractionDialog
@@ -84,10 +85,12 @@ def row_appearance(state):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, settings, capabilities=Capabilities(), today_provider=date.today):
+    def __init__(self, settings, capabilities=Capabilities(), today_provider=date.today, startup_trace=None, auto_refresh=True):
         super().__init__()
+        self.trace = startup_trace
+        settings.icon_theme = set_theme(settings.icon_theme)
         self.settings, self.capabilities, self.today = settings, capabilities, today_provider
-        self.zip = ZipService(cache_dir=cache_directory())
+        self.zip = ZipService(cache_dir=cache_directory(), startup_trace=startup_trace)
         self.days, self.files, self.sizes = [], {}, {}
         self.work_keys, self.entries, self.origin_pending = [], (), ()
         self.origins_complete, self.access_error = True, ''
@@ -125,6 +128,7 @@ class MainWindow(QMainWindow):
         toolbar.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
         controls_layout.addWidget(toolbar, 1)
         self.actions = []
+        self.action_roles = []
         for title, icon_name, callback in [
             ('Kicsomagolás', 'extract', self.extract),
             ('Kijelölt nap fájljainak törlése', 'delete', lambda: self.delete(False)),
@@ -132,6 +136,7 @@ class MainWindow(QMainWindow):
             ('Frissítés', 'refresh', self.refresh),
             ('Beállítások', 'settings', self.configure)]:
             self.actions.append(toolbar.addAction(icon(icon_name), title, callback))
+            self.action_roles.append(icon_name)
         self.about_button = QToolButton()
         self.about_button.setIcon(icon('about'))
         self.about_button.setIconSize(QSize(40, 40))
@@ -143,7 +148,7 @@ class MainWindow(QMainWindow):
         self.split = QSplitter(Qt.Orientation.Horizontal)
         self.left = QSplitter(Qt.Orientation.Vertical)
         self.day_table = self.table(['Dátum', 'Csomag azonosítója / ZIP neve', 'PDF-ek', 'Állapot'], (.18, .44, .10, .28))
-        self.docs_table = self.table(['Nap', 'Fájlnév', 'Méret'], (.21, .64, .15))
+        self.docs_table = self.table(['Dátum', 'Fájlnév', 'Méret'], (.21, .64, .15))
         bold_font = self.day_table.font()
         bold_font.setBold(True)
         metrics = QFontMetrics(bold_font)
@@ -190,7 +195,10 @@ class MainWindow(QMainWindow):
             if value:
                 restore(QByteArray.fromBase64(value.encode()))
         self.update_actions()
-        QTimer.singleShot(0, self.refresh)
+        manager().subscribe(self)
+        self.refresh_icons()
+        if auto_refresh:
+            QTimer.singleShot(0, self.refresh)
 
     def table(self, headers, ratios=None):
         table = ProportionalTable(headers, ratios) if ratios else QTableWidget(0, len(headers))
@@ -287,6 +295,7 @@ class MainWindow(QMainWindow):
         return self.days[row] if 0 <= row < len(self.days) else None
 
     def read_workspace(self, settings):
+        started = time.perf_counter()
         try:
             target = directory(settings.target, 'A munkamappa')
             files = inventory(target)
@@ -294,17 +303,28 @@ class MainWindow(QMainWindow):
             return WorkspaceModel(files, sizes, {}), target, ''
         except Exception as exc:
             return WorkspaceModel({}, {}, {}), None, 'A munkamappa nem olvasható: ' + str(exc)
+        finally:
+            if self.trace:
+                self.trace.add('workspace_check_ms', (time.perf_counter() - started) * 1000)
 
     def read_daily_archives(self, settings):
         try:
             source = directory(settings.source, 'A forrásarchívum')
+            started = time.perf_counter()
             entries = self.zip.catalogue(source)
+            if self.trace:
+                self.trace.add('zip_catalogue_ms', (time.perf_counter() - started) * 1000)
+            started = time.perf_counter()
             days = self.zip.scan(source, settings.history_days, today=self.today(), entries=entries)
+            if self.trace:
+                self.trace.add('zip_filtered_scan_ms', (time.perf_counter() - started) * 1000)
             return DailyArchiveModel(days, {}, entries), source, ''
         except Exception as exc:
             return DailyArchiveModel([], {}, ()), None, str(exc)
 
     def snapshot(self):
+        if self.trace and self.trace.network_delay_ms:
+            time.sleep(self.trace.network_delay_ms / 1000)
         settings = self.settings
         source_error = target_error = guard_error = ''
         source = target = None
@@ -334,7 +354,7 @@ class MainWindow(QMainWindow):
 
     def refresh(self):
         if not self.busy and not self.extracting:
-            self.statusBar().showMessage('Mappák és csomagok ellenőrzése…')
+            self.statusBar().showMessage('Dokumentumok és napi csomagok betöltése…')
             self.submit(self.snapshot, self.apply_snapshot)
 
     def apply_snapshot(self, snapshot):
@@ -375,6 +395,9 @@ class MainWindow(QMainWindow):
         self.select_day()
         self.last_refresh = datetime.now()
         self.show_status()
+        if self.trace:
+            self.trace.mark('first_background_load_finished')
+            self.trace.publish('loaded', access_error=bool(self.access_error))
 
     def populate_workspace(self, origins):
         row = self.docs_table.currentRow()
@@ -527,6 +550,11 @@ class MainWindow(QMainWindow):
                 dialog.accept()
         button.clicked.connect(preview)
         table.itemDoubleClicked.connect(preview)
+        def refresh_preview_icons():
+            for row in range(table.rowCount()):
+                table.item(row, 0).setIcon(icon('pdf'))
+        dialog.refresh_icons = refresh_preview_icons
+        manager().subscribe(dialog)
         dialog.exec_()
 
     def show_day_menu(self, pos):
@@ -536,11 +564,13 @@ class MainWindow(QMainWindow):
         self.day_table.selectRow(row)
         day = self.days[row]
         menu = QMenu(self)
-        preview = menu.addAction('ZIP-csomag PDF-jeinek megtekintése…')
+        preview = menu.addAction(icon('zip'), 'ZIP-csomag PDF-jeinek megtekintése…')
+        preview.setProperty('icon_role', 'zip')
         preview.setEnabled(not day.error)
         preview.triggered.connect(lambda: self.browse_day(day=day))
         if self.capabilities.processed:
-            action = menu.addAction(self.processed_action.text())
+            action = menu.addAction(icon('about'), self.processed_action.text())
+            action.setProperty('icon_role', 'about')
             action.setEnabled(self.processed_action.isEnabled())
             action.triggered.connect(lambda: self.mark_day(day))
         menu.exec_(self.day_table.viewport().mapToGlobal(pos))
@@ -662,22 +692,47 @@ class MainWindow(QMainWindow):
         dialog = SettingsDialog(self.settings, self)
         if dialog.exec_():
             candidate = dialog.result_settings()
+            previous = self.settings
+            path_changed = (candidate.source, candidate.target) != (previous.source, previous.target)
+            workflow_changed = any(getattr(candidate, field) != getattr(previous, field)
+                                   for field in ('source', 'target', 'history_days', 'refresh_minutes'))
             def save():
-                check_settings(candidate)
+                if path_changed:
+                    check_settings(candidate)
                 candidate.save()
                 return candidate
             def saved(value):
-                self.origin_requested = False
-                self.origin_timer.stop()
                 self.settings = value
-                self.viewer.set_paths(value.source, value.target)
                 from .appearance import apply_style
                 apply_style(value.qt_style)
-                self.preview_generation += 1
-                self.source_generation += 1
-                self.update_timer()
-                QTimer.singleShot(0, self.refresh)
+                value.icon_theme = set_theme(value.icon_theme)
+                if workflow_changed:
+                    self.origin_requested = False
+                    self.origin_timer.stop()
+                    self.viewer.set_paths(value.source, value.target)
+                    self.preview_generation += 1
+                    self.source_generation += 1
+                    self.update_timer()
+                    QTimer.singleShot(0, self.refresh)
             self.submit(save, saved)
+
+    def refresh_icons(self):
+        for action, role in zip(self.actions, self.action_roles):
+            action.setIcon(icon(role))
+        self.about_button.setIcon(icon('about'))
+        self.archive_preview_action.setIcon(icon('zip'))
+        self.processed_action.setIcon(icon('about'))
+        self.day_table.setUpdatesEnabled(False)
+        self.docs_table.setUpdatesEnabled(False)
+        try:
+            for row, day in enumerate(self.days):
+                state = self.archive_model.states.get(day.date, '')
+                self.day_table.item(row, 1).setIcon(icon('warning' if day.error or state == 'Fájlütközés' else 'zip'))
+            for row in range(self.docs_table.rowCount()):
+                self.docs_table.item(row, 1).setIcon(icon('pdf'))
+        finally:
+            self.day_table.setUpdatesEnabled(True)
+            self.docs_table.setUpdatesEnabled(True)
 
     def closeEvent(self, event):
         if self.jobs or self.extracting or self.viewer.save_job is not None:

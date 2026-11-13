@@ -90,12 +90,14 @@ from PySide2.QtCore import QTimer
 from PySide2.QtWidgets import QApplication, QWidget
 import edpd.ui.main_window
 class Probe(QWidget):
-    def __init__(self, settings):
+    def __init__(self, settings, **kwargs):
         super().__init__()
         app = QApplication.instance()
         assert app.style().objectName() == expected
         assert app.styleSheet() == ''
-        QTimer.singleShot(0, app.quit)
+        self.exit_timer = QTimer(self)
+        self.exit_timer.timeout.connect(app.quit)
+        self.exit_timer.start(100)
 edpd.ui.main_window.MainWindow = Probe
 from edpd.main import main
 main()
@@ -124,7 +126,12 @@ def test_failed_settings_save_keeps_running_style(app, folders, tmp_path, monkey
         raise OSError('Teszt: nem menthető')
 
     monkeypatch.setattr(SettingsDialog, 'exec_', choose)
-    monkeypatch.setattr(main_window, 'check_settings', fail)
+    original_save = Settings.save
+    def fail_candidate(settings, *args, **kwargs):
+        if settings.qt_style == 'Windows':
+            fail(settings)
+        return original_save(settings, *args, **kwargs)
+    monkeypatch.setattr(Settings, 'save', fail_candidate)
     window.configure()
     wait_for(app, lambda: errors and not window.jobs)
     assert window.settings.qt_style == 'Fusion'

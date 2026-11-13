@@ -16,6 +16,7 @@ class Settings:
     panels: str = ''
     left_panels: str = ''
     qt_style: str = 'Fusion'
+    icon_theme: str = 'Crystal SVG'
 
     def __post_init__(self):
         for key in ('source', 'target'):

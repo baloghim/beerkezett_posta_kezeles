@@ -22,7 +22,7 @@ def test_workspace_day_order_selection_and_responsive_columns(app,folders,pdf_by
     window.refresh();wait_for(app,lambda:not window.jobs)
     origins={'z.pdf':'2026.11.13.','a.pdf':'2026.11.13.','b.pdf':'2026.11.12.'}
     window.populate_workspace(origins)
-    assert [window.docs_table.horizontalHeaderItem(i).text() for i in range(3)]==['Nap','Fájlnév','Méret']
+    assert [window.docs_table.horizontalHeaderItem(i).text() for i in range(3)]==['Dátum','Fájlnév','Méret']
     assert window.work_keys==['a.pdf','z.pdf','b.pdf','unknown.pdf']
     assert window.docs_table.item(3,0).text()=='Ismeretlen'
     window.docs_table.selectRow(1);wait_for(app,lambda:window.viewer.pdf and not window.jobs)

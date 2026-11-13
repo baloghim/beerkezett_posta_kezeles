@@ -88,7 +88,7 @@ def test_thousand_archives_actual_qt_rows_and_all_zip_opens(app, thousand_archiv
         assert actual_dates == [d.strftime('%Y.%m.%d.') for d in expected_dates]
         assert window.docs_table.rowCount() == 1
         assert window.docs_table.item(0, 1).text() == 'unknown.pdf'
-        assert [window.docs_table.horizontalHeaderItem(i).text() for i in range(3)] == ['Nap', 'Fájlnév', 'Méret']
+        assert [window.docs_table.horizontalHeaderItem(i).text() for i in range(3)] == ['Dátum', 'Fájlnév', 'Méret']
         assert window.docs_table.item(0, 0).text() == 'Ismeretlen'
         for row in (0, len(expected) - 1):
             window.day_table.selectRow(row)
@@ -239,7 +239,7 @@ def test_source_column_stays_visible_with_long_filename(app, folders, tmp_path, 
     try:
         wait(app, lambda: window.docs_table.rowCount() == 1 and not window.jobs)
         app.processEvents()
-        assert window.docs_table.horizontalHeaderItem(0).text() == 'Nap'
+        assert window.docs_table.horizontalHeaderItem(0).text() == 'Dátum'
         assert not window.docs_table.isColumnHidden(0)
         assert window.docs_table.columnViewportPosition(0) + window.docs_table.columnWidth(0) <= window.docs_table.viewport().width()
         assert window.docs_table.item(0, 1).toolTip() == name

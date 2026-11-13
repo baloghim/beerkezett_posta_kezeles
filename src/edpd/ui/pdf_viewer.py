@@ -1,12 +1,38 @@
 from ..qt_image import image_from_pixmap
 from PySide2.QtCore import Qt, QSize, QEvent, QTimer, QObject, Signal, QRunnable, QThreadPool
-from PySide2.QtGui import QPixmap
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QToolBar, QScrollArea, QLabel, QMessageBox, QFileDialog
-from .icons import icon
+from PySide2.QtGui import QPixmap, QIcon, QPalette
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QToolBar, QScrollArea, QLabel, QMessageBox, QFileDialog, QToolButton, QWidgetAction, QStylePainter, QStyleOptionToolButton, QStyle
+from .icons import icon, manager
 from ..pdf_service import PDFService
 from ..print_service import print_pdf
 from ..pdf_export import save_pdf, validate_export, target_stamp
 from pathlib import Path
+
+
+class SpacedToolButton(QToolButton):
+    """Keep native button chrome and use an explicit eight-pixel icon/text gap."""
+    def sizeHint(self):
+        size = super().sizeHint()
+        size.setWidth(size.width() + 4)
+        return size
+
+    def paintEvent(self, event):
+        option = QStyleOptionToolButton()
+        self.initStyleOption(option)
+        text, image = option.text, option.icon
+        option.text, option.icon = '', QIcon()
+        painter = QStylePainter(self)
+        painter.drawComplexControl(QStyle.CC_ToolButton, option)
+        width = option.iconSize.width()
+        text_width = self.fontMetrics().horizontalAdvance(text)
+        left = (self.width() - width - 8 - text_width) // 2
+        top = (self.height() - option.iconSize.height()) // 2
+        from PySide2.QtCore import QRect
+        image.paint(painter, QRect(left, top, width, option.iconSize.height()), Qt.AlignCenter,
+                    QIcon.Normal if self.isEnabled() else QIcon.Disabled)
+        rect = QRect(left + width + 8, 0, text_width, self.height())
+        self.style().drawItemText(painter, rect, Qt.AlignVCenter | Qt.AlignLeft,
+                                  option.palette, self.isEnabled(), text, QPalette.ButtonText)
 
 
 class SaveSignals(QObject):
@@ -53,20 +79,25 @@ class PDFViewer(QWidget):
                                       ('previous', 'Előző oldal', lambda: self.move(self.page - 1)),
                                       ('next', 'Következő oldal', lambda: self.move(self.page + 1)),
                                       ('last', 'Utolsó oldal', lambda: self.move(self.pdf.pages - 1) if self.pdf else None)]:
-            self.toolbar.addAction(icon(name), title, callback)
+            self.toolbar.addAction(icon(name), title, callback).setProperty('icon_role', name)
+        self.add_group_space()
         self.page_label = QLabel('Nincs megnyitott PDF')
         self.toolbar.addWidget(self.page_label)
+        self.add_group_space()
         self.toolbar.addAction(icon('zoom_out'), 'Kicsinyítés', lambda: self.zoom(0.8))
         self.toolbar.addAction(icon('zoom_in'), 'Nagyítás', lambda: self.zoom(1.25))
+        self.add_group_space()
         self.width_action = self.toolbar.addAction(icon('width'), 'Szélesség', lambda: self.fit('width'))
         self.width_action.setToolTip('Az oldal igazítása a betekintő szélességéhez')
         self.page_action = self.toolbar.addAction(icon('page'), 'Teljes oldal', lambda: self.fit('page'))
         self.page_action.setToolTip('A teljes oldal igazítása a látható területhez')
         for action in (self.width_action, self.page_action):
             action.setCheckable(True)
-        self.print_action = self.toolbar.addAction(icon('print'), 'Nyomtatás', self.print_current)
+        self.add_group_space()
+        self.print_action = self.spaced_action('print', 'Nyomtatás', self.print_current)
         self.print_action.setEnabled(False)
-        self.save_action = self.toolbar.addAction(icon('save'), 'PDF mentése', self.save_current)
+        self.add_group_space()
+        self.save_action = self.spaced_action('save', 'PDF mentése', self.save_current)
         self.save_action.setEnabled(False)
         for action in (self.width_action, self.page_action, self.print_action, self.save_action):
             self.toolbar.widgetForAction(action).setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -80,6 +111,38 @@ class PDFViewer(QWidget):
         self.fit_timer.setSingleShot(True)
         self.fit_timer.timeout.connect(self.render)
         layout.addWidget(self.scroll)
+        roles = {'Első oldal':'first', 'Előző oldal':'previous', 'Következő oldal':'next',
+                 'Utolsó oldal':'last', 'Kicsinyítés':'zoom_out', 'Nagyítás':'zoom_in',
+                 'Szélesség':'width', 'Teljes oldal':'page', 'Nyomtatás':'print', 'PDF mentése':'save'}
+        for action in self.toolbar.actions():
+            if action.text() in roles:
+                action.setProperty('icon_role', roles[action.text()])
+        manager().subscribe(self)
+
+    def add_group_space(self):
+        spacer = QWidget()
+        spacer.setFixedWidth(6)
+        spacer.setObjectName('pdf-group-space')
+        self.toolbar.addWidget(spacer)
+
+    def spaced_action(self, role, text, callback):
+        action = QWidgetAction(self.toolbar)
+        action.setText(text)
+        action.setIcon(icon(role))
+        action.triggered.connect(callback)
+        button = SpacedToolButton()
+        button.setIconSize(self.toolbar.iconSize())
+        button.setDefaultAction(action)
+        button.setAutoRaise(True)
+        action.setDefaultWidget(button)
+        self.toolbar.addAction(action)
+        return action
+
+    def refresh_icons(self):
+        for action in self.toolbar.actions():
+            role = action.property('icon_role')
+            if role:
+                action.setIcon(icon(role))
 
     def open_data(self, data, filename='dokumentum.pdf'):
         pdf = PDFService(data)

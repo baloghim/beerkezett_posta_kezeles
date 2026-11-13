@@ -27,7 +27,14 @@ class AboutDialog(QDialog):
             '<br>PyInstaller: GPLv2, a terjesztett alkalmazásra vonatkozó kivétellel.</p>'
             '<p>Crystal Remix ikonok: Everaldo Coelho; modern átdolgozás: Viet Dang (Đặng Việt Dũng). '
             'GNU LGPL (az upstream nem jelöl verziót). Az EDPD színezett és kombinált változatokat is használ. '
-            'A források és licencszövegek a csomag assets és licenses mappáiban találhatók.</p>')
+            'A források és licencszövegek a csomag assets és licenses mappáiban találhatók.</p>'
+            '<p>Választható belső ikonok:<br>Crystal SVG: Everaldo Coelho, Viet Dang; GNU LGPL (verziójelölés nélkül).<br>'
+            'Nuvola: David Vignoni; LGPL-2.1-or-later.<br>'
+            'KDE Modern Classic: Shaun Belcher, eredeti KDE Classic művészek; LGPL-3.0-or-later, '
+            'az örökölt elemekhez a LICENSE-KDE-Classic.txt is tartozik. Az upstream AI-segített rekonstrukcióként ismerteti.<br>'
+            'Papirus: Papirus Development Team; GPL-3.0.<br>'
+            'We10X: yeyushengfan258, Ubuntu Yaru közreműködők; GPL-3.0.<br>'
+            'Részletes eredet és módosítások: assets/themes.json; teljes licencszövegek: licenses/.</p>')
         self.info.setOpenExternalLinks(True)
         layout.addWidget(self.info)
         buttons = QDialogButtonBox(QDialogButtonBox.Close)

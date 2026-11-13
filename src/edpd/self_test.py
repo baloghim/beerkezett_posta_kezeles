@@ -111,7 +111,7 @@ def run(report_path, require_windows1607=False):
             apply_style(window.settings.qt_style)
             result['checks'].append('three_panel_gui_and_zip_scan')
             headers = [window.docs_table.horizontalHeaderItem(i).text() for i in range(window.docs_table.columnCount())]
-            if headers != ['Nap', 'Fájlnév', 'Méret'] or window.workspace_panel.title_label.text() != 'A munkamappa dokumentumai':
+            if headers != ['Dátum', 'Fájlnév', 'Méret'] or window.workspace_panel.title_label.text() != 'A munkamappa dokumentumai':
                 raise RuntimeError('A becsomagolt felület munkamappa-táblája hibás.')
             for row in range(window.day_table.rowCount()):
                 window.day_table.selectRow(row)
