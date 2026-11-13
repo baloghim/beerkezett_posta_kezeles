@@ -232,7 +232,7 @@ class MainWindow(QMainWindow):
         self.actions[2].setEnabled(not (self.busy or self.extracting) and self.capabilities.delete and not self.access_error)
         self.processed_action.setVisible(self.capabilities.processed)
         self.processed_action.setEnabled(not (self.busy or self.extracting) and day is not None and not self.mark_error and self.capabilities.processed)
-        marked = day is not None and packet_id(self.source_identity, day) in self.processed
+        marked = day is not None and packet_id(self.source_identity, day, canonical=True) in self.processed
         self.processed_action.setText('Feldolgozás visszavonása' if marked else 'Feldolgozva')
         self.update_origin_button()
 
@@ -358,7 +358,7 @@ class MainWindow(QMainWindow):
         row = 0
         for index, day in enumerate(self.days):
             state = snapshot.archive.states[day.date]
-            marked = packet_id(self.source_identity, day) in self.processed
+            marked = packet_id(self.source_identity, day, canonical=True) in self.processed
             display = 'Feldolgozva • ' + state if marked else state
             color, bold = row_appearance('Feldolgozva' if marked else state)
             self.fill(self.day_table, index,
@@ -548,7 +548,7 @@ class MainWindow(QMainWindow):
     def mark_day(self, day):
         if not day or not self.capabilities.processed or self.busy or self.extracting or self.mark_error:
             return
-        desired = packet_id(self.source_identity, day) not in self.processed
+        desired = packet_id(self.source_identity, day, canonical=True) not in self.processed
         def write():
             ProcessedStore(self.settings.source, self.settings.target, self.capabilities).set_processed(day, desired)
             return self.snapshot()

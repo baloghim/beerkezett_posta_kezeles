@@ -10,8 +10,8 @@ from .models import EDPDError, Capabilities
 from .paths import overlap, normalize_path
 
 
-def packet_id(source, day):
-    root = os.path.abspath(normalize_path(source))
+def packet_id(source, day, *, canonical=False):
+    root = os.path.abspath(normalize_path(source)) if canonical else str(Path(source).resolve())
     if os.name == 'nt':
         root = root.casefold()
     payload = [root, day.date.isoformat(), sorted(p.name for p in day.archives),
@@ -47,7 +47,7 @@ class ProcessedStore:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with workspace_lock(self.path.parent):
             values = self.read()
-            key = packet_id(self.source, day)
+            key = packet_id(self.source, day, canonical=True)
             values.add(key) if desired else values.discard(key)
             fd, temporary = tempfile.mkstemp(prefix='.processed-', dir=self.path.parent)
             try:

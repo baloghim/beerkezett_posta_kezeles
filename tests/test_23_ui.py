@@ -174,3 +174,16 @@ def test_viewer_cannot_write_local_marks_in_service(folders):
     store=ProcessedStore(*folders,Capabilities.viewer())
     with pytest.raises(Exception,match='tiltott'):store.set_processed(day,True)
     assert not store.path.exists()
+
+
+def test_local_marks_use_same_identity_through_source_directory_alias(folders,tmp_path):
+    from edpd.zip_service import ZipService
+    source,target=folders
+    with zipfile.ZipFile(source/'20261113_A.zip','w') as z:z.writestr('a.pdf',b'a')
+    alias=tmp_path/'source-alias'
+    try:alias.symlink_to(source,target_is_directory=True)
+    except OSError:pytest.skip('A tesztfiók nem hozhat létre könyvtárhivatkozást')
+    day=ZipService().scan(source)[0]
+    store=ProcessedStore(alias,target);store.set_processed(day,True)
+    assert packet_id(alias,day)==packet_id(source,day)
+    assert packet_id(alias,day) in ProcessedStore(source,target).read()
