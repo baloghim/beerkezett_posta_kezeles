@@ -8,7 +8,6 @@ from pathlib import Path
 
 import pytest
 from edpd.config import Settings
-from edpd.completion_service import CompletionStore, day_identity, validate_shared_directory
 from edpd.file_service import FileService
 from edpd.models import Capabilities, EDPDError
 from edpd.paths import normalize_path
@@ -121,12 +120,11 @@ def test_corrupt_local_cache_is_rebuilt(folders, tmp_path):
 ])
 def test_windows_paths_and_config_roundtrip(tmp_path, value, expected):
     assert normalize_path(value) == expected
-    settings = Settings(source=value, shared_data='\\\\szerver\\kozos\\EDPD_appdata', history_days=90)
+    settings = Settings(source=value, history_days=90)
     path = tmp_path / 'settings.json'
     settings.save(path)
     loaded = Settings.load(path)
     assert loaded.source == expected and loaded.history_days == 90
-    assert loaded.shared_data.startswith('\\\\szerver\\')
 
 
 def test_old_configuration_defaults_and_invalid_history(tmp_path):
@@ -141,125 +139,7 @@ def test_old_configuration_defaults_and_invalid_history(tmp_path):
             Settings.load(path)
 
 
-def test_done_marks_persist_merge_revoke_and_ignore_pdf_operations(folders, tmp_path):
-    source, target = folders
-    make_zip(source, entries={'a.pdf': b'a', 'b.pdf': b'b'})
-    make_zip(source, TODAY - timedelta(days=1), entries={'other.pdf': b'o'})
-    days = ZipService().scan(source)
-    store = CompletionStore(tmp_path / 'shared', source, target)
-    assert store.read() == set()
-    before_source = {p.name: p.read_bytes() for p in source.iterdir()}
-    store.set_done(days[0], True)
-    other_client = CompletionStore(tmp_path / 'shared', source, target)
-    other_client.set_done(days[1], True)
-    assert store.read() == {day_identity(d) for d in days}
-    saved = (tmp_path / 'shared' / 'completed.json').read_bytes()
-    service = FileService(source, target)
-    service.extract(days[0])
-    service.delete(days[0], confirmed=True, expected_names=service.deletion_plan(days[0]))
-    (target / 'extra.pdf').write_bytes(b'x')
-    service.delete(confirmed=True, expected_names=service.deletion_plan())
-    assert (tmp_path / 'shared' / 'completed.json').read_bytes() == saved
-    assert before_source == {p.name: p.read_bytes() for p in source.iterdir()}
-    store.set_done(days[0], False)
-    assert other_client.read() == {day_identity(days[1])}
-
-
-def test_done_identity_distinguishes_offices_and_changed_packets(folders):
-    source, _ = folders
-    make_zip(source, suffix='HIVATAL_A')
-    first = ZipService().scan(source)[0]
-    make_zip(source, suffix='HIVATAL_B')
-    combined = ZipService().scan(source)[0]
-    assert day_identity(first) != day_identity(combined)
-    make_zip(source, suffix='HIVATAL_A', entries={'a.pdf': b'changed'})
-    assert day_identity(combined) != day_identity(ZipService().scan(source)[0])
-
-
-def test_common_store_rejects_overlap_corruption_and_viewer(folders, tmp_path):
-    source, target = folders
-    make_zip(source)
-    day = ZipService().scan(source)[0]
-    for path in [source, source / 'appdata', target, target / 'appdata', source.parent]:
-        with pytest.raises(EDPDError):
-            validate_shared_directory(path, source, target)
-    shared = tmp_path / 'shared'
-    with pytest.raises(EDPDError):
-        CompletionStore(shared, source, target, Capabilities.viewer()).set_done(day, True)
-    assert not shared.exists()
-    shared.mkdir()
-    state = shared / 'completed.json'
-    state.write_text('broken')
-    store = CompletionStore(shared, source, target)
-    with pytest.raises(EDPDError):
-        store.read()
-    with pytest.raises(EDPDError):
-        store.set_done(day, True)
-    assert state.read_text() == 'broken'
-
-
-def test_failed_common_atomic_replace_preserves_existing_state(folders, tmp_path, monkeypatch):
-    source, target = folders
-    make_zip(source)
-    day = ZipService().scan(source)[0]
-    store = CompletionStore(tmp_path / 'shared', source, target)
-    store.set_done(day, True)
-    before = (tmp_path / 'shared' / 'completed.json').read_bytes()
-    def fail(*args):
-        raise OSError('Megszakadt kapcsolat')
-    monkeypatch.setattr(os, 'replace', fail)
-    with pytest.raises(OSError):
-        store.set_done(day, False)
-    assert (tmp_path / 'shared' / 'completed.json').read_bytes() == before
-    assert not list((tmp_path / 'shared').glob('*.tmp'))
-
-
-def mark_worker(source, target, shared, selected_date, barrier, results):
-    try:
-        day = ZipService().scan(source, dates={selected_date})[0]
-        store = CompletionStore(shared, source, target)
-        barrier.wait(timeout=10)
-        for attempt in range(30):
-            try:
-                store.set_done(day, True)
-                results.put('ok')
-                return
-            except EDPDError as exc:
-                if 'foglalt' not in str(exc):
-                    raise
-                time.sleep(0.03)
-        results.put('lock timeout')
-    except Exception as exc:
-        results.put(repr(exc))
-
-
-def test_two_processes_merge_common_marks_without_lost_updates(folders, tmp_path):
-    source, target = folders
-    make_zip(source)
-    make_zip(source, TODAY - timedelta(days=1))
-    days = ZipService().scan(source)
-    shared = tmp_path / 'shared'
-    shared.mkdir()
-    context = multiprocessing.get_context('spawn')
-    barrier, results = context.Barrier(2), context.Queue()
-    processes = [context.Process(target=mark_worker, args=(source, target, shared, day.date, barrier, results)) for day in days]
-    try:
-        for process in processes:
-            process.start()
-        for process in processes:
-            process.join(20)
-            assert process.exitcode == 0
-        assert [results.get(timeout=5) for _ in processes] == ['ok', 'ok']
-        assert CompletionStore(shared, source, target).read() == {day_identity(d) for d in days}
-    finally:
-        for process in processes:
-            if process.is_alive():
-                process.terminate()
-            process.join(5)
-        results.close()
-
-
-def test_daily_deletion_exact_subset_preserves_other_days_and_mark(folders, tmp_path):
+def test_daily_deletion_exact_subset_preserves_other_days(folders, tmp_path):
     source, target = folders
     make_zip(source, entries={f'a{i}.pdf': str(i).encode() for i in range(6)})
     make_zip(source, TODAY - timedelta(days=100), entries={'other.pdf': b'o'})
@@ -268,8 +148,6 @@ def test_daily_deletion_exact_subset_preserves_other_days_and_mark(folders, tmp_
         (target / f'a{index}.pdf').write_bytes(str(index).encode())
     (target / 'other.pdf').write_bytes(b'o')
     (target / 'keep.csv').write_text('keep')
-    store = CompletionStore(tmp_path / 'shared', source, target)
-    store.set_done(day, True)
     service = FileService(source, target)
     names = service.deletion_plan(day)
     assert names == {f'a{i}.pdf' for i in range(4)}
@@ -277,7 +155,6 @@ def test_daily_deletion_exact_subset_preserves_other_days_and_mark(folders, tmp_
     assert (target / 'other.pdf').read_bytes() == b'o'
     assert (target / 'keep.csv').exists()
     assert not list(target.glob('a*.pdf'))
-    assert day_identity(day) in store.read()
 
 
 def test_hidden_old_archive_collision_blocks_daily_deletion(folders):
@@ -289,25 +166,6 @@ def test_hidden_old_archive_collision_blocks_daily_deletion(folders):
     with pytest.raises(EDPDError, match='Több nap'):
         FileService(source, target).deletion_plan(day)
     assert (target / 'shared.pdf').exists()
-
-
-def test_common_store_retries_transient_windows_sharing_violation(folders, tmp_path, monkeypatch):
-    source, target = folders
-    make_zip(source)
-    day = ZipService().scan(source)[0]
-    store = CompletionStore(tmp_path / 'shared', source, target)
-    store.set_done(day, True)
-    original, attempts = os.replace, []
-    def temporarily_open(*args):
-        attempts.append(1)
-        if len(attempts) == 1:
-            error = PermissionError('Átmenetileg másik olvasó nyitva tartja')
-            error.winerror = 32
-            raise error
-        return original(*args)
-    monkeypatch.setattr(os, 'replace', temporarily_open)
-    store.set_done(day, False)
-    assert store.read() == set() and len(attempts) == 2
 
 
 def test_mutations_reuse_checked_historical_metadata_but_reread_selected(folders, tmp_path, monkeypatch):
@@ -331,18 +189,6 @@ def test_mutations_reuse_checked_historical_metadata_but_reread_selected(folders
     assert selected_path in reads
     service.delete(day, confirmed=True, expected_names={'a.pdf'})
     assert not (target / 'a.pdf').exists()
-
-
-def test_common_directory_cannot_be_created_under_source_alias(folders, tmp_path):
-    source, target = folders
-    alias = tmp_path / 'alias'
-    try:
-        alias.symlink_to(source, target_is_directory=True)
-    except OSError:
-        pytest.skip('A tesztfiók nem hozhat létre mappahivatkozást')
-    with pytest.raises(EDPDError):
-        validate_shared_directory(alias / 'new-appdata', source, target)
-    assert not (source / 'new-appdata').exists()
 
 
 def test_transient_zip_read_error_is_retried_on_refresh_without_file_change(folders, tmp_path, monkeypatch):
@@ -373,8 +219,7 @@ def test_local_index_never_writes_inside_source_archive(folders):
     assert list(source.iterdir()) == [path]
 
 
-@pytest.mark.parametrize('operation', ['extract', 'mark'])
-def test_detected_source_change_invalidates_index_even_with_preserved_stamp(folders, tmp_path, operation):
+def test_detected_source_change_invalidates_index_even_with_preserved_stamp(folders, tmp_path):
     source, target = folders
     path = make_zip(source, entries={'a.pdf': b'a'})
     index = ZipService(cache_dir=tmp_path / 'cache')
@@ -384,10 +229,7 @@ def test_detected_source_change_invalidates_index_even_with_preserved_stamp(fold
     os.utime(path, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
     assert path.stat().st_size == stamp.st_size
     with pytest.raises(EDPDError, match='megváltozott'):
-        if operation == 'extract':
-            FileService(source, target, zip_service=index).extract(old)
-        else:
-            CompletionStore(tmp_path / 'shared', source, target, zip_service=index).set_done(old, True)
+        FileService(source, target, zip_service=index).extract(old)
     current = index.scan(source)[0]
     assert current.documents[0].crc != old.documents[0].crc
     FileService(source, target, zip_service=index).extract(current)

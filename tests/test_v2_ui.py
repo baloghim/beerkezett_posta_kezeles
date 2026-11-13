@@ -6,7 +6,6 @@ from pathlib import Path
 from PySide2.QtCore import QTimer
 from PySide2.QtGui import QColor, QPalette
 from PySide2.QtWidgets import QMessageBox
-from edpd.completion_service import CompletionStore, day_identity
 from edpd.config import Settings
 from edpd.file_service import FileService
 from edpd.models import Capabilities
@@ -40,7 +39,7 @@ def setup_window(app, folders, tmp_path, monkeypatch):
     errors = []
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
     monkeypatch.setattr(QMessageBox, 'information', lambda *args: None)
-    settings = Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'))
+    settings = Settings(source=str(source), target=str(target))
     window = MainWindow(settings, today_provider=lambda: TODAY)
     window.show()
     wait(app, lambda: bool(window.days) and not window.jobs)
@@ -78,57 +77,23 @@ def test_whole_workspace_origins_day_navigation_and_pdf_retained(app, folders, t
     window.close()
 
 
-def test_done_mark_visual_priority_revoke_and_no_pdf_changes(app, folders, tmp_path, monkeypatch, pdf_bytes):
-    source, target = folders
-    put_zip(source, TODAY, ['a.pdf', 'b.pdf'], pdf_bytes)
-    window, errors = setup_window(app, folders, tmp_path, monkeypatch)
-    assert window.day_table.item(0, 3).text() == 'Nincs kicsomagolva'
-    assert not window.day_table.item(0, 0).font().bold()
-    day = window.current_day()
-    service = FileService(source, target)
-    service.extract(day)
-    window.refresh()
-    wait(app, lambda: not window.jobs)
-    assert window.day_table.item(0, 0).font().bold()
-    assert window.day_table.item(0, 0).foreground().color() == QColor('#000000')
-    before = {p.name: p.read_bytes() for p in target.glob('*.pdf')}
-    window.toggle_done()
-    wait(app, lambda: not window.jobs)
-    assert window.day_table.item(0, 3).text() == 'Elvégezve'
-    assert window.mark_action.text() == 'Jelölés visszavonása'
-    for col in range(4):
-        assert window.day_table.item(0, col).foreground().color() == QColor('#167235')
-    assert window.day_table.palette().color(QPalette.HighlightedText) == QColor('white')
-    assert before == {p.name: p.read_bytes() for p in target.glob('*.pdf')}
-    service.delete(day, confirmed=True, expected_names=service.deletion_plan(day))
-    window.refresh()
-    wait(app, lambda: not window.jobs)
-    assert window.day_table.item(0, 3).text() == 'Elvégezve'
-    assert window.docs_table.rowCount() == 0
-    window.toggle_done()
-    wait(app, lambda: not window.jobs)
-    assert window.day_table.item(0, 3).text() == 'Nincs kicsomagolva'
-    assert window.mark_action.text() == 'Elvégezve jelölés'
-    assert not errors
-    window.close()
-
-
-def test_partial_state_and_changed_shared_marks_seen_on_refresh(app, folders, tmp_path, monkeypatch, pdf_bytes):
+def test_partial_and_complete_state_seen_on_refresh(app, folders, tmp_path, monkeypatch, pdf_bytes):
     source, target = folders
     put_zip(source, TODAY, ['a.pdf', 'b.pdf'], pdf_bytes)
     (target / 'a.pdf').write_bytes(pdf_bytes)
     window, errors = setup_window(app, folders, tmp_path, monkeypatch)
     assert window.day_table.item(0, 3).text() == 'Részben kicsomagolva'
     assert window.day_table.item(0, 0).foreground().color() == QColor('#885000')
-    CompletionStore(tmp_path / 'shared', source, target).set_done(window.current_day(), True)
+    (target / 'b.pdf').write_bytes(pdf_bytes)
     window.refresh()
     wait(app, lambda: not window.jobs)
-    assert window.day_table.item(0, 3).text() == 'Elvégezve'
+    assert window.day_table.item(0, 3).text() == 'Kicsomagolva'
+    assert window.day_table.item(0, 0).font().bold()
     assert not errors
     window.close()
 
 
-def test_daily_delete_dialog_exact_count_and_mark_independence(app, folders, tmp_path, monkeypatch, pdf_bytes):
+def test_daily_delete_dialog_exact_count(app, folders, tmp_path, monkeypatch, pdf_bytes):
     source, target = folders
     put_zip(source, TODAY, [f'a{i}.pdf' for i in range(6)], pdf_bytes)
     put_zip(source, TODAY - timedelta(days=1), ['other.pdf'], pdf_bytes)
@@ -140,38 +105,20 @@ def test_daily_delete_dialog_exact_count_and_mark_independence(app, folders, tmp
         messages.append(args[2])
         return QMessageBox.StandardButton.Yes
     monkeypatch.setattr(QMessageBox, 'question', yes)
-    store = CompletionStore(tmp_path / 'shared', source, target)
-    store.set_done(window.current_day(), True)
     window.refresh()
     wait(app, lambda: not window.jobs)
     window.delete(False)
     wait(app, lambda: window.docs_table.rowCount() == 1 and not window.jobs)
     assert '6 dokumentumból jelenleg 4' in messages[0]
     assert (target / 'other.pdf').exists()
-    assert window.day_table.item(0, 3).text() == 'Elvégezve'
     assert not errors
     window.close()
 
 
-def test_corrupt_shared_state_is_visible_and_disables_marking(app, folders, tmp_path, monkeypatch, pdf_bytes):
-    source, _ = folders
-    put_zip(source, TODAY, ['a.pdf'], pdf_bytes)
-    shared = tmp_path / 'shared'
-    shared.mkdir()
-    (shared / 'completed.json').write_text('bad')
-    window, errors = setup_window(app, folders, tmp_path, monkeypatch)
-    assert not window.mark_action.isEnabled()
-    assert window.shared_notice.isVisible()
-    assert 'nem érhetők el' in window.shared_notice.text()
-    assert window.actions[0].isEnabled()
-    assert not errors  # Időzítőből nem nyitunk ismétlődő modális ablakot.
-    window.close()
-
-
-def test_settings_history_choices_and_viewer_mark_permission(app, folders, tmp_path, monkeypatch, pdf_bytes):
+def test_settings_history_choices_and_viewer_delete_permission(app, folders, tmp_path, monkeypatch, pdf_bytes):
     source, target = folders
     put_zip(source, TODAY, ['a.pdf'], pdf_bytes)
-    settings = Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'))
+    settings = Settings(source=str(source), target=str(target))
     dialog = SettingsDialog(settings, None)
     assert [dialog.history.itemData(i) for i in range(dialog.history.count())] == [14, 30, 90, 180, None]
     for index, expected in enumerate([14, 30, 90, 180, None]):
@@ -182,9 +129,8 @@ def test_settings_history_choices_and_viewer_mark_permission(app, folders, tmp_p
     window = MainWindow(settings, Capabilities.viewer(), today_provider=lambda: TODAY)
     window.show()
     wait(app, lambda: bool(window.days) and not window.jobs)
-    assert not window.mark_action.isEnabled()
-    window.toggle_done()
-    assert not (tmp_path / 'shared').exists()
+    assert not window.actions[1].isEnabled()
+    assert not window.actions[2].isEnabled()
     assert not errors
     window.close()
 
@@ -192,7 +138,7 @@ def test_settings_history_choices_and_viewer_mark_permission(app, folders, tmp_p
 def test_ui_stays_responsive_while_all_archives_are_scanned(app, folders, tmp_path, monkeypatch, pdf_bytes):
     source, target = folders
     put_zip(source, TODAY, ['a.pdf'], pdf_bytes)
-    settings = Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'), history_days=None)
+    settings = Settings(source=str(source), target=str(target), history_days=None)
     release, entered = threading.Event(), threading.Event()
     original = ZipService.scan
     def delayed(self, *args, **kwargs):
@@ -220,13 +166,13 @@ def test_ui_stays_responsive_while_all_archives_are_scanned(app, folders, tmp_pa
 def test_workspace_preview_survives_unavailable_source(app, folders, tmp_path, monkeypatch, pdf_bytes):
     source, target = folders
     (target / 'local.pdf').write_bytes(pdf_bytes)
-    settings = Settings(source=str(source / 'unavailable'), target=str(target), shared_data=str(tmp_path / 'shared'))
+    settings = Settings(source=str(source / 'unavailable'), target=str(target))
     window = MainWindow(settings, today_provider=lambda: TODAY)
     window.show()
     wait(app, lambda: window.docs_table.rowCount() == 1 and not window.jobs)
     assert not window.days and window.access_error
-    assert not window.actions[3].isEnabled()  # Elérés nélkül nincs módosítás.
-    assert window.shared_notice.isVisible()
+    assert not window.actions[2].isEnabled()  # Elérés nélkül nincs módosítás.
+    assert window.access_notice.isVisible()
     window.docs_table.selectRow(0)
     wait(app, lambda: window.viewer.pdf is not None and not window.jobs)
     assert window.viewer.pdf.pages == 3

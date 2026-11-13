@@ -9,7 +9,6 @@ import pytest
 from PySide2.QtCore import Qt
 from PySide2.QtTest import QTest
 from PySide2.QtWidgets import QDialog, QMessageBox
-from edpd.completion_service import CompletionStore, day_identity
 from edpd.config import Settings
 from edpd.ui.main_window import MainWindow
 import edpd.ui.main_window as ui_module
@@ -74,7 +73,7 @@ def test_thousand_archives_actual_qt_rows_and_all_zip_opens(app, thousand_archiv
     monkeypatch.setattr(zipfile, 'ZipFile', spy)
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
     monkeypatch.setattr(QMessageBox, 'information', lambda *args: None)
-    settings = Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'), history_days=period)
+    settings = Settings(source=str(source), target=str(target), history_days=period)
     window = MainWindow(settings, today_provider=lambda: TODAY)
     window.show()
     try:
@@ -136,9 +135,9 @@ def test_three_days_workspace_model_and_real_ui_mutations(app, folders, tmp_path
     monkeypatch.setattr(QMessageBox, 'information', lambda *args: None)
     monkeypatch.setattr(QMessageBox, 'question', lambda *args: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, 'exec_', lambda self: 0)
-    monkeypatch.setattr(QMessageBox, 'clickedButton', lambda self: next(b for b in self.buttons() if b.text() == 'Meglévők kihagyása'))
+    monkeypatch.setattr(QMessageBox, 'clickedButton', lambda self: next(b for b in self.buttons() if b.text() == 'Meglévők kihagyása, hiányzók kicsomagolása'))
     monkeypatch.setattr(QDialog, 'exec_', lambda self: dialogs.append(self.windowTitle()) or 0)
-    settings = Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'))
+    settings = Settings(source=str(source), target=str(target))
     window = MainWindow(settings, today_provider=lambda: TODAY)
     window.show()
     try:
@@ -150,24 +149,15 @@ def test_three_days_workspace_model_and_real_ui_mutations(app, folders, tmp_path
             window.day_table.selectRow(row)
             assert table_files(window) == first_names
             assert window.workspace_model is model
-        rect = window.day_table.visualItemRect(window.day_table.item(1, 0))
-        QTest.mouseDClick(window.day_table.viewport(), Qt.LeftButton, pos=rect.center())
-        app.processEvents()
-        assert not dialogs  # Nincs megtévesztő, automatikus ZIP-dokumentumablak.
-        assert table_files(window) == first_names and len(inventory_calls) == reads_before
         window.day_table.selectRow(1)
         second_day = window.current_day()
-        store = CompletionStore(tmp_path / 'shared', source, target)
-        store.set_done(second_day, True)
         window.actions[0].trigger()
         wait(app, lambda: table_files(window) == first_names | second_names and not window.jobs)
         assert all(window.docs_table.item(i, 2).text() in ('2026.11.09.', '2026.11.10.') for i in range(12))
-        window.actions[2].trigger()
+        window.actions[1].trigger()
         wait(app, lambda: table_files(window) == first_names and not window.jobs)
-        assert day_identity(second_day) in store.read()
-        window.actions[3].trigger()
+        window.actions[2].trigger()
         wait(app, lambda: window.docs_table.rowCount() == 0 and not window.jobs)
-        assert day_identity(second_day) in store.read()
         assert (target / 'keep.csv').exists() and (target / 'subfolder').is_dir()
         assert before_source == {p.name: p.read_bytes() for p in source.iterdir()}
         assert not errors
@@ -186,7 +176,7 @@ def test_old_origins_only_after_user_click_unknown_still_opens(app, folders, tmp
         return original(path, *args, **kwargs)
     monkeypatch.setattr(zipfile, 'ZipFile', spy)
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
-    window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared')), today_provider=lambda: TODAY)
+    window = MainWindow(Settings(source=str(source), target=str(target)), today_provider=lambda: TODAY)
     window.show()
     try:
         wait(app, lambda: bool(window.days) and not window.jobs)
@@ -222,7 +212,7 @@ def test_cached_old_and_ambiguous_origins_in_actual_workspace_table(app, folders
         return original(path, *args, **kwargs)
     monkeypatch.setattr(zipfile, 'ZipFile', spy)
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
-    window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared')), today_provider=lambda: TODAY)
+    window = MainWindow(Settings(source=str(source), target=str(target)), today_provider=lambda: TODAY)
     window.show()
     try:
         wait(app, lambda: window.docs_table.rowCount() == 3 and not window.jobs)
@@ -244,7 +234,7 @@ def test_source_column_stays_visible_with_long_filename(app, folders, tmp_path, 
     name = 'nagyon_hosszu_pdf_fajlnev_' * 2 + 'abcdef0123456789.pdf'
     make_zip(source, TODAY, {name})
     (target / name).write_bytes(pdf_bytes)
-    window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared')), today_provider=lambda: TODAY)
+    window = MainWindow(Settings(source=str(source), target=str(target)), today_provider=lambda: TODAY)
     window.show()
     try:
         wait(app, lambda: window.docs_table.rowCount() == 1 and not window.jobs)

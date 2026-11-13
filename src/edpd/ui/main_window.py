@@ -1,20 +1,20 @@
 from datetime import date, datetime
 from pathlib import Path
 from dataclasses import dataclass
-from PySide2.QtCore import Qt, QTimer, QObject, Signal, QRunnable, QThreadPool, QByteArray
+from PySide2.QtCore import Qt, QTimer, QObject, Signal, QSize, QRunnable, QThreadPool, QByteArray
 from PySide2.QtGui import QColor, QBrush, QPalette
 from .. import __version__
 from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView,
-                              QStyle, QDialog, QPushButton, QAction, QSizePolicy, QToolButton, QHBoxLayout)
+                              QDialog, QPushButton, QAction, QSizePolicy, QToolButton, QHBoxLayout, QProgressBar)
 from ..config import cache_directory
-from ..completion_service import CompletionStore, day_identity
 from ..file_service import FileService, validate_paths
 from ..models import Capabilities
 from ..paths import directory
 from ..state_service import inventory, day_status
 from ..zip_service import ZipService, read_document, MAX_PDF
 from .pdf_viewer import PDFViewer
+from .icons import icon
 from .settings_dialog import SettingsDialog, check_settings
 
 
@@ -22,17 +22,19 @@ class Signals(QObject):
     done = Signal(object)
     failed = Signal(str)
     finished = Signal()
+    progress = Signal(str, int, int)
 
 
 class Job(QRunnable):
-    def __init__(self, function):
+    def __init__(self, function, with_progress=False):
         super().__init__()
         self.function = function
+        self.with_progress = with_progress
         self.signals = Signals()
 
     def run(self):
         try:
-            self.signals.done.emit(self.function())
+            self.signals.done.emit(self.function(self.signals.progress.emit) if self.with_progress else self.function())
         except Exception as exc:
             self.signals.failed.emit(str(exc))
         finally:
@@ -57,16 +59,12 @@ class WorkspaceModel:
 class Snapshot:
     archive: DailyArchiveModel
     workspace: WorkspaceModel
-    completed: set
-    shared_error: str
     pending: tuple
     origins_complete: bool
     access_error: str = ''
 
 
 def row_appearance(state):
-    if state == 'Elvégezve':
-        return '#167235', False
     if state == 'Kicsomagolva':
         return '#000000', True
     if state == 'Részben kicsomagolva':
@@ -81,9 +79,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.settings, self.capabilities, self.today = settings, capabilities, today_provider
         self.zip = ZipService(cache_dir=cache_directory())
-        self.days, self.files, self.sizes, self.completed = [], {}, {}, set()
+        self.days, self.files, self.sizes = [], {}, {}
         self.work_keys, self.entries, self.origin_pending = [], (), ()
-        self.origins_complete, self.shared_error, self.access_error = True, '', ''
+        self.origins_complete, self.access_error = True, ''
         self.archive_model = DailyArchiveModel([], {}, ())
         self.workspace_model = WorkspaceModel({}, {}, {})
         self.origin_requested = False
@@ -91,9 +89,19 @@ class MainWindow(QMainWindow):
         self.busy = self.preview_busy = self.origin_busy = False
         self.preview_generation = self.source_generation = 0
         self.preview_pending = None
+        self.extracting = False
+        self.extraction_label = QLabel()
+        self.extraction_bar = QProgressBar()
+        self.extraction_bar.setMaximumWidth(220)
+        self.statusBar().addPermanentWidget(self.extraction_label)
+        self.statusBar().addPermanentWidget(self.extraction_bar)
+        self.extraction_label.hide()
+        self.extraction_bar.hide()
         self.setWindowTitle(f'EDPD {__version__} – Postai dokumentumkezelő')
+        self.setWindowIcon(icon('app'))
         self.resize(1600, 900)
         toolbar = QToolBar('Műveletek')
+        toolbar.setIconSize(QSize(32, 32))
         toolbar.setMovable(False)
         toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.addToolBar(toolbar)
@@ -105,21 +113,21 @@ class MainWindow(QMainWindow):
         toolbar.addWidget(self.toolbar_controls)
         # Only operation buttons may overflow; About always keeps its own space.
         toolbar = QToolBar('Műveleti gombok')
+        toolbar.setIconSize(QSize(32, 32))
         toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         toolbar.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
         controls_layout.addWidget(toolbar, 1)
         self.actions = []
-        for title, icon, callback in [
-            ('Kicsomagolás', QStyle.StandardPixmap.SP_ArrowDown, self.extract),
-            ('Elvégezve jelölés', QStyle.StandardPixmap.SP_DialogApplyButton, self.toggle_done),
-            ('Kijelölt nap fájljainak törlése', QStyle.StandardPixmap.SP_TrashIcon, lambda: self.delete(False)),
-            ('Munkamappa ürítése', QStyle.StandardPixmap.SP_DialogDiscardButton, lambda: self.delete(True)),
-            ('Frissítés', QStyle.StandardPixmap.SP_BrowserReload, self.refresh),
-            ('Beállítások', QStyle.StandardPixmap.SP_FileDialogContentsView, self.configure)]:
-            self.actions.append(toolbar.addAction(self.style().standardIcon(icon), title, callback))
-        self.mark_action = self.actions[1]
+        for title, icon_name, callback in [
+            ('Kicsomagolás', 'extract', self.extract),
+            ('Kijelölt nap fájljainak törlése', 'delete', lambda: self.delete(False)),
+            ('Munkamappa ürítése', 'clear', lambda: self.delete(True)),
+            ('Frissítés', 'refresh', self.refresh),
+            ('Beállítások', 'settings', self.configure)]:
+            self.actions.append(toolbar.addAction(icon(icon_name), title, callback))
         self.about_button = QToolButton()
-        self.about_button.setIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
+        self.about_button.setIcon(icon('about'))
+        self.about_button.setIconSize(QSize(32, 32))
         self.about_button.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.about_button.setToolTip('Névjegy')
         self.about_button.setAccessibleName('Névjegy')
@@ -135,9 +143,9 @@ class MainWindow(QMainWindow):
         self.docs_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
         self.docs_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeToContents)
         top = self.panel('EDPD mappa tartalma', self.day_table)
-        self.shared_notice = QLabel()
-        self.shared_notice.setWordWrap(True)
-        top.layout().insertWidget(1, self.shared_notice)
+        self.access_notice = QLabel()
+        self.access_notice.setWordWrap(True)
+        top.layout().insertWidget(1, self.access_notice)
         self.left.addWidget(top)
         self.workspace_panel = self.panel('A munkamappa dokumentumai', self.docs_table)
         self.origin_button = QPushButton('További forráskeresés')
@@ -151,6 +159,7 @@ class MainWindow(QMainWindow):
         self.split.setSizes([560, 1040])
         self.setCentralWidget(self.split)
         self.day_table.itemSelectionChanged.connect(self.select_day)
+        self.day_table.itemDoubleClicked.connect(lambda *_: self.extract())
         self.day_table.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.archive_preview_action = QAction('ZIP-csomag PDF-jeinek megtekintése…', self.day_table)
         self.archive_preview_action.triggered.connect(self.browse_day)
@@ -197,23 +206,21 @@ class MainWindow(QMainWindow):
         day = self.current_day()
         valid = day is not None and not day.error and not self.access_error
         for action in self.actions:
-            action.setEnabled(not self.busy)
-        self.actions[0].setEnabled(not self.busy and valid)
-        self.actions[2].setEnabled(not self.busy and valid and self.capabilities.delete)
-        self.actions[3].setEnabled(not self.busy and self.capabilities.delete and not self.access_error)
-        self.mark_action.setEnabled(not self.busy and valid and not self.shared_error and self.capabilities.mark_done)
-        marked = day is not None and day_identity(day) in self.completed
-        self.mark_action.setText('Jelölés visszavonása' if marked else 'Elvégezve jelölés')
-        self.mark_action.setToolTip(self.shared_error or 'A jelölés nem módosítja a PDF-eket.')
+            action.setEnabled(not (self.busy or self.extracting))
+        self.actions[0].setEnabled(not (self.busy or self.extracting) and valid)
+        self.actions[1].setEnabled(not (self.busy or self.extracting) and valid and self.capabilities.delete)
+        self.actions[2].setEnabled(not (self.busy or self.extracting) and self.capabilities.delete and not self.access_error)
         self.update_origin_button()
 
-    def submit(self, function, success, *, kind='main', refresh_on_error=False, failure=None):
+    def submit(self, function, success, *, kind='main', refresh_on_error=False, failure=None, progress=None):
         if kind == 'main' and self.busy:
             return
         if kind == 'main':
             self.busy = True
             self.update_actions()
-        job = Job(function)
+        job = Job(function, with_progress=progress is not None)
+        if progress is not None:
+            job.signals.progress.connect(progress)
         job.needs_refresh = False
         self.jobs.add(job)
         def receive(value):
@@ -289,19 +296,14 @@ class MainWindow(QMainWindow):
                 guard_error = str(exc)
         access_error = '\n'.join(e for e in (source_error, target_error, guard_error) if e)
         daily = {day.date: ('Munkamappa nem érhető el' if target_error else day_status(day, files, sizes)) for day in days}
-        try:
-            completed = self.completion_store(settings).read()
-            shared_error = ''
-        except Exception as exc:
-            completed, shared_error = set(), str(exc)
         if source_error:
             origins, pending, complete = {name: 'Ismeretlen' for name in files}, (), False
         else:
             origins, pending, complete = self.zip.origin_state(source, files, entries)
-        return Snapshot(DailyArchiveModel(days, daily, entries), WorkspaceModel(files, sizes, origins), completed, shared_error, pending, complete, access_error)
+        return Snapshot(DailyArchiveModel(days, daily, entries), WorkspaceModel(files, sizes, origins), pending, complete, access_error)
 
     def refresh(self):
-        if not self.busy:
+        if not self.busy and not self.extracting:
             self.statusBar().showMessage('Mappák és csomagok ellenőrzése…')
             self.submit(self.snapshot, self.apply_snapshot)
 
@@ -310,14 +312,14 @@ class MainWindow(QMainWindow):
         self.source_generation += 1
         self.archive_model, self.workspace_model = snapshot.archive, snapshot.workspace
         self.days, self.files, self.sizes = snapshot.archive.days, snapshot.workspace.files, snapshot.workspace.sizes
-        self.completed, self.shared_error, self.access_error = snapshot.completed, snapshot.shared_error, snapshot.access_error
+        self.access_error = snapshot.access_error
         self.entries, self.origin_pending = snapshot.archive.entries, snapshot.pending
         self.origins_complete = snapshot.origins_complete
         if not self.origin_pending:
             self.origin_requested = False
-        notice = self.access_error or (('Közös jelölések nem érhetők el: ' + self.shared_error) if self.shared_error else '')
-        self.shared_notice.setText(notice)
-        self.shared_notice.setVisible(bool(notice))
+        notice = self.access_error
+        self.access_notice.setText(notice)
+        self.access_notice.setVisible(bool(notice))
         self.day_table.blockSignals(True)
         self.day_table.setUpdatesEnabled(False)
         header = self.day_table.horizontalHeader()
@@ -325,12 +327,13 @@ class MainWindow(QMainWindow):
         self.day_table.setRowCount(len(self.days))
         row = 0
         for index, day in enumerate(self.days):
-            state = 'Elvégezve' if day_identity(day) in self.completed else snapshot.archive.states[day.date]
-            display = state + (' • jelölés nem érhető el' if self.shared_error else '')
+            state = snapshot.archive.states[day.date]
+            display = state
             color, bold = row_appearance(state)
             self.fill(self.day_table, index,
                       [day.date.strftime('%Y.%m.%d.'), ', '.join(p.name for p in day.archives), str(len(day.documents)), display],
                       appearance=(color, bold), tooltip=day.error or display)
+            self.day_table.item(index, 0).setIcon(icon('warning' if day.error or state == 'Fájlütközés' else 'zip'))
             if selected and day.date == selected.date:
                 row = index
         if self.days:
@@ -356,6 +359,7 @@ class MainWindow(QMainWindow):
         self.docs_table.setCurrentCell(-1, -1)
         for row, key in enumerate(self.work_keys):
             self.fill(self.docs_table, row, [self.files[key].name, f'{self.sizes[key] / 1024:,.1f} KiB', origins.get(key, 'Ismeretlen')])
+            self.docs_table.item(row, 0).setIcon(icon('pdf'))
             if key == selected:
                 self.docs_table.selectRow(row)
         self.docs_table.setUpdatesEnabled(True)
@@ -385,7 +389,7 @@ class MainWindow(QMainWindow):
         self.show_status()
 
     def lookup_origins(self):
-        if not self.origin_requested or self.busy or self.origin_busy or not self.files or not self.origin_pending:
+        if not self.origin_requested or self.busy or self.extracting or self.origin_busy or not self.files or not self.origin_pending:
             return
         generation, entries, source = self.source_generation, self.entries, self.settings.source
         files = dict(self.files)
@@ -478,6 +482,7 @@ class MainWindow(QMainWindow):
         table.setRowCount(len(day.documents))
         for row, doc in enumerate(day.documents):
             self.fill(table, row, [doc.name, f'{doc.size / 1024:,.1f} KiB'])
+            table.item(row, 0).setIcon(icon('pdf'))
         layout.addWidget(table)
         button = QPushButton('Megtekintés kicsomagolás nélkül')
         layout.addWidget(button)
@@ -493,42 +498,74 @@ class MainWindow(QMainWindow):
     def service(self):
         return FileService(self.settings.source, self.settings.target, self.capabilities, zip_service=self.zip)
 
-    def completion_store(self, settings=None):
-        settings = settings or self.settings
-        return CompletionStore(settings.shared_data, settings.source, settings.target, self.capabilities, zip_service=self.zip)
+    def extraction_progress(self, text, done=0, total=0):
+        self.extraction_label.setText(f'{text}: {done} / {total}' if total else text)
+        self.extraction_bar.setRange(0, total)
+        self.extraction_bar.setValue(done)
+        self.extraction_label.show()
+        self.extraction_bar.show()
 
-    def toggle_done(self):
-        day = self.current_day()
-        if not day or self.shared_error or self.access_error or not self.capabilities.mark_done:
-            return
-        desired, store = day_identity(day) not in self.completed, self.completion_store()
-        self.submit(lambda: (store.set_done(day, desired), self.snapshot()), self.operation_done, refresh_on_error=True)
+    def finish_extraction(self):
+        self.extracting = False
+        self.extraction_label.hide()
+        self.extraction_bar.hide()
+        self.update_actions()
 
     def extract(self):
         day = self.current_day()
-        if not day or day.error or self.access_error:
+        if self.busy or self.extracting or not day or day.error or self.access_error:
             return
-        box = QMessageBox(self)
-        box.setWindowTitle('Napi csomag kicsomagolása')
-        existing = sum(d.name.casefold() in self.files for d in day.documents)
-        box.setText(f'A napi csomag {len(day.documents)} PDF-et tartalmaz; a legutóbbi frissítéskor {existing} már a munkamappában volt. Válasszon műveletet!')
-        skip = box.addButton('Meglévők kihagyása', QMessageBox.ButtonRole.AcceptRole)
-        overwrite = None
-        if self.capabilities.overwrite:
-            overwrite = box.addButton('Meglévők felülírása', QMessageBox.ButtonRole.DestructiveRole)
-        cancel = box.addButton('Mégse', QMessageBox.ButtonRole.RejectRole)
-        box.setDefaultButton(skip)
-        box.setEscapeButton(cancel)
-        box.exec_()
-        if box.clickedButton() is None or box.clickedButton() not in (skip, overwrite):
-            return
-        mode = 'overwrite' if box.clickedButton() == overwrite else 'skip'
+        self.extracting = True
+        self.update_actions()
+        self.extraction_progress('Kicsomagolás folyamatban…')
         service = self.service()
-        self.submit(lambda: (service.extract(day, mode), self.snapshot()), self.operation_done, refresh_on_error=True)
+
+        def failed(text):
+            self.finish_extraction()
+            self.error(text)
+
+        def prepared(plan):
+            # A következő háttérművelet csak az előkészítő job lezárása után indul.
+            QTimer.singleShot(0, lambda: choose(plan))
+
+        def choose(plan):
+            if plan.present == plan.total:
+                self.finish_extraction()
+                QMessageBox.information(self, 'Kicsomagolás',
+                    'A kiválasztott nap dokumentumai már megtalálhatók a munkamappában.')
+                return
+            mode = 'skip'
+            if plan.present:
+                box = QMessageBox(self)
+                box.setWindowTitle('Napi csomag kicsomagolása')
+                box.setText(f'{plan.total} PDF-ből {plan.present} már megtalálható, '
+                            f'{plan.total - plan.present} hiányzik a munkamappából.')
+                skip = box.addButton('Meglévők kihagyása, hiányzók kicsomagolása', QMessageBox.AcceptRole)
+                overwrite = box.addButton('Meglévők felülírása', QMessageBox.DestructiveRole) if self.capabilities.overwrite else None
+                cancel = box.addButton('Mégse', QMessageBox.RejectRole)
+                box.setDefaultButton(skip)
+                box.setEscapeButton(cancel)
+                box.exec_()
+                clicked = box.clickedButton()
+                if clicked is None or clicked not in (skip, overwrite):
+                    self.finish_extraction()
+                    return
+                mode = 'overwrite' if clicked is overwrite else 'skip'
+            self.extraction_progress('Kicsomagolás folyamatban…')
+            def perform(notify):
+                message = service.extract(day, mode, expected_existing=plan.existing, progress=notify)
+                return message, self.snapshot()
+            def done(result):
+                message, snapshot = result
+                self.apply_snapshot(snapshot)
+                self.finish_extraction()
+                self.statusBar().showMessage(message, 10000)
+            self.submit(perform, done, failure=failed, refresh_on_error=True, progress=self.extraction_progress)
+        self.submit(lambda: service.extraction_plan(day), prepared, failure=failed)
 
     def delete(self, all_files):
         day = None if all_files else self.current_day()
-        if self.access_error or not self.capabilities.delete or (not all_files and not day):
+        if self.busy or self.extracting or self.access_error or not self.capabilities.delete or (not all_files and not day):
             return
         service = self.service()
         def prepare():
@@ -574,7 +611,7 @@ class MainWindow(QMainWindow):
             self.submit(save, saved)
 
     def closeEvent(self, event):
-        if self.jobs:
+        if self.jobs or self.extracting:
             QMessageBox.information(self, 'Folyamatban lévő művelet', 'Kérjük, várja meg a háttérművelet befejezését.')
             event.ignore()
             return

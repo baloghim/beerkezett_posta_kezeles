@@ -44,7 +44,6 @@ def run(report_path, require_windows1607=False):
         from PySide2.QtWidgets import QApplication, QMessageBox, QStyleFactory
         from PySide2.QtPrintSupport import QPrinter
         from .config import Settings
-        from .completion_service import CompletionStore, day_identity
         from .file_service import FileService
         from .locking import workspace_lock
         from .models import EDPDError
@@ -85,14 +84,14 @@ def run(report_path, require_windows1607=False):
                 app.processEvents()
                 if errors:
                     raise RuntimeError('\n'.join(errors))
-                if window is not None and (window.access_error or window.shared_error):
-                    raise RuntimeError(window.access_error or window.shared_error)
+                if window is not None and (window.access_error):
+                    raise RuntimeError(window.access_error)
                 if condition():
                     return
                 time.sleep(0.01)
             raise TimeoutError('A felület háttérművelete nem fejeződött be.')
         try:
-            window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(base / 'shared')))
+            window = MainWindow(Settings(source=str(source), target=str(target)))
             window.show()
             wait(lambda: bool(window.entries) and not window.jobs)
             if len(window.days) != 2 or len(window.days[0].documents) != 2:
@@ -155,9 +154,12 @@ def run(report_path, require_windows1607=False):
             result['checks'].append('workspace_file_lock')
             day = window.days[0]
             service = FileService(source, target)
-            service.extract(day)
-            window.refresh()
-            wait(lambda: not window.jobs)
+            window.extract()
+            if not window.extracting or not window.extraction_bar.isVisible():
+                raise RuntimeError('A kicsomagolás folyamatjelzője nem jelent meg.')
+            wait(lambda: not window.extracting and not window.jobs)
+            if window.extraction_bar.isVisible() or list(target.glob('*.csv')):
+                raise RuntimeError('Hibás kicsomagolási befejezés.')
             if window.day_table.item(0, 3).text() != 'Kicsomagolva':
                 raise RuntimeError('Hibás kicsomagolási állapot.')
             # A munkamappából megnyitás is az éles UI-kódon keresztül fut.
@@ -183,14 +185,15 @@ def run(report_path, require_windows1607=False):
             if not (target / 'keep.csv').exists() or list(target.glob('*.pdf')):
                 raise RuntimeError('Hibás törlési határok.')
             result['checks'].append('daily_delete_and_clear')
-            store = CompletionStore(base / 'shared', source, target)
-            store.set_done(day, True)
-            if day_identity(day) not in store.read():
-                raise RuntimeError('A közös Elvégezve jelölés nem maradt meg.')
-            store.set_done(day, False)
-            if day_identity(day) in store.read():
-                raise RuntimeError('A jelölés visszavonása sikertelen.')
-            result['checks'].append('shared_completion_mark_and_revoke')
+            from .ui.icons import icon, ASSETS
+            metadata = json.loads((ASSETS / 'manifest.json').read_text())
+            result['icons'] = list(metadata['icons']) + ['app']
+            for name in result['icons']:
+                if icon(name).pixmap(32, 32).isNull():
+                    raise RuntimeError('Hiányzó Crystal ikon: ' + name)
+            if window.windowIcon().isNull() or not (ASSETS / 'edpd.ico').is_file():
+                raise RuntimeError('Hiányzó EDPD alkalmazásikon.')
+            result['checks'].append('crystal_icons_and_application_icon')
             window.close()
             window = None
             restored = Settings.load(base / 'profile' / 'EDPD' / 'settings.json')

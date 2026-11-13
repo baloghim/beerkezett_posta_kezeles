@@ -13,3 +13,14 @@ Külső komponensek:
 
 Terjesztés előtt a jogtulajdonos rendezze a saját kód és a csomagolt
 függőségek licencelését, valamint a szükséges licencszövegek átadását.
+
+Crystal Remix ikonok:
+- Eredeti Crystal Project / Crystal Clear ikonok: Everaldo Coelho.
+- Crystal Remix: Viet Dang (Đặng Việt Dũng).
+- https://github.com/dangvd/crystal-remix-icon-theme
+- GNU Lesser General Public License (LGPL), az upstream README nem rögzít verziót.
+- Az upstream README változatlan másolata és a LGPL 2.1 / LGPL 3.0
+  licencszövegek: licenses/crystal-remix/. Nem állítunk az upstream által
+  meg nem adott konkrét licencverziót.
+- Az EDPD színezett és kombinált származékokat is tartalmaz; a módosítások,
+  eredeti fájlok és újragenerálás: docs/ICONS.md és scripts/generate_icons.py.

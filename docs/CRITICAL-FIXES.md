@@ -28,7 +28,7 @@ A tesztarchívum 1000 egymást követő napot, három naptári évet fed le. A c
 
 A változatlan ZIP-ek második, automatikus frissítése nem növeli a megnyitásszámot. Ez a tesztadatokra vonatkozó mérés; éles hálózati másodpercekre nem következtetünk belőle. Több ZIP egy napon természetesen több megnyitást, de egy napi sort jelent.
 
-A külön munkamappa-teszt három napot választ ki egymás után, hat változatlan alsó PDF-sorral és változatlan munkamappamodellel, új munkamappa-olvasás nélkül. A második nap kicsomagolása 12-re növeli, annak törlése 6-ra csökkenti, az ürítés 0-ra csökkenti a tényleges táblázatsorokat. Az Elvégezve jelölés megmarad, a forrás ZIP-ek és más fájltípusok változatlanok.
+A külön munkamappa-teszt három napot választ ki egymás után, hat változatlan alsó PDF-sorral és változatlan munkamappamodellel, új munkamappa-olvasás nélkül. A második nap kicsomagolása 12-re növeli, annak törlése 6-ra csökkenti, az ürítés 0-ra csökkenti a tényleges táblázatsorokat. A forrás ZIP-ek és más fájltípusok változatlanok.
 
 A Forrásnap-tesztek lefedik az ismert napot, a korábban indexelt régi PDF-et, az Ismeretlen és Több lehetséges nap megjelenést, az index érvénytelenítését és az ismeretlen eredetű PDF megnyitását. A korábbi nyomtatási és fájlműveleti tesztek is megmaradnak.
 
@@ -36,4 +36,4 @@ A Forrásnap-tesztek lefedik az ismert napot, a korábban indexelt régi PDF-et,
 
 A kiadási workflow JUnit XML-ben megőrzi a mért számokat. A becsomagolt EXE tíz ellenőrzése között külön vizsgálat ellenőrzi a munkamappa-címet, a három oszlopot, az üres cél üres tábláját minden felső kijelölésnél, a valódi célfájl megjelenését, valamint egy történeti ZIP kizárását az induló feldolgozásból. A jelentés pontos alkalmazásverziót is tartalmaz.
 
-A Python 3.10.11 / Qt 5.15.2 / PyMuPDF 1.23.26 natív alap, az Elvégezve tárolása és a fájlműveletek hatóköre változatlan. A Windows 10 1607-en a 2.0.1 új önellenőrzése és a valódi SMB/nyomtatópróba még szükséges; modern runneren sikeres futást nem tekintünk célgépes bizonyítéknak.
+A Python 3.10.11 / Qt 5.15.2 / PyMuPDF 1.23.26 natív alap és a fájlműveletek hatóköre változatlan. A Windows 10 1607-en a 2.0.1 új önellenőrzése és a valódi SMB/nyomtatópróba még szükséges; modern runneren sikeres futást nem tekintünk célgépes bizonyítéknak.

@@ -41,7 +41,9 @@ jobs:
       - name: Önálló Windows x64 alkalmazás
         run: python scripts/ci_run.py python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
       - name: Natív DLL-leltár és statikus kompatibilitási ellenőrzés
-        run: python scripts/ci_run.py python scripts/audit_windows_binary.py dist/EDPD-Manager --report native-dependencies.json
+        run: |
+          python scripts/ci_run.py python scripts/audit_windows_binary.py dist/EDPD-Manager --report native-dependencies.json
+          python scripts/ci_run.py python scripts/check_packaged_icons.py dist/EDPD-Manager --report icon-audit.json
       - name: Csomagolt EXE valódi indítása a modern runneren
         shell: pwsh
         run: |
@@ -55,7 +57,7 @@ jobs:
           $result = Get-Content -Raw $report | ConvertFrom-Json
           if (-not $result.passed -or -not $result.host.frozen) { throw ('Hibás csomagolt önellenőrzés: ' + (Get-Content -Raw $report)) }
           $expectedVersion = python -c "from edpd import __version__; print(__version__)"
-          if ($result.application_version -ne $expectedVersion -or $result.checks.Count -lt 10) { throw 'Eltérő verzió vagy hiányos EDPD 2.0 önellenőrzés' }
+          if ($result.application_version -ne $expectedVersion -or $result.checks.Count -lt 10) { throw 'Eltérő verzió vagy hiányos EDPD önellenőrzés' }
           # A modern runner eredménye nem 1607 kompatibilitási bizonyíték.
           if ($result.windows1607_verified) { throw 'Hibás OS-minősítés a modern runneren' }
       - name: Csomagolás
@@ -64,7 +66,7 @@ jobs:
           Copy-Item README.md, LICENSE dist/EDPD-Manager/
           Copy-Item docs/WINDOWS-VALIDATION.md, docs/WINDOWS1607.md dist/EDPD-Manager/
           Copy-Item scripts/Test-Windows1607.ps1 dist/EDPD-Manager/
-          Copy-Item modern-runner-selftest.json, native-dependencies.json, test-results.xml dist/EDPD-Manager/
+          Copy-Item modern-runner-selftest.json, native-dependencies.json, icon-audit.json, test-results.xml dist/EDPD-Manager/
           Compress-Archive -Path dist/EDPD-Manager -DestinationPath EDPD-Manager-Windows-x64.zip
           (Get-FileHash EDPD-Manager-Windows-x64.zip -Algorithm SHA256).Hash.ToLower() + '  EDPD-Manager-Windows-x64.zip' | Out-File EDPD-Manager-Windows-x64.zip.sha256 -Encoding ascii
       - uses: actions/upload-artifact@v4
@@ -81,6 +83,7 @@ jobs:
           path: |
             modern-runner-selftest.json
             native-dependencies.json
+            icon-audit.json
             test-results.xml
   # Nem fut PR-ból, és alapból nem vár nem létező runnerre.
   # A konkrét 1607-es vendég OS-t a mellékelt script és az EXE is ellenőrzi.
@@ -137,5 +140,5 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          printf '%s\n' "EDPD $RELEASE_TAG – gyári Qt-stílusválasztó, Névjegy, alapértelmezett Szélesség PDF-nézet és pontosított felületi feliratok." 'Változatlan Windows 10 1607 x64 technológiai alap: Python 3.10.11, Qt 5.15.2 / PySide2 5.15.2.1, PyMuPDF 1.23.26.' 'A Windows build, a tesztek, a csomagolt EXE önellenőrzése és a statikus DLL-vizsgálat a kiadást készítő workflow részei. A célgépes Windows 10 1607 és többfelhasználós munkahelyi próba külön szükséges.' > release-notes.txt
+          printf '%s\n' "EDPD $RELEASE_TAG – egyszerűsített kicsomagolás valódi folyamatjelzéssel, dupla kattintás, Crystal Remix ikonok és saját alkalmazásikon; a kézi közös jelölések megszűntek." 'Változatlan Windows 10 1607 x64 technológiai alap: Python 3.10.11, Qt 5.15.2 / PySide2 5.15.2.1, PyMuPDF 1.23.26.' 'A Windows build, a tesztek, a csomagolt EXE önellenőrzése és a statikus DLL-vizsgálat a kiadást készítő workflow részei. A célgépes Windows 10 1607 és többfelhasználós munkahelyi próba külön szükséges.' > release-notes.txt
           gh release create "$RELEASE_TAG" release/EDPD-Manager-Windows-x64.zip release/EDPD-Manager-Windows-x64.zip.sha256 --verify-tag --notes-file release-notes.txt --title "EDPD $RELEASE_TAG"

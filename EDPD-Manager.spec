@@ -2,14 +2,14 @@
 import sys
 from pathlib import Path
 import PySide2
-from PyInstaller.utils.hooks import collect_all
+from PyInstaller.utils.hooks import collect_all, collect_data_files
 
 if sys.platform != 'win32' or sys.version_info[:2] != (3, 10):
     raise RuntimeError('A kiadáshoz Windows x64 és Python 3.10 szükséges.')
 
 fitz_data, fitz_binaries, fitz_imports = collect_all('fitz')
 a = Analysis(['run_edpd.py'], pathex=['src'], binaries=fitz_binaries,
-             datas=fitz_data, hiddenimports=fitz_imports,
+             datas=fitz_data + collect_data_files('edpd') + [('licenses', 'licenses')], hiddenimports=fitz_imports,
              excludes=['PySide6', 'PyQt6', 'PyQt5', 'tkinter', 'numpy'],
              noarchive=False)
 
@@ -44,5 +44,5 @@ for name, source in vc.items():
 a.binaries = cleaned
 pyz = PYZ(a.pure)
 exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='EDPD-Manager',
-          debug=False, strip=False, upx=False, console=False)
+          debug=False, strip=False, upx=False, console=False, icon='src/edpd/assets/edpd.ico')
 coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name='EDPD-Manager')

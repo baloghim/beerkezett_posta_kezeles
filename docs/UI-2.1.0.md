@@ -19,7 +19,7 @@ QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m edpd.main --self-test --report
 - A 10 funkcionális önellenőrzés sikeres. A JSON külön felsorolja a ténylegesen
   kipróbált Qt-stílusokat: ezen a gépen Windows és Fusion.
 - A teljes tesztcsomag továbbra is ellenőrzi az 1000 ZIP-es időszakszűrést,
-  a munkamappa függetlenségét, a célzott törlést, a jelöléseket és a fájlzárakat.
+  a munkamappa függetlenségét, a célzott törlést, a fájlzárakat.
 - A próbák kizárólag szintetikus adatokat, helyi ideiglenes mappákat használnak.
 
 A Windows csomagolási parancs ezen a Linux gépen a spec platformellenőrzésénél

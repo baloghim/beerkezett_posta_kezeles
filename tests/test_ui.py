@@ -42,7 +42,7 @@ def test_main_workflow_and_settings(app, folders, pdf_bytes, tmp_path, monkeypat
         z.writestr('sum.csv', 'ignored')
     errors = []
     monkeypatch.setattr(QMessageBox, 'warning', lambda *args: errors.append(args[-1]))
-    window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'), history_days=None))
+    window = MainWindow(Settings(source=str(source), target=str(target), history_days=None))
     window.show()
     wait_for(app, lambda: len(window.days) == 1 and not window.jobs)
     assert window.docs_table.rowCount() == 0  # A ZIP tartalma nem a munkamappa.
@@ -84,8 +84,8 @@ def test_ui_extract_delete_and_clear(app, folders, pdf_bytes, tmp_path, monkeypa
     monkeypatch.setattr(QMessageBox, 'information', lambda *args: None)
     monkeypatch.setattr(QMessageBox, 'question', lambda *args: QMessageBox.StandardButton.Yes)
     monkeypatch.setattr(QMessageBox, 'exec_', lambda self: 0)
-    monkeypatch.setattr(QMessageBox, 'clickedButton', lambda self: next(b for b in self.buttons() if b.text() == 'Meglévők kihagyása'))
-    window = MainWindow(Settings(source=str(source), target=str(target), shared_data=str(tmp_path / 'shared'), history_days=None))
+    monkeypatch.setattr(QMessageBox, 'clickedButton', lambda self: next(b for b in self.buttons() if b.text() == 'Meglévők kihagyása, hiányzók kicsomagolása'))
+    window = MainWindow(Settings(source=str(source), target=str(target), history_days=None))
     window.show()
     wait_for(app, lambda: bool(window.days) and not window.jobs)
     window.extract()

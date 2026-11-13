@@ -1,0 +1,178 @@
+{
+  "upstream": "https://github.com/dangvd/crystal-remix-icon-theme",
+  "commit": "f8863b558b8eedf22caea0eabe18030bfcbe0783",
+  "icons": {
+    "extract": {
+      "source": "apps/ark.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "delete": {
+      "source": "places/user-trash-full.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "clear": {
+      "source": "places/folder.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "refresh": {
+      "source": "apps/system-software-update.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "settings": {
+      "source": "actions/system-run.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "about": {
+      "source": "status/dialog-information.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "first": {
+      "source": "actions/go-first.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "previous": {
+      "source": "actions/go-previous.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "next": {
+      "source": "actions/go-next.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "last": {
+      "source": "actions/go-last.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "zoom_in": {
+      "source": "actions/zoom-in.png",
+      "sizes": [
+        22,
+        32
+      ]
+    },
+    "zoom_out": {
+      "source": "actions/zoom-out.png",
+      "sizes": [
+        22,
+        32
+      ]
+    },
+    "width": {
+      "source": "actions/zoom-fit-best.png",
+      "sizes": [
+        22,
+        32
+      ]
+    },
+    "page": {
+      "source": "actions/zoom-fit-best.png",
+      "sizes": [
+        22,
+        32
+      ]
+    },
+    "print": {
+      "source": "actions/document-print.png",
+      "sizes": [
+        22,
+        32
+      ]
+    },
+    "zip": {
+      "source": "mimetypes/application-x-archive.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "pdf": {
+      "source": "mimetypes/application-pdf.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "warning": {
+      "source": "status/dialog-warning.png",
+      "sizes": [
+        22,
+        32,
+        48,
+        64,
+        128
+      ]
+    },
+    "mail": {
+      "source": "actions/mail-message.png",
+      "sizes": [
+        22,
+        32
+      ]
+    }
+  }
+}

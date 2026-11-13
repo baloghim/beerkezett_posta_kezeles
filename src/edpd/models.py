@@ -28,11 +28,10 @@ class Day:
 class Capabilities:
     overwrite: bool = True
     delete: bool = True
-    mark_done: bool = True
 
     @classmethod
     def viewer(cls):
-        return cls(False, False, False)
+        return cls(False, False)
 
 
 @dataclass(frozen=True)

@@ -19,6 +19,8 @@ def main():
     from .config import Settings
     from .ui.main_window import MainWindow
     app = QApplication(sys.argv)
+    from .ui.icons import icon
+    app.setWindowIcon(icon('app'))
     try:
         settings = Settings.load()
     except (OSError, ValueError, TypeError) as exc:

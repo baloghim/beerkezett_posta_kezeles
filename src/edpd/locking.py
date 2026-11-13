@@ -9,7 +9,7 @@ def workspace_lock(target, *, filename='.edpd-operation.lock', label='munkamappa
 
     A technikai fájlt tilos törölni: a név újralétrehozása megkerülné a zárat.
     """
-    if filename not in ('.edpd-operation.lock', '.edpd-marks.lock'):
+    if filename != '.edpd-operation.lock':
         raise ValueError('Ismeretlen zárolási fájl.')
     path = target / filename
     if path.is_symlink():

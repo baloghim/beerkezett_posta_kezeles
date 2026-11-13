@@ -51,7 +51,7 @@ def test_extract_skip_overwrite_and_source_unchanged(folders):
     dest.write_bytes(b'existing')
     service.extract(day, 'skip')
     assert dest.read_bytes() == b'existing'
-    service.extract(day, 'overwrite')
+    service.extract(day, 'overwrite', expected_existing=service.extraction_plan(day).existing)
     assert dest.read_bytes() == b'first'
     with pytest.raises(EDPDError):
         service.extract(day, 'cancel')
@@ -135,8 +135,10 @@ def test_collisions_and_viewer_permissions(folders):
     with pytest.raises(EDPDError):
         limited.delete(day, confirmed=True, expected_names={'a.pdf'})
     archive(source, '20261110_2.zip', {'a.pdf': b'b'})
+    (target / 'a.pdf').unlink()  # Írás előtt továbbra is kötelező az ütközésvizsgálat.
     with pytest.raises(EDPDError, match='Más napi'):
         FileService(source, target).extract(day)
+    (target / 'a.pdf').write_bytes(b'a')
     with pytest.raises(EDPDError, match='Több nap'):
         FileService(source, target).delete(day, confirmed=True, expected_names={'a.pdf'})
 
@@ -188,7 +190,7 @@ def test_failed_replace_preserves_original_and_cleans_temp(folders, monkeypatch)
         raise OSError('Hálózati kapcsolat megszakadt')
     monkeypatch.setattr(os, 'replace', fail)
     with pytest.raises(OSError):
-        service.extract(day, 'overwrite')
+        service.extract(day, 'overwrite', expected_existing=service.extraction_plan(day).existing)
     assert destination.read_bytes() == b'old'
     assert not list(target.glob('.edpd-*.tmp'))
 

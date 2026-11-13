@@ -1,7 +1,8 @@
 from ..qt_image import image_from_pixmap
 from PySide2.QtCore import Qt, QSize, QEvent, QTimer
-from PySide2.QtGui import QPixmap, QIcon, QPainter, QColor, QPen
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QToolBar, QScrollArea, QLabel, QMessageBox, QStyle
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QToolBar, QScrollArea, QLabel, QMessageBox
+from .icons import icon
 from ..pdf_service import PDFService
 from ..print_service import print_pdf
 
@@ -15,23 +16,25 @@ class PDFViewer(QWidget):
         self.fit_mode = 'width'
         layout = QVBoxLayout(self)
         self.toolbar = QToolBar('PDF')
-        self.toolbar.setIconSize(QSize(16, 16))
-        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.toolbar.setIconSize(QSize(22, 22))
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         layout.addWidget(self.toolbar)
-        for title, callback in [('⏮', lambda: self.move(0)), ('◀', lambda: self.move(self.page - 1)),
-                                ('▶', lambda: self.move(self.page + 1)), ('⏭', lambda: self.move(self.pdf.pages - 1) if self.pdf else None)]:
-            self.toolbar.addAction(title, callback)
+        for name, title, callback in [('first', 'Első oldal', lambda: self.move(0)),
+                                      ('previous', 'Előző oldal', lambda: self.move(self.page - 1)),
+                                      ('next', 'Következő oldal', lambda: self.move(self.page + 1)),
+                                      ('last', 'Utolsó oldal', lambda: self.move(self.pdf.pages - 1) if self.pdf else None)]:
+            self.toolbar.addAction(icon(name), title, callback)
         self.page_label = QLabel('Nincs megnyitott PDF')
         self.toolbar.addWidget(self.page_label)
-        self.toolbar.addAction('−', lambda: self.zoom(0.8))
-        self.toolbar.addAction('+', lambda: self.zoom(1.25))
-        self.width_action = self.toolbar.addAction('Szélesség', lambda: self.fit('width'))
+        self.toolbar.addAction(icon('zoom_out'), 'Kicsinyítés', lambda: self.zoom(0.8))
+        self.toolbar.addAction(icon('zoom_in'), 'Nagyítás', lambda: self.zoom(1.25))
+        self.width_action = self.toolbar.addAction(icon('width'), 'Szélesség', lambda: self.fit('width'))
         self.width_action.setToolTip('Az oldal igazítása a betekintő szélességéhez')
-        self.page_action = self.toolbar.addAction('Teljes oldal', lambda: self.fit('page'))
+        self.page_action = self.toolbar.addAction(icon('page'), 'Teljes oldal', lambda: self.fit('page'))
         self.page_action.setToolTip('A teljes oldal igazítása a látható területhez')
         for action in (self.width_action, self.page_action):
             action.setCheckable(True)
-        self.print_action = self.toolbar.addAction(printer_icon(), 'Nyomtatás', self.print_current)
+        self.print_action = self.toolbar.addAction(icon('print'), 'Nyomtatás', self.print_current)
         self.print_action.setEnabled(False)
         self.scroll = QScrollArea()
         self.scroll.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -109,22 +112,3 @@ class PDFViewer(QWidget):
                 print_pdf(self.pdf, self)
             except Exception as exc:
                 QMessageBox.warning(self, 'Nyomtatási hiba', str(exc))
-
-
-
-def printer_icon():
-    pix = QPixmap(24, 24)
-    pix.fill(Qt.GlobalColor.transparent)
-    painter = QPainter(pix)
-    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    painter.setPen(QPen(QColor('#29445d'), 1.5))
-    painter.setBrush(QColor('white'))
-    painter.drawRect(6, 2, 12, 8)
-    painter.setBrush(QColor('#b8cbd9'))
-    painter.drawRoundedRect(2, 8, 20, 11, 2, 2)
-    painter.setBrush(QColor('white'))
-    painter.drawRect(6, 13, 12, 9)
-    painter.drawLine(9, 16, 15, 16)
-    painter.drawLine(9, 19, 15, 19)
-    painter.end()
-    return QIcon(pix)

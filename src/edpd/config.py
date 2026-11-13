@@ -12,14 +12,13 @@ class Settings:
     target: str = 'G:\\Igazgatas\\DMS_One\\00_t_meghajtóról érkezők'
     refresh_minutes: int = 15
     history_days: int | None = 14
-    shared_data: str = 'G:\\Igazgatas\\DMS_One\\EDPD_appdata'
     geometry: str = ''
     panels: str = ''
     left_panels: str = ''
     qt_style: str = 'Fusion'
 
     def __post_init__(self):
-        for key in ('source', 'target', 'shared_data'):
+        for key in ('source', 'target'):
             value = getattr(self, key)
             if not isinstance(value, str):
                 raise ValueError('Érvénytelen mappaútvonal.')

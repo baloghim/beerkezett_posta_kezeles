@@ -1,11 +1,9 @@
 from dataclasses import replace
 import tempfile
-from pathlib import Path
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPushButton,
                               QDialogButtonBox, QHBoxLayout, QFileDialog, QSlider, QLabel, QComboBox, QStyleFactory, QGroupBox, QApplication)
 from ..file_service import validate_paths
-from ..completion_service import validate_shared_directory
 from ..paths import normalize_path
 
 
@@ -20,8 +18,7 @@ class SettingsDialog(QDialog):
         layout.addLayout(form)
         self.source = QLineEdit(settings.source)
         self.target = QLineEdit(settings.target)
-        self.shared_data = QLineEdit(settings.shared_data)
-        for title, edit in [('Forrásarchívum (csak olvasás)', self.source), ('Ideiglenes munkamappa', self.target), ('Közös jelölések mappája', self.shared_data)]:
+        for title, edit in [('Forrásarchívum (csak olvasás)', self.source), ('Ideiglenes munkamappa', self.target)]:
             row = QHBoxLayout()
             row.addWidget(edit)
             browse = QPushButton('Tallózás…')
@@ -46,14 +43,15 @@ class SettingsDialog(QDialog):
         reset.clicked.connect(lambda: self.slider.setValue(3))
         row.addWidget(reset)
         form.addRow('Automatikus frissítés', row)
-        layout.addWidget(QLabel('A közös jelölések mappája legyen külön a forrástól és a munkamappától.\nMentéskor háttérben ellenőrizzük az útvonalakat és az írási jogosultságot.'))
+        layout.addWidget(QLabel('Mentéskor háttérben ellenőrizzük az útvonalakat és az írási jogosultságot.'))
         appearance = QGroupBox('Megjelenés')
         appearance_form = QFormLayout(appearance)
         self.style_combo = QComboBox()
-        self.style_combo.addItems(QStyleFactory.keys())
+        for key in QStyleFactory.keys():
+            self.style_combo.addItem('Vista' if key.lower() == 'windowsvista' else key, key)
         current = QApplication.instance().style().objectName()
         selected = next((i for i in range(self.style_combo.count())
-                         if self.style_combo.itemText(i).lower() == current.lower()), 0)
+                         if self.style_combo.itemData(i).lower() == current.lower()), 0)
         self.style_combo.setCurrentIndex(selected)
         appearance_form.addRow('Qt-stílus', self.style_combo)
         layout.addWidget(appearance)
@@ -74,8 +72,8 @@ class SettingsDialog(QDialog):
 
     def result_settings(self):
         return replace(self.original, source=normalize_path(self.source.text()), target=normalize_path(self.target.text()),
-                       shared_data=normalize_path(self.shared_data.text()), history_days=self.history.currentData(),
-                       refresh_minutes=self.slider.value() * 5, qt_style=self.style_combo.currentText())
+                       history_days=self.history.currentData(),
+                       refresh_minutes=self.slider.value() * 5, qt_style=self.style_combo.currentData())
 
 
 def check_settings(settings):
@@ -84,14 +82,6 @@ def check_settings(settings):
     with __import__('os').scandir(source) as entries:
         next(entries, None)
     with tempfile.TemporaryFile(dir=target) as stream:
-        stream.write(b'EDPD')
-        stream.flush()
-    shared = validate_shared_directory(settings.shared_data, source, target)
-    if not shared.exists():
-        if not shared.parent.is_dir():
-            raise ValueError('A közös állapotmappa szülője nem érhető el.')
-        shared.mkdir()
-    with tempfile.TemporaryFile(dir=shared) as stream:
         stream.write(b'EDPD')
         stream.flush()
     return settings
