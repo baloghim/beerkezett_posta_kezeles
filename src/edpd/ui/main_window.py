@@ -88,6 +88,7 @@ class MainWindow(QMainWindow):
     def __init__(self, settings, capabilities=Capabilities(), today_provider=date.today, startup_trace=None, auto_refresh=True):
         super().__init__()
         self.trace = startup_trace
+        self.first_refresh_started = None
         settings.icon_theme = set_theme(settings.icon_theme)
         self.settings, self.capabilities, self.today = settings, capabilities, today_provider
         self.zip = ZipService(cache_dir=cache_directory(), startup_trace=startup_trace)
@@ -308,8 +309,11 @@ class MainWindow(QMainWindow):
                 self.trace.add('workspace_check_ms', (time.perf_counter() - started) * 1000)
 
     def read_daily_archives(self, settings):
+        before = time.perf_counter()
         try:
             source = directory(settings.source, 'A forrásarchívum')
+            if self.trace:
+                self.trace.add('source_directory_check_ms', (time.perf_counter() - before) * 1000)
             started = time.perf_counter()
             entries = self.zip.catalogue(source)
             if self.trace:
@@ -320,6 +324,8 @@ class MainWindow(QMainWindow):
                 self.trace.add('zip_filtered_scan_ms', (time.perf_counter() - started) * 1000)
             return DailyArchiveModel(days, {}, entries), source, ''
         except Exception as exc:
+            if self.trace:
+                self.trace.add('source_directory_check_ms', (time.perf_counter() - before) * 1000)
             return DailyArchiveModel([], {}, ()), None, str(exc)
 
     def snapshot(self):
@@ -354,6 +360,9 @@ class MainWindow(QMainWindow):
 
     def refresh(self):
         if not self.busy and not self.extracting:
+            if self.trace and self.first_refresh_started is None:
+                self.first_refresh_started = time.perf_counter()
+                self.trace.mark('first_background_load_started')
             self.statusBar().showMessage('Dokumentumok és napi csomagok betöltése…')
             self.submit(self.snapshot, self.apply_snapshot)
 
@@ -396,6 +405,8 @@ class MainWindow(QMainWindow):
         self.last_refresh = datetime.now()
         self.show_status()
         if self.trace:
+            if self.first_refresh_started is not None:
+                self.trace.add('first_automatic_refresh_ms', (time.perf_counter() - self.first_refresh_started) * 1000)
             self.trace.mark('first_background_load_finished')
             self.trace.publish('loaded', access_error=bool(self.access_error))
 

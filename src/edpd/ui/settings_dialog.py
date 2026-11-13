@@ -44,7 +44,7 @@ class SettingsDialog(QDialog):
         reset.clicked.connect(lambda: self.slider.setValue(3))
         row.addWidget(reset)
         form.addRow('Automatikus frissítés', row)
-        layout.addWidget(QLabel('Mentéskor háttérben ellenőrizzük az útvonalakat és az írási jogosultságot.'))
+        layout.addWidget(QLabel('Mappaváltoztatáskor háttérben ellenőrizzük az útvonalakat és az írási jogosultságot.'))
         appearance = QGroupBox('Megjelenés')
         appearance_form = QFormLayout(appearance)
         self.style_combo = QComboBox()

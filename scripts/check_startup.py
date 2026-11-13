@@ -78,6 +78,30 @@ class Harness:
         assert result['events_ms']['main_window_visible'] <= result['events_ms']['first_background_load_finished']
         return result
 
+    def native_main_windows(self):
+        if os.name != 'nt':
+            return None
+        import ctypes
+        from ctypes import wintypes as w
+        from edpd.single_instance import InstanceGuard
+        guard = InstanceGuard(self.namespace)
+        user = ctypes.WinDLL('user32', use_last_error=True)
+        user.GetPropW.argtypes = [w.HWND, w.LPCWSTR]
+        user.GetPropW.restype = w.HANDLE
+        user.IsWindowVisible.argtypes = [w.HWND]
+        user.GetWindowThreadProcessId.argtypes = [w.HWND, ctypes.POINTER(w.DWORD)]
+        callback = ctypes.WINFUNCTYPE(w.BOOL, w.HWND, w.LPARAM)
+        user.EnumWindows.argtypes = [callback, w.LPARAM]
+        pids = []
+        def inspect(hwnd, unused):
+            if user.GetPropW(hwnd, guard.property_name+'.main') and user.IsWindowVisible(hwnd):
+                pid = w.DWORD()
+                user.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+                pids.append(pid.value)
+            return True
+        user.EnumWindows(callback(inspect), 0)
+        return pids
+
     def finish(self, run):
         process = run[0]
         assert process.wait(timeout=45) == 0, process.stderr.read().decode('utf-8', errors='replace')
@@ -102,6 +126,9 @@ def verify(command, root, *, copied_command=None):
         peer = harness.wait(second, lambda r:r.get('outcome') == 'secondary')
         assert peer['peer_state'] in ('main_visible', 'activation_requested'), peer
         harness.finish(second)
+        assert 'qt_core_import_ms' not in peer['durations_ms']
+        if os.name == 'nt':
+            assert harness.native_main_windows() == [first[0].pid]
         assert first[0].poll() is None
         checks.extend(['first_new_profile_start', 'second_launch_activates_existing'])
         # Same identity from another installed copy or another working directory.
@@ -110,6 +137,8 @@ def verify(command, root, *, copied_command=None):
         third = harness.start('other-copy', command=copied_command, cwd=other)
         assert harness.wait(third, lambda r:r.get('outcome') == 'secondary')['peer_state'] != 'initializing'
         harness.finish(third)
+        if os.name == 'nt':
+            assert harness.native_main_windows() == [first[0].pid]
         checks.append('different_installation_directories')
         harness.finish(first)
 

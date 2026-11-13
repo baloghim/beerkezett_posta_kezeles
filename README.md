@@ -2,6 +2,10 @@
 
 Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak kezeléséhez, a munkamappa PDF-jeinek megtekintéséhez és nyomtatásához. Nincs dokumentumfeltöltés, telemetria vagy külön szerver.
 
+A 2.4-es forrás öt, futás közben váltható belső ikontémát kínál: **Crystal SVG, Nuvola, KDE Modern Classic, Papirus, We10X** (Beállítások → Megjelenés → Ikontéma). A választás a meglévő settings.json fájlban marad meg; a Qt-stílus külön választható, az EXE saját ikonja állandó. [Eredet, licencek és fallback](docs/ICON-THEMES.md), [összehasonlító kép](docs/icon-theme-comparison.png).
+
+Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a főablak után, háttérben fut. A munkamenetenkénti példányvédelem a külön mappákból indított 2.4-es másolatokat is összefogja. [Mérések, példányvédelem és tesztelés](docs/STARTUP.md). Az alsó lista felirata Dátum; a dátumok képzése és rendezése változatlan.
+
 ## Windows letöltés
 
 **[EDPD 2.3.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.3.0/EDPD-Manager-Windows-x64.zip)**
@@ -11,7 +15,7 @@ Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-c
 ## Újdonságok a 2.3 változatban
 
 - 40 pixeles fő eszköztár, kisebb PDF-eszköztár. Félkövér, kissé nagyobb panelcímek, kényelmesebb táblázatsorok. A gyári Qt-stílusok megmaradtak, nincs dekoratív QSS.
-- Arányos, kézzel átméretezhető oszlopok. Kiindulóarányok fent: 18/44/10/28%. Lent: **Nap – Fájlnév – Méret**, 21/64/15%, olvashatóságot védő minimális szélességekkel. A Nap az eredeti ZIP dátuma (`ÉÉÉÉ.HH.NN.`); a sorrend dátum szerint csökkenő, azon belül fájlnév szerint növekvő. Ismeretlen és többértelmű eredet a dátumos tételek után marad. A munkamappa továbbra is kizárólag a célmappa közvetlen PDF-jeiből áll; a felső kijelölés nem szűri.
+- Arányos, kézzel átméretezhető oszlopok. Kiindulóarányok fent: 18/44/10/28%. Lent: **Dátum – Fájlnév – Méret**, 21/64/15%, olvashatóságot védő minimális szélességekkel. A Dátum az eredeti ZIP dátuma (`ÉÉÉÉ.HH.NN.`); a sorrend dátum szerint csökkenő, azon belül fájlnév szerint növekvő. Ismeretlen és többértelmű eredet a dátumos tételek után marad. A munkamappa továbbra is kizárólag a célmappa közvetlen PDF-jeiből áll; a felső kijelölés nem szűri.
 - A További forráskeresés gomb csak további ZIP-ek esetén látszik, a keresés végén eltűnik.
 - A kicsomagolás külön **modális folyamatablakban** fut, Crystal ikonnal, dátummal, valós fájlszámmal és Mégse gombbal. A Qt eseményciklusa működik, a főablakot a művelet fogja.
 - Először az összes szükséges PDF ellenőrzött ideiglenes területre kerül, biztonsági másolatokkal; utána ellenőrzött véglegesítés következik. Megszakítás és hiba esetén a saját új fájlokat visszavonjuk, a felülírtak eredeti tartalmát helyreállítjuk. A hálózati zár a teljes művelet alatt megmarad. Részleges helyreállításnál a program név szerint jelzi a problémákat és megőrzi a naplót/másolatokat. [Helyreállítás és korlátai](docs/RECOVERY.md).

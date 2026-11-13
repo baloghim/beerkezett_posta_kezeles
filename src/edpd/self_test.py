@@ -216,6 +216,21 @@ def run(report_path, require_windows1607=False):
             if window.windowIcon().isNull() or not (ASSETS / 'edpd.ico').is_file():
                 raise RuntimeError('Hiányzó EDPD alkalmazásikon.')
             result['checks'].append('crystal_icons_and_application_icon')
+            from .ui.icons import THEME_NAMES, set_theme
+            result['icon_themes'] = []
+            for theme in THEME_NAMES:
+                set_theme(theme)
+                app.processEvents()
+                for role in metadata['icons']:
+                    if icon(role).pixmap(22, 22).isNull():
+                        raise RuntimeError('Hiányzó témaikon: ' + theme + ' / ' + role)
+                if window.actions[0].icon().cacheKey() != icon('extract').cacheKey():
+                    raise RuntimeError('A fő eszköztár ikonja nem frissült.')
+                if window.viewer.print_action.icon().cacheKey() != icon('print').cacheKey():
+                    raise RuntimeError('A PDF eszköztár ikonja nem frissült.')
+                result['icon_themes'].append(theme)
+            set_theme(window.settings.icon_theme)
+            result['checks'].append('five_live_icon_themes')
             window.close()
             window = None
             restored = Settings.load(base / 'profile' / 'EDPD' / 'settings.json')

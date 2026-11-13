@@ -24,3 +24,13 @@ Crystal Remix ikonok:
   meg nem adott konkrét licencverziót.
 - Az EDPD színezett és kombinált származékokat is tartalmaz; a módosítások,
   eredeti fájlok és újragenerálás: docs/ICONS.md és scripts/generate_icons.py.
+
+EDPD 2.4 további belső ikontémák (válogatott, eredeti upstream fájlok):
+- Nuvola: David Vignoni, LGPL-2.1-or-later; licenses/nuvola/.
+- KDE Modern Classic: Shaun Belcher, LGPL-3.0-or-later; történeti KDE Classic
+  elemekhez külön megengedő feltételek; licenses/modern-classic/. Az upstream
+  AI-segített rekonstrukcióként ismerteti a témát; a teljes tájékoztatást megőrizzük.
+- Papirus: Papirus Development Team, GPL-3.0; licenses/papirus/.
+- We10X: yeyushengfan258, Ubuntu Yaru közreműködők, GPL-3.0; licenses/we10x/.
+Pontos fájleredet, commitok, SHA-256, módosítások és licencértelmezés:
+assets/themes.json és docs/ICON-THEMES.md.

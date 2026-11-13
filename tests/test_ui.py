@@ -111,7 +111,7 @@ def test_packaged_entry_selftest_without_real_folders(tmp_path):
                             capture_output=True, text=True, timeout=60, env=os.environ.copy())
     assert result.returncode == 0, (report.read_text(encoding='utf-8') if report.exists() else result.stderr)
     data = json.loads(report.read_text())
-    assert data['passed'] and len(data['checks']) == 13
+    assert data['passed'] and len(data['checks']) == 14
     assert data['versions']['Qt'] == '5.15.2'
     assert not data['host']['frozen']
     if sys.platform != 'win32' or sys.getwindowsversion().build != 14393:

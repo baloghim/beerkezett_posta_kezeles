@@ -70,6 +70,7 @@ def main():
         before = time.perf_counter()
         from .ui.icons import icon, set_theme
         app.setWindowIcon(icon('app'))
+        trace.add('icon_resources_load_ms', (time.perf_counter() - before) * 1000)
         pixmap = QPixmap(480, 180)
         pixmap.fill(QColor('white'))
         painter = QPainter(pixmap)

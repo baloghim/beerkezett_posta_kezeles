@@ -15,7 +15,7 @@ A [1607-es EXE-önellenőrzést](WINDOWS1607.md) futtassa le a részletes próba
 9. A 2.3 modális folyamatablakában ellenőrizze a Mégse, Escape és bezárás megszakítási kérelmét. Próbálja a visszavonást új és felülírt PDF-ekkel, valamint hálózati kieséssel. Részleges helyreállításnál maradjanak meg a napló/másolatok, másik kliens módosított fájlja ne törlődjön. [Helyreállítás](RECOVERY.md). Kicsomagoláskor ellenőrizze az üres, részleges és teljes napi állapotot; a dupla kattintás csak egyszer indítson műveletet. Két klienssel próbálja a zárat és az időközben megváltozott célfájl miatti új felülírási megerősítést. A folyamatjelző valós fájlszámot mutasson, a PDF-betekintő közben működjön.
 10. Ellenőrizze 5 és 60 perces frissítéssel, hogy az olvasott PDF nyitva marad. Indítsa újra az alkalmazást, ellenőrizze a beállítások és ablakelrendezés megmaradását.
 
-11. A Nap–Fájlnév–Méret lista dátum szerint csökkenő, azon belül név szerint növekvő legyen. A jobb gombos jelölés a ténylegesen megcélzott napra vonatkozzon. A PDF mentése ZIP-betekintésből is őrizze meg az eredeti bájtokat, és a forrás/munkamappa írásvédelmét.
+11. A Dátum–Fájlnév–Méret lista dátum szerint csökkenő, azon belül név szerint növekvő legyen. A jobb gombos jelölés a ténylegesen megcélzott napra vonatkozzon. A PDF mentése ZIP-betekintésből is őrizze meg az eredeti bájtokat, és a forrás/munkamappa írásvédelmét.
 
 ## Ismert működési határok
 
@@ -25,3 +25,7 @@ A [1607-es EXE-önellenőrzést](WINDOWS1607.md) futtassa le a részletes próba
 - A program nem szakítja félbe erőszakkal az operációs rendszer hálózati hívásait; hálózati kieséskor az OS-időtúllépésig a feladat várakozhat. A felület használható, bezárni a háttérfeladat befejezése után lehet.
 - A normál és hibával visszatérő fájlműveletek takarítják a saját ideiglenes fájlt. Áramkimaradás vagy folyamatkilövés után `.edpd-*.tmp` maradhat a célban. Ezek dokumentumadatot tartalmazhatnak; az üzemeltető csak minden kliens leállítása után távolítsa el őket. A program nem töröl automatikusan technikai állományokat.
 - Windows EXE-t Linuxon nem készítünk; a Windows Actions futás és a fenti kézi ellenőrzés külön bizonyíték szükséges a kiadáshoz.
+
+## 2.4 átvételi kiegészítés
+
+A [részletes indítási ellenőrzéseket](STARTUP.md) végezze el valódi Windows 10 1607 célgépen is: friss rendszerindítás utáni első indítás, gyors dupla indítás, indulás alatti második indítás, külön mappák, lassú/hiányzó H: és G:, hibás settings.json, normál bezárás és folyamatkilövés utáni újraindítás. A modern Windows CI-ben végrehajtott EXE-próba és annak időadatai a ZIP startup-validation.json fájljában vannak. Próbálja végig az öt ikontémát mindhárom panelen és a PDF-eszköztáron, valamint a Névjegy és a helyi menük ikonjait.

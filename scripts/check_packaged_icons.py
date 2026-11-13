@@ -38,7 +38,15 @@ def verify(bundle, source):
         target=packaged/path.relative_to(source)
         assert target.is_file(),target
         assert hashlib.sha256(path.read_bytes()).digest()==hashlib.sha256(target.read_bytes()).digest(),target
-    return {'passed':True,'ico_sizes':sorted(verified),'asset_files':len(files)}
+    license_source=Path(__file__).resolve().parents[1]/'licenses'
+    license_files=[p for p in license_source.rglob('*') if p.is_file()]
+    for path in license_files:
+        target=bundle/'_internal/licenses'/path.relative_to(license_source)
+        assert target.is_file() and target.read_bytes()==path.read_bytes(),target
+    themes=json.loads((packaged/'themes.json').read_text(encoding='utf-8'))
+    assert len(themes['themes'])==5
+    return {'passed':True,'ico_sizes':sorted(verified),'asset_files':len(files),
+            'license_files':len(license_files),'themes':list(themes['themes'])}
 
 
 if __name__=='__main__':
