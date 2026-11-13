@@ -41,7 +41,7 @@ A Python belépési pont után mért nagyobb szakaszok:
 | Helyi ZIP-index betöltése | 0.699 ms |
 | Első automatikus frissítés | 5.707 ms |
 
-Ebben a mintában a legnagyobb külön mért GUI-szakasz az első splash-festés/fontinicializálás, utána a PDF/nyomtatás modulimportja. A főablak felépítése körülbelül 33 ms; az ikonok gyorsítótárazottak. Több másodperces helyi inicializálási elakadást ezen a runneren nem tapasztaltunk. A splash időmérése tartalmazza az ikonidőt; a táblázat sorai nem adhatók egyszerűen össze. A becsomagolt QtCore import 0,009 ms-os újraimportja nem a teljes natív betöltést jelenti: a PyInstaller runtimehookjai a belépési pont előtt is tölthetnek modulokat, ami a külső, együttes időbe tartozik. Nem állítunk külön megmért bootloader- vagy Python-inicializálási időt.
+Ebben a mintában a legnagyobb külön mért GUI-szakasz az indítóképernyő létrehozása és első festése, utána a PDF/nyomtatás modulimportja. A főablak felépítése körülbelül 33 ms; az ikonok gyorsítótárazottak. Több másodperces helyi inicializálási elakadást ezen a runneren nem tapasztaltunk. A splash időmérése tartalmazza az ikonidőt; a táblázat sorai nem adhatók egyszerűen össze. A becsomagolt QtCore import 0,009 ms-os újraimportja nem a teljes natív betöltést jelenti: a PyInstaller runtimehookjai a belépési pont előtt is tölthetnek modulokat, ami a külső, együttes időbe tartozik. Nem állítunk külön megmért bootloader- vagy Python-inicializálási időt.
 
 A két másodperccel késleltetett hálózati munkaszál próbájában a főablak a Python belépési pont után **424.754 ms**-nál már látható volt, a betöltés **2439.688 ms**-nál fejeződött be. A felület a hálózati feladat eredményétől függetlenül jelent meg. Nem elérhető mappákkal és hibás JSON-konfigurációval is sikeres az indulás.
 
