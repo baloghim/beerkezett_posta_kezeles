@@ -8,9 +8,9 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 
 ## Windows letöltés
 
-**[EDPD Menedzser 2.6.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.0/EDPD-Manager-Windows-x64.zip)**
+**[EDPD Menedzser 2.6.1 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.1/EDPD-Manager-Windows-x64.zip)**
 
-**A 2.6.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** 157 sikeres Windows-teszt, öt csomagolt EXE-futtatás összesen 100 sikeres önellenőrzéssel, 12 indítási ellenőrzés, mindhárom felületi téma és 125/150%-os Qt-skálázási próba szerepel a csomag jelentéseiben. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzési jelentés és mérési korlátok](docs/RELEASE-2.6.0.md).
+**A 2.6.1 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** 177 sikeres Windows-teszt, öt csomagolt EXE-futtatás összesen 100 sikeres funkcionális ellenőrzéssel, 12 indítási ellenőrzési csoport, 11 ikontéma, öt egységes felületi stílus és 125/150%-os Qt-skálázási próba. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzési jelentés, méret/indulás és korlátok](docs/RELEASE-2.6.1.md).
 
 ## Újdonságok a 2.6.1 változatban
 
