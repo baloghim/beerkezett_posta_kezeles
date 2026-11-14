@@ -20,6 +20,8 @@ from .icons import icon, manager, set_theme, ThemedMenu as QMenu
 from .settings_dialog import SettingsDialog, check_settings
 from .proportional_table import ProportionalTable
 from .extraction_dialog import ExtractionDialog
+from .themes import manager as surface_manager, set_theme as set_surface_theme
+from .themes.widgets import StatusItemDelegate, ThemeStatusBar
 from ..processed_store import ProcessedStore, packet_id
 
 
@@ -87,6 +89,9 @@ def row_appearance(state):
 class MainWindow(QMainWindow):
     def __init__(self, settings, capabilities=Capabilities(), today_provider=date.today, startup_trace=None, auto_refresh=True):
         super().__init__()
+        self.setObjectName('edpd-window')
+        self.setStatusBar(ThemeStatusBar(self))
+        settings.surface_theme = set_surface_theme(settings.surface_theme)
         self.trace = startup_trace
         self.first_refresh_started = None
         settings.icon_theme = set_theme(settings.icon_theme)
@@ -122,8 +127,10 @@ class MainWindow(QMainWindow):
             base_points = main_font.pixelSize() * 72 / (dpi if dpi > 0 else 96)
         main_font.setPointSizeF(base_points + 2)
         toolbar.setFont(main_font)
+        toolbar.setObjectName('main-toolbar')
         self.main_toolbar = toolbar
         self.toolbar_controls = QWidget()
+        self.toolbar_controls.setObjectName('toolbar-controls')
         self.toolbar_controls.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         controls_layout = QHBoxLayout(self.toolbar_controls)
         controls_layout.setContentsMargins(0, 0, 0, 0)
@@ -131,6 +138,7 @@ class MainWindow(QMainWindow):
         # Only operation buttons may overflow; About always keeps its own space.
         toolbar = QToolBar('Műveleti gombok')
         toolbar.setFont(main_font)
+        toolbar.setObjectName('operation-toolbar')
         self.operation_toolbar = toolbar
         toolbar.layout().setSpacing(6)
         toolbar.setIconSize(QSize(40, 40))
@@ -146,6 +154,7 @@ class MainWindow(QMainWindow):
             ('Frissítés', 'refresh', self.refresh),
             ('Beállítások', 'settings', self.configure)]:
             self.actions.append(toolbar.addAction(icon(icon_name), title, callback))
+            self.actions[-1].setFont(main_font)
             self.action_roles.append(icon_name)
         self.about_button = QToolButton()
         self.about_button.setIcon(icon('about'))
@@ -159,6 +168,7 @@ class MainWindow(QMainWindow):
         self.left = QSplitter(Qt.Orientation.Vertical)
         self.day_table = self.table(['Dátum', 'Csomag azonosítója / ZIP neve', 'PDF-ek', 'Állapot'], (.18, .44, .10, .28))
         self.docs_table = self.table(['Dátum', 'Fájlnév', 'Méret'], (.21, .64, .15))
+        self.day_table.setItemDelegate(StatusItemDelegate(self.day_table))
         bold_font = self.day_table.font()
         bold_font.setBold(True)
         metrics = QFontMetrics(bold_font)
@@ -226,8 +236,10 @@ class MainWindow(QMainWindow):
 
     def panel(self, title, table):
         panel = QWidget()
+        panel.setObjectName('edpd-panel')
         layout = QVBoxLayout(panel)
         label = QLabel(title)
+        label.setObjectName('panel-title')
         font = label.font()
         font.setBold(True)
         font.setPointSizeF(max(8, font.pointSizeF()) + 1)
@@ -448,7 +460,9 @@ class MainWindow(QMainWindow):
             progress += ' (elérési hiba miatt hiányos)' if self.access_error else ' (hibás ZIP miatt hiányos)'
         period = f'{self.settings.history_days} nap' if self.settings.history_days is not None else 'Összes'
         progress += ' • kézi keresés folyamatban' if self.origin_requested else ' • további keresés csak kérésre'
-        self.statusBar().showMessage(f'v{__version__}  |  Időszak: {period}  |  Forrás: {self.settings.source}  |  Cél: {self.settings.target}  |  {len(self.files)} PDF  |  Frissítve: {self.last_refresh:%H:%M:%S}  |  {progress}')
+        full = f'v{__version__}  |  Időszak: {period}  |  Forrás: {self.settings.source}  |  Cél: {self.settings.target}  |  {len(self.files)} PDF  |  Frissítve: {self.last_refresh:%H:%M:%S}  |  {progress}'
+        summary = f'v{__version__}  |  {period}  |  {len(self.files)} PDF  |  Frissítve: {self.last_refresh:%H:%M:%S}  |  {progress}'
+        self.statusBar().set_summary(full, summary)
 
     def update_origin_button(self):
         self.origin_button.setVisible(bool(self.origin_pending))
@@ -504,7 +518,8 @@ class MainWindow(QMainWindow):
             item.setToolTip(value + ('\n' + tooltip if tooltip and tooltip != value else ''))
             if appearance is not None:
                 color, bold = appearance
-                item.setForeground(QBrush(QColor(color) if color else table.palette().color(QPalette.Text)))
+                if color:
+                    item.setForeground(QBrush(QColor(color)))
                 font = item.font()
                 font.setBold(bold)
                 item.setFont(font)
@@ -724,7 +739,8 @@ class MainWindow(QMainWindow):
             def saved(value):
                 self.settings = value
                 from .appearance import apply_style
-                apply_style(value.qt_style)
+                apply_style(value.qt_style, value.surface_theme)
+                value.surface_theme = surface_manager().name
                 value.icon_theme = set_theme(value.icon_theme)
                 if workflow_changed:
                     self.origin_requested = False

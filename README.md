@@ -12,6 +12,14 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 
 **A 2.5.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** A csomagban 145 sikeres Windows-teszt, 17 sikeres csomagolt EXE-önellenőrzés, 11 indítási ellenőrzés, 109 auditált natív bináris, 433 ellenőrzött erőforrás és 18 licencfájl szerepel. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzési jelentés](docs/RELEASE-2.5.0.md).
 
+## Újdonságok a 2.6 változatban
+
+Választható **Longhorn Blue** és **Longhorn Slate** felület: Beállítások → Megjelenés → **Felületi téma**. Fényes, kék-ezüst vagy kékesszürke eszköztárak és panelcímek, egységes táblázatok és párbeszédablakok. A gyári Qt-stílus és az öt ikontéma külön választható. Az **Alapértelmezett** visszaállítja a dekoráció nélküli Qt-felületet; régi beállításokkal ez marad az induló megjelenés. Az alkalmazás három panelje, tényleges oszlopai és dokumentumkezelési működése megmaradt.
+
+[Használat, megvalósítás és tényleges alkalmazásképek](docs/LONGHORN.md)
+
+![Longhorn és gyári Qt összehasonlítás – tényleges alkalmazásképek](docs/longhorn-theme-comparison.png)
+
 ## Újdonságok a 2.5 változatban
 
 - Egységes felhasználói név: **EDPD Menedzser** a címsorban, a Névjegyben, az indítóképernyőn és az indulás alatti második indítás jelzésében. Az EXE fájlneve, az alkalmazásikon, a példányzár és a `%APPDATA%\EDPD\settings.json` útvonal változatlan.

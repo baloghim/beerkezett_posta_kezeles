@@ -8,6 +8,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description=DISPLAY_NAME)
     parser.add_argument('--self-test', action='store_true', help='Izolált indítási és működési próba')
+    parser.add_argument('--self-test-surface', help='Önellenőrzés felületi témája')
     parser.add_argument('--report', help='Az önellenőrzés JSON-eredménye')
     parser.add_argument('--require-windows1607', action='store_true')
     parser.add_argument('--recover-extraction', help='Megőrzött .edpd-recovery-* mappa helyreállítása')
@@ -17,6 +18,8 @@ def main():
     parser.add_argument('--startup-delay-ms', type=int, default=0)
     parser.add_argument('--startup-network-delay-ms', type=int, default=0)
     args = parser.parse_args()
+    if args.self_test_surface and not args.self_test:
+        parser.error('A self-test-surface csak önellenőrzéshez használható.')
     probing = bool(args.startup_report and args.startup_exit_ms > 0)
     if (args.startup_test_namespace or args.startup_delay_ms or args.startup_network_delay_ms) and not probing:
         parser.error('A tesztparaméterekhez startup-report és startup-exit-ms szükséges.')
@@ -39,7 +42,7 @@ def main():
         if not args.report:
             parser.error('Az önellenőrzéshez --report útvonal szükséges.')
         from .self_test import run
-        sys.exit(run(args.report, args.require_windows1607))
+        sys.exit(run(args.report, args.require_windows1607, args.self_test_surface or 'Alapértelmezett'))
     if args.report or args.require_windows1607:
         parser.error('Ezek a kapcsolók csak --self-test mellett használhatók.')
     from .startup_trace import StartupTrace
@@ -100,7 +103,7 @@ def main():
         trace.add('settings_load_ms', (time.perf_counter() - before) * 1000)
         before = time.perf_counter()
         from .ui.appearance import apply_style
-        apply_style(settings.qt_style)
+        apply_style(settings.qt_style, settings.surface_theme)
         set_theme(settings.icon_theme)
         trace.add('appearance_setup_ms', (time.perf_counter() - before) * 1000)
         before = time.perf_counter()
@@ -114,7 +117,8 @@ def main():
         splash.finish(window)
         trace.mark('main_window_visible')
         trace.publish('visible', configuration_error=configuration_error, icon_theme=settings.icon_theme,
-                      display_name=DISPLAY_NAME, window_title=window.windowTitle())
+                      display_name=DISPLAY_NAME, window_title=window.windowTitle(),
+                      surface_theme=settings.surface_theme)
         activation_timer = QTimer(window)
         activation_timer.timeout.connect(lambda: guard.poll_activation(window))
         activation_timer.start(100)

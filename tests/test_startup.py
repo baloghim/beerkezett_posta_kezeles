@@ -11,7 +11,7 @@ def test_real_process_startup_races_crashes_and_network_delays(tmp_path, monkeyp
     spec.loader.exec_module(module)
     monkeypatch.setenv('PYTHONPATH',str(root/'src'))
     result=module.verify([sys.executable,'-m','edpd.main'], tmp_path)
-    assert result['passed'] and len(result['checks'])==11
+    assert result['passed'] and len(result['checks'])==12
     assert 'main_modules_pdf_print_import_ms' in result['timings']['new_profile_first_process']['durations_ms']
 
 

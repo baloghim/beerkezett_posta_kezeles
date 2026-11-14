@@ -17,6 +17,7 @@ class Settings:
     left_panels: str = ''
     qt_style: str = 'Fusion'
     icon_theme: str = 'Crystal SVG'
+    surface_theme: str = 'Alapértelmezett'
 
     def __post_init__(self):
         for key in ('source', 'target'):
@@ -35,6 +36,8 @@ class Settings:
             raise ValueError('A beállításfájl nem JSON-objektum.')
         allowed = cls.__dataclass_fields__
         result = cls(**{k: v for k, v in data.items() if k in allowed})
+        if not isinstance(result.surface_theme, str):
+            result.surface_theme = 'Alapértelmezett'
         if (type(result.refresh_minutes) is not int or
                 result.refresh_minutes not in range(5, 61, 5) or
                 (result.history_days is not None and (type(result.history_days) is not int or result.history_days not in (14, 30, 90, 180))) or

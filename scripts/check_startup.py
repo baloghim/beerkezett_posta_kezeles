@@ -188,6 +188,13 @@ def verify(command, root, *, copied_command=None):
             assert result['icon_theme'] == theme
             harness.finish(themed)
         checks.append('five_saved_themes_start_in_real_processes')
+        for surface in ('Alapértelmezett','Longhorn Blue','Longhorn Slate'):
+            harness.settings(surface_theme=surface)
+            run=harness.start('surface-'+str(len(surface)),lifetime=150)
+            result=harness.loaded(run)
+            assert result['surface_theme']==surface
+            harness.finish(run)
+        checks.append('three_saved_surface_themes_start_in_real_processes')
 
         harness.settings()
         crashed = harness.start('crash', lifetime=30000)

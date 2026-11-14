@@ -21,7 +21,7 @@ def host_info():
     return info
 
 
-def run(report_path, require_windows1607=False):
+def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'):
     result = {'schema': 1, 'host': host_info(), 'passed': False, 'checks': [],
               'windows1607_verified': False, 'error': None}
     from . import __version__, DISPLAY_NAME
@@ -50,6 +50,10 @@ def run(report_path, require_windows1607=False):
         from .print_service import render_to_printer
         from .pdf_service import PDFService
         from .ui.main_window import MainWindow
+        from .ui.themes import THEME_NAMES, manager as surface_manager
+        if surface_theme not in THEME_NAMES:
+            raise ValueError('Ismeretlen önellenőrzési felületi téma.')
+        result['requested_surface_theme'] = surface_theme
         result['versions'] = {'PySide2': PySide2.__version__, 'Qt': qVersion(), 'PyMuPDF': fitz.VersionBind}
         result['checks'].append('native_imports')
         root = tempfile.TemporaryDirectory(prefix='EDPD-self-test-')
@@ -92,7 +96,7 @@ def run(report_path, require_windows1607=False):
                 time.sleep(0.01)
             raise TimeoutError('A felület háttérművelete nem fejeződött be.')
         try:
-            window = MainWindow(Settings(source=str(source), target=str(target)))
+            window = MainWindow(Settings(source=str(source), target=str(target), surface_theme=surface_theme))
             window.show()
             wait(lambda: bool(window.entries) and not window.jobs)
             if len(window.days) != 2 or len(window.days[0].documents) != 2:
@@ -101,12 +105,12 @@ def run(report_path, require_windows1607=False):
                 raise RuntimeError('Induláskor időszakon kívüli ZIP-et dolgozott fel.')
             result['startup_archives'] = {'total_valid_zips': len(window.entries), 'in_period_zips': sum(len(d.archives) for d in window.days),
                                           'upper_rows': window.day_table.rowCount(), 'historical_zip_opened': False}
-            from .ui.appearance import apply_style
+            from .ui.appearance import apply_style, current_style_name
             result['qt_styles'] = []
             for style in QStyleFactory.keys():
                 apply_style(style)
                 app.processEvents()
-                if app.style().objectName().lower() != style.lower() or app.styleSheet():
+                if current_style_name().lower() != style.lower() or bool(app.styleSheet()) != (surface_theme != THEME_NAMES[0]):
                     raise RuntimeError('A gyári Qt-stílus nem alkalmazható: ' + style)
                 result['qt_styles'].append(style)
             apply_style(window.settings.qt_style)
@@ -293,10 +297,14 @@ def run(report_path, require_windows1607=False):
                 result['icon_themes'].append(theme)
             set_theme(window.settings.icon_theme)
             result['checks'].append('five_live_icon_themes')
+            from .ui.themes.validation import validate_surfaces
+            result['surface_validation'] = validate_surfaces(window, report.parent / (report.stem + '-screenshots'))
+            result['checks'].extend(['surface_style_icon_matrix_pdf_integrity',
+                                     'surface_repeat_restore_and_objects', 'surface_viewport_sweep'])
             window.close()
             window = None
             restored = Settings.load(base / 'profile' / 'EDPD' / 'settings.json')
-            if restored.source != str(source) or not restored.panels:
+            if restored.source != str(source) or not restored.panels or restored.surface_theme != surface_theme:
                 raise RuntimeError('A helyi beállítások nem maradtak meg.')
             result['checks'].append('settings_and_layout_persistence')
         finally:

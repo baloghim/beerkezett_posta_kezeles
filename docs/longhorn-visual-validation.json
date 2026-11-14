@@ -1,0 +1,85 @@
+{
+  "platform": "posix",
+  "qt_platform": "offscreen",
+  "synthetic_data_only": true,
+  "viewports": [
+    {
+      "requested": [
+        1280,
+        720
+      ],
+      "actual": [
+        1280,
+        720
+      ],
+      "splitters": [
+        2,
+        2
+      ],
+      "pdf_labels": [
+        "Szélesség",
+        "Teljes oldal",
+        "Nyomtatás",
+        "PDF mentése"
+      ],
+      "pdf_buttons_visible": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "requested": [
+        1600,
+        900
+      ],
+      "actual": [
+        1600,
+        900
+      ],
+      "splitters": [
+        2,
+        2
+      ],
+      "pdf_labels": [
+        "Szélesség",
+        "Teljes oldal",
+        "Nyomtatás",
+        "PDF mentése"
+      ],
+      "pdf_buttons_visible": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "requested": [
+        1920,
+        1080
+      ],
+      "actual": [
+        1920,
+        1080
+      ],
+      "splitters": [
+        2,
+        2
+      ],
+      "pdf_labels": [
+        "Szélesség",
+        "Teljes oldal",
+        "Nyomtatás",
+        "PDF mentése"
+      ],
+      "pdf_buttons_visible": [
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ]
+}

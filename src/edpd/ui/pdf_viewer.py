@@ -3,6 +3,7 @@ from PySide2.QtCore import Qt, QSize, QEvent, QTimer, QObject, Signal, QRunnable
 from PySide2.QtGui import QPixmap, QIcon, QPalette
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QToolBar, QScrollArea, QLabel, QMessageBox, QFileDialog, QToolButton, QWidgetAction, QStylePainter, QStyleOptionToolButton, QStyle
 from .icons import icon, manager
+from .themes import manager as surface_manager
 from ..pdf_service import PDFService
 from ..print_service import print_pdf
 from ..pdf_export import save_pdf, validate_export, target_stamp
@@ -71,7 +72,16 @@ class PDFViewer(QWidget):
         self.scale = 1.0
         self.fit_mode = 'width'
         layout = QVBoxLayout(self)
+        self.theme_title = QLabel('PDF-betekintő')
+        self.theme_title.setObjectName('panel-title')
+        title_font = self.theme_title.font()
+        title_font.setBold(True)
+        title_font.setPointSizeF(max(8, title_font.pointSizeF()) + 1)
+        self.theme_title.setFont(title_font)
+        layout.addWidget(self.theme_title)
+        self.theme_title.setVisible(surface_manager().active)
         self.toolbar = QToolBar('PDF')
+        self.toolbar.setObjectName('pdf-toolbar')
         self.toolbar.setIconSize(QSize(22, 22))
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         layout.addWidget(self.toolbar)
@@ -103,8 +113,12 @@ class PDFViewer(QWidget):
         for action in (self.width_action, self.page_action, self.print_action, self.save_action):
             self.toolbar.widgetForAction(action).setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.scroll = QScrollArea()
+        self.scroll.setObjectName('pdf-scroll')
+        self.scroll.viewport().setAttribute(Qt.WA_StyledBackground, True)
+        self.scroll.viewport().setObjectName('pdf-viewport')
         self.scroll.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label = QLabel('Válasszon egy dokumentumot a betekintéshez.')
+        self.label.setObjectName('pdf-page')
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.scroll.setWidget(self.label)
         self.scroll.viewport().installEventFilter(self)
@@ -122,6 +136,10 @@ class PDFViewer(QWidget):
             if action.text() in roles:
                 action.setProperty('icon_role', roles[action.text()])
         manager().subscribe(self)
+        surface_manager().subscribe(self)
+
+    def refresh_surface(self):
+        self.theme_title.setVisible(surface_manager().active)
 
     def add_group_space(self):
         spacer = QWidget()

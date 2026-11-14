@@ -33,3 +33,7 @@ A [részletes indítási ellenőrzéseket](STARTUP.md) végezze el valódi Windo
 ## 2.5 felületi átvétel
 
 Ellenőrizze az EDPD Menedzser nevet a címsorban, a Névjegyben, az indítóképernyőn és az indulás alatti második indítás jelzésében. Korábbi profillal is ugyanaz a beállításfájl töltődjön be. A fő eszköztár feliratai az alaphoz képest két ponttal nagyobbak legyenek; a PDF-eszköztár betűmérete maradjon az eredeti. Nagyítson be egy többoldalas szintetikus PDF-et, görgessen mindkét irányban, és használja az Első/Előző/Következő/Utolsó gombokat: az új oldal felül, vízszintesen balról jelenjen meg. Ismételje meg Szélesség és Teljes oldal nézetben. A Szélesség–Teljes oldal és Nyomtatás–PDF mentése párok között azonos térköz legyen.
+
+## 2.6 Longhorn átvétel
+
+Kapcsolja be a Blue és Slate felületet, majd váltson vissza Alapértelmezettre. Ismételje meg különböző Qt-stílusokkal és mind az öt ikontémával. A szemantikus sorok zöld/barna/piros jelzése kijelöléskor is olvasható legyen. A régi profil alapértelmezett felülettel induljon; mentés után a kiválasztott téma maradjon meg, Mégse után ne változzon. Próbálja a három kért ablakméretet és a valódi Windows 125/150%-os DPI-beállítását is. A CI Qt-folyamatskálázása nem azonos a célgép Windows-beállításának megváltoztatásával. [Témák és ellenőrzések](LONGHORN.md).
