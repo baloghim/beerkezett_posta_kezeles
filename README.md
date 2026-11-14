@@ -8,9 +8,9 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 
 ## Windows letöltés
 
-**[EDPD Menedzser 2.5.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.5.0/EDPD-Manager-Windows-x64.zip)**
+**[EDPD Menedzser 2.6.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.0/EDPD-Manager-Windows-x64.zip)**
 
-**A 2.5.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** A csomagban 145 sikeres Windows-teszt, 17 sikeres csomagolt EXE-önellenőrzés, 11 indítási ellenőrzés, 109 auditált natív bináris, 433 ellenőrzött erőforrás és 18 licencfájl szerepel. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzési jelentés](docs/RELEASE-2.5.0.md).
+**A 2.6.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** 157 sikeres Windows-teszt, öt csomagolt EXE-futtatás összesen 100 sikeres önellenőrzéssel, 12 indítási ellenőrzés, mindhárom felületi téma és 125/150%-os Qt-skálázási próba szerepel a csomag jelentéseiben. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzési jelentés és mérési korlátok](docs/RELEASE-2.6.0.md).
 
 ## Újdonságok a 2.6 változatban
 
@@ -38,7 +38,7 @@ Választható **Longhorn Blue** és **Longhorn Slate** felület: Beállítások 
 - A napi lista célzott jobb gombos menüje **Feldolgozva / Feldolgozás visszavonása** helyi jelölést ad. Tárolás: `%LOCALAPPDATA%\EDPD\local-state\processed.json`; nincs közös hálózati állapotmappa. Az azonosító a forrásmappát és a napi csomagot is tartalmazza. A teljes zöld sor elsőbbséget élvez a félkövér jelzéssel szemben, az állapotoszlop a tényleges kicsomagoltságot is mutatja. A jelölés nem végez PDF-műveletet, és új verzió telepítésekor is megmarad. A Betekintő képességkészlet nem engedi ezt a funkciót.
 
 
-Frissítés előtt zárja be a futó korábbi EDPD-példányt. A 2.4 és 2.5 azonos példányvédelmet használ: a már futó régi ablak kerül előtérbe, ha azt még nem zárta be. A beállítások megmaradnak. A teljes ZIP-et új helyi mappába bontsa ki, az `_internal` mappát is tartsa meg. Python telepítése nem szükséges. A Windows buildet a meglévő [GitHub Actions workflow](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) készíti.
+Frissítés előtt zárja be a futó korábbi EDPD-példányt. A 2.4-es és újabb verziók azonos példányvédelmet használnak: a már futó régi ablak kerül előtérbe, ha azt még nem zárta be. A beállítások megmaradnak. A teljes ZIP-et új helyi mappába bontsa ki, az `_internal` mappát is tartsa meg. Python telepítése nem szükséges. A Windows buildet a meglévő [GitHub Actions workflow](https://github.com/baloghim/beerkezett_posta_kezeles/actions/workflows/windows-build.yml) készíti.
 
 ## Megőrzött alapműködés
 

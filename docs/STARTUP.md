@@ -12,7 +12,7 @@ Mért fázisok: példányzár; QtCore; QtWidgets és QApplication; ikonerőforr�
 
 A PyInstaller/Windows betöltő és a Python inicializálása a Python belépési pont előtt fut. Ezeket belülről nem lehet visszamenőleg külön-külön megmérni. A külső teszt a folyamatindítástól a Python belépési pontjáig, a splashig és a főablakig is mér. Az előbbi a folyamat/bootloader/Python együttes ideje, nem kizárólag PyInstaller-idő.
 
-A kiadás tényleges Windows-mérései és a leglassabb fázisok a ZIP `startup-validation.json` fájljában, a [2.4.0 részletes indulási mérésében](RELEASE-2.4.0.md) és a [2.5.0 kiadásellenőrzésében](RELEASE-2.5.0.md) találhatók. Az új folyamat/új profil nem azonos az operációs rendszer teljesen hideg fájlgyorsítótárával. A CI nem üríti a Windows fájlgyorsítótárát, és nem modellezi az adott munkahely víruskeresőjének első EXE-vizsgálatát. A munkahelyi hideg indítást friss rendszerindítás után külön is mérni kell ugyanilyen jelentéssel.
+A kiadás tényleges Windows-mérései és a leglassabb fázisok a ZIP `startup-validation.json` fájljában, a [2.4.0 részletes indulási mérésében](RELEASE-2.4.0.md) és a [2.6.0 kiadásellenőrzésében](RELEASE-2.6.0.md) találhatók. Az új folyamat/új profil nem azonos az operációs rendszer teljesen hideg fájlgyorsítótárával. A CI nem üríti a Windows fájlgyorsítótárát, és nem modellezi az adott munkahely víruskeresőjének első EXE-vizsgálatát. A munkahelyi hideg indítást friss rendszerindítás után külön is mérni kell ugyanilyen jelentéssel.
 
 ## Felhasználónként és Windows-munkamenetenként egy példány
 
