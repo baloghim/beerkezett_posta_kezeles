@@ -1,8 +1,17 @@
 """Only selection text and a narrow status message need custom drawing."""
 from PySide2.QtCore import Qt, QPoint
-from PySide2.QtGui import QBrush, QPalette, QPolygon
+from PySide2.QtGui import QBrush, QPalette, QPolygon, QColor
 from PySide2.QtWidgets import QStyledItemDelegate, QStatusBar, QStyle, QStyleOption, QStylePainter
 from . import manager
+from ...surface_styles import LUNA
+
+
+def selected_text_colour(colour, surface):
+    if surface == LUNA:
+        # All four have at least 4.5:1 contrast on the royal-blue selection.
+        return QColor({'#167235':'#c0ffd0', '#885000':'#fff3c4',
+                       '#ad2525':'#ffeaea', '#000000':'#ffffff'}.get(colour.name(), '#ffffff'))
+    return colour
 
 
 class StatusItemDelegate(QStyledItemDelegate):
@@ -10,8 +19,8 @@ class StatusItemDelegate(QStyledItemDelegate):
         super().initStyleOption(option, index)
         brush = index.data(Qt.ForegroundRole)
         if manager().active and isinstance(brush, QBrush):
-            # The pale blue highlight leaves green/brown/red status text legible.
-            option.palette.setColor(QPalette.HighlightedText, brush.color())
+            option.palette.setColor(QPalette.HighlightedText,
+                                    selected_text_colour(brush.color(), manager().name))
 
 
 class ThemeStatusBar(QStatusBar):

@@ -3,18 +3,50 @@ import hashlib
 import time
 from dataclasses import replace
 from pathlib import Path
-from PySide2.QtCore import Qt, QCoreApplication, QEvent
+from PySide2.QtCore import Qt, QCoreApplication, QEvent, QPoint, QRect
 from PySide2.QtGui import QPalette
-from PySide2.QtWidgets import QApplication, QWidget, QStyleFactory
+from PySide2.QtWidgets import (QApplication, QWidget, QStyleFactory, QAbstractButton,
+                              QComboBox, QLineEdit, QSlider, QProgressBar)
 from . import manager, set_theme, THEME_NAMES
 from .styles import stylesheet
 from ..appearance import apply_style, current_style_name
 from ..icons import manager as icon_manager, set_theme as set_icons, icon, THEME_NAMES as ICON_NAMES
 from ..settings_dialog import SettingsDialog
+from ...surface_styles import SURFACE_SLUGS, LUNA
 
 
 def settle(app):
     for _ in range(4):app.processEvents()
+
+
+def validate_luna_dialogs(window, width, height):
+    """Exercise production dialog layouts with synthetic data, without file actions."""
+    from ..about_dialog import AboutDialog
+    from ..extraction_dialog import ExtractionDialog
+    preview=replace(window.settings,ui_style=LUNA,qt_style='Fusion',surface_theme=LUNA)
+    records=[]
+    for kind,factory in (
+            ('settings',lambda:SettingsDialog(preview,window)),
+            ('about',lambda:AboutDialog(window)),
+            ('extraction',lambda:ExtractionDialog(window.days[0],window))):
+        dialog=factory()
+        try:
+            dialog.show();settle(QApplication.instance())
+            assert dialog.minimumSizeHint().width()<=width and dialog.minimumSizeHint().height()<=height
+            assert dialog.width()<=width and dialog.height()<=height
+            for control_type in (QAbstractButton,QComboBox,QLineEdit,QSlider,QProgressBar):
+                for control in dialog.findChildren(control_type):
+                    if control.isVisibleTo(dialog):
+                        area=QRect(control.mapTo(dialog,QPoint(0,0)),control.size())
+                        assert dialog.rect().contains(area),(kind,control.objectName(),area)
+            records.append({'dialog':kind,'viewport':[width,height],
+                            'actual':[dialog.width(),dialog.height()],'controls_contained':True})
+        finally:
+            if kind=='extraction':dialog.complete()
+            else:dialog.reject()
+            dialog.deleteLater()
+            QCoreApplication.sendPostedEvents(None,QEvent.DeferredDelete)
+    return records
 
 
 def validate_surfaces(window, destination):
@@ -37,7 +69,7 @@ def validate_surfaces(window, destination):
     result={'surface_names':list(THEME_NAMES),'combinations':[],'viewports':[],
             'css_sha256':{name:hashlib.sha256(stylesheet(name).encode()).hexdigest() for name in THEME_NAMES[1:]},
             'qt_platform':app.platformName(),'device_pixel_ratio':app.primaryScreen().devicePixelRatio(),
-            'screenshots':[]}
+            'screenshots':[], 'luna_dialog_viewports':[]}
     try:
         for style in QStyleFactory.keys():
             for surface in THEME_NAMES:
@@ -83,8 +115,10 @@ def validate_surfaces(window, destination):
                     'visible':[viewer.toolbar.widgetForAction(action).isVisible() for action in controls]})
                 assert window.split.count()==2 and window.left.count()==2
                 assert all(viewer.toolbar.widgetForAction(action).toolButtonStyle()==Qt.ToolButtonTextBesideIcon for action in controls)
+                if surface==LUNA:
+                    result['luna_dialog_viewports'].extend(validate_luna_dialogs(window,width,height))
             window.setFixedSize(1600,900);settle(app)
-            name={'Alapértelmezett':'default','Longhorn Blue':'blue','Longhorn Slate':'slate'}[surface]
+            name=SURFACE_SLUGS[surface]
             filename=f'{name}-crystal.png'
             assert window.grab().save(str(output/filename))
             result['screenshots'].append(filename)
@@ -100,6 +134,20 @@ def validate_surfaces(window, destination):
         assert dialog.grab().save(str(output/'blue-settings.png'))
         dialog.reject();dialog.deleteLater()
         result['screenshots'].append('blue-settings.png')
+        set_theme(LUNA)
+        for icons in ('SE98','Oxygen','Nuvola'):
+            set_icons(icons);settle(app)
+            filename='xp-luna-'+icons.lower()+'.png'
+            assert window.grab().save(str(output/filename))
+            result['screenshots'].append(filename)
+        set_icons('SE98')
+        preview=replace(window.settings,ui_style=LUNA,qt_style='Fusion',surface_theme=LUNA,icon_theme='SE98')
+        dialog=SettingsDialog(preview,window);dialog.show();settle(app)
+        assert dialog.style_combo.currentData()==LUNA
+        assert dialog.grab().save(str(output/'xp-luna-settings.png'))
+        dialog.reject();dialog.deleteLater()
+        result['screenshots'].append('xp-luna-settings.png')
+
         result['pdf_bytes_preserved']=True
         result['pdf_pixels_preserved']=True
         result['semantic_foregrounds_preserved']=True

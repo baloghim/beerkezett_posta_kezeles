@@ -4,6 +4,7 @@ import tempfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from .paths import normalize_path
+from .surface_styles import CUSTOM_SURFACES
 
 
 @dataclass
@@ -24,7 +25,7 @@ class Settings:
         # Migrate 2.6 profiles without discarding unrelated, valid settings.
         if not isinstance(self.ui_style, str) or not self.ui_style:
             self.ui_style = (self.surface_theme if self.surface_theme in
-                             ('Longhorn Blue', 'Longhorn Slate') else
+                             CUSTOM_SURFACES else
                              self.qt_style if isinstance(self.qt_style, str) else 'Fusion')
         if not isinstance(self.surface_theme, str):
             self.surface_theme = 'Alapértelmezett'

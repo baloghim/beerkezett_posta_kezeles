@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 from edpd import __version__
 from edpd.ui.themes.styles import stylesheet
+from edpd.surface_styles import CUSTOM_SURFACES, LUNA, SURFACE_SLUGS
 import hashlib
 
 
@@ -20,13 +21,15 @@ def main():
     base=json.loads(args.default_report.read_text(encoding='utf-8'))
     assert base['passed'] and base['host']['frozen'] and len(base['checks'])==20
     base_dpr=base['surface_validation']['device_pixel_ratio']
-    css={name:hashlib.sha256(stylesheet(name).encode()).hexdigest() for name in ('Longhorn Blue','Longhorn Slate')}
+    css={name:hashlib.sha256(stylesheet(name).encode()).hexdigest() for name in CUSTOM_SURFACES}
     assert base['surface_validation']['css_sha256']==css
     args.output.mkdir(parents=True,exist_ok=True)
     result={'passed':False,'version':__version__,'scaling_method':'Qt environment scaling; Windows desktop setting unchanged',
             'base_device_pixel_ratio':base_dpr,'css_sha256':css,'cases':[]}
-    for name,surface,scale in [('blue','Longhorn Blue','1'),('slate','Longhorn Slate','1'),
-                                ('blue-125','Longhorn Blue','1.25'),('blue-150','Longhorn Blue','1.5')]:
+    cases=[(SURFACE_SLUGS[name],name,'1') for name in CUSTOM_SURFACES]
+    cases += [(SURFACE_SLUGS[name]+'-'+suffix,name,scale)
+              for name in ('Longhorn Blue',LUNA) for suffix,scale in (('125','1.25'),('150','1.5'))]
+    for name,surface,scale in cases:
         report=args.output/(name+'.json')
         env=os.environ.copy()
         env['QT_QPA_PLATFORM']='windows'

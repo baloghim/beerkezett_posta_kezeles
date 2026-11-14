@@ -22,6 +22,7 @@ from edpd.ui.settings_dialog import SettingsDialog
 from edpd.ui.themes import set_theme, THEME_NAMES
 from edpd.ui.icons import set_theme as set_icons
 from edpd.file_service import FileService
+from edpd.surface_styles import LUNA
 
 
 def wait(app, condition, timeout=15):
@@ -40,7 +41,8 @@ def settle(app):
         time.sleep(.005)
 
 
-def capture(output):
+def capture(output, mode='longhorn'):
+    luna = mode == 'xp-luna'
     app=QApplication.instance() or QApplication([])
     apply_style('Fusion','Alapértelmezett')
     output.mkdir(parents=True,exist_ok=True)
@@ -92,15 +94,24 @@ def capture(output):
                 path=output/name
                 assert widget.grab().save(str(path)),str(path)
             shots=[]
-            for filename,surface,icons in [
+            variants = ([
+                ('xp-luna-crystal.png',LUNA,'Crystal SVG'),
+                ('xp-luna-longhorn-blue.png','Longhorn Blue','Crystal SVG'),
+                ('xp-luna-se98.png',LUNA,'SE98'),
+                ('xp-luna-oxygen.png',LUNA,'Oxygen'),
+                ('xp-luna-nuvola.png',LUNA,'Nuvola')] if luna else [
                 ('longhorn-default.png','Alapértelmezett','Crystal SVG'),
                 ('longhorn-blue-crystal.png','Longhorn Blue','Crystal SVG'),
                 ('longhorn-blue-nuvola.png','Longhorn Blue','Nuvola'),
-                ('longhorn-slate-crystal.png','Longhorn Slate','Crystal SVG')]:
+                ('longhorn-slate-crystal.png','Longhorn Slate','Crystal SVG')])
+            for filename,surface,icons in variants:
                 set_theme(surface);set_icons(icons);save(filename);shots.append((filename,surface+' / '+icons))
-            set_theme('Longhorn Blue');set_icons('Crystal SVG')
-            settings=SettingsDialog(Settings(source=str(source),target=str(target),surface_theme='Longhorn Blue'),window)
-            settings.show();save('longhorn-blue-settings.png',settings);settings.reject()
+            selected=LUNA if luna else 'Longhorn Blue'
+            prefix='xp-luna' if luna else 'longhorn-blue'
+            set_theme(selected);set_icons('SE98' if luna else 'Crystal SVG')
+            settings=SettingsDialog(Settings(source=str(source),target=str(target),surface_theme=selected,
+                icon_theme='SE98' if luna else 'Crystal SVG'),window)
+            settings.show();save(prefix+'-settings.png',settings);settings.reject()
             # Exercise the real transaction, pausing only the synthetic progress callback.
             bad.unlink();window.refresh();wait(app,lambda:not window.jobs)
             window.day_table.selectRow(0)
@@ -129,7 +140,7 @@ def capture(output):
             try:
                 window.extract()
                 wait(app,lambda:entered.is_set() and window.extraction_dialog is not None and window.extraction_dialog.isVisible())
-                save('longhorn-blue-extraction.png',window.extraction_dialog)
+                save(prefix+'-extraction.png',window.extraction_dialog)
             finally:
                 gate.set();answer.stop();FileService.extract=original
             wait(app,lambda:not window.jobs and not window.extracting)
@@ -143,15 +154,15 @@ def capture(output):
                               'pdf_labels':[action.text() for action in actions],
                               'pdf_buttons_visible':[window.viewer.toolbar.widgetForAction(action).isVisible() for action in actions]})
             result={'platform':os.name,'qt_platform':app.platformName(),'synthetic_data_only':True,'viewports':sweep}
-            (output/'longhorn-visual-validation.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
-            canvas=QImage(2560,1520,QImage.Format_RGB32);canvas.fill(Qt.white)
+            (output/('xp-luna-visual-validation.json' if luna else 'longhorn-visual-validation.json')).write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+            canvas=QImage(2560,760*((len(shots)+1)//2),QImage.Format_RGB32);canvas.fill(Qt.white)
             painter=QPainter(canvas);painter.setFont(QFont(app.font().family(),16,QFont.Bold))
             for i,(filename,label) in enumerate(shots):
                 x,y=(i%2)*1280,(i//2)*760
                 painter.setPen(Qt.black);painter.drawText(QRect(x+14,y,1250,40),Qt.AlignVCenter,label)
                 image=QImage(str(output/filename)).scaled(1280,720,Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
                 painter.drawImage(x,y+40,image)
-            painter.end();assert canvas.save(str(output/'longhorn-theme-comparison.png'))
+            painter.end();assert canvas.save(str(output/('xp-luna-theme-comparison.png' if luna else 'longhorn-theme-comparison.png')))
             return result
         finally:
             set_theme('Alapértelmezett');set_icons('Crystal SVG')
@@ -163,4 +174,5 @@ def capture(output):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--output',type=Path,default=Path('docs'))
-    args=parser.parse_args();print(json.dumps(capture(args.output),ensure_ascii=False))
+    parser.add_argument('--mode', choices=('longhorn','xp-luna'), default='longhorn')
+    args=parser.parse_args();print(json.dumps(capture(args.output,args.mode),ensure_ascii=False))

@@ -12,7 +12,7 @@ def test_real_process_startup_races_crashes_and_network_delays(tmp_path, monkeyp
     monkeypatch.setenv('PYTHONPATH',str(root/'src'))
     result=module.verify([sys.executable,'-m','edpd.main'], tmp_path)
     assert result['passed'] and len(result['checks'])==12
-    assert {'surface_Alapértelmezett','surface_Longhorn Blue','surface_Longhorn Slate'}<=set(result['timings'])
+    assert {'surface_Alapértelmezett','surface_Longhorn Blue','surface_Longhorn Slate','surface_Windows XP Luna Blue','ui_Windows XP Luna Blue'}<=set(result['timings'])
     assert 'main_modules_pdf_print_import_ms' in result['timings']['new_profile_first_process']['durations_ms']
 
 

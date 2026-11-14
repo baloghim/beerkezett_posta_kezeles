@@ -1,5 +1,6 @@
 from PySide2.QtWidgets import QApplication, QStyleFactory
 from .themes import manager
+from ..surface_styles import CUSTOM_SURFACES, DEFAULT_SURFACE
 
 
 def apply_style(name, surface_theme=None):
@@ -20,20 +21,23 @@ def current_style_name():
     return QApplication.instance().style().objectName() or manager().qt_style_name
 
 
-def ui_style_choices():
-    """Only installed native styles, followed by the two complete Longhorn styles."""
+def native_style_choices():
     return [('Vista' if key.lower() == 'windowsvista' else key, key)
             for key in sorted(QStyleFactory.keys(), key=lambda key:
-                              {'fusion':0, 'windows':1, 'windowsvista':2}.get(key.lower(),3))] + [(name, name) for name in
-                                               ('Longhorn Blue', 'Longhorn Slate')]
+                              {'fusion':0, 'windows':1, 'windowsvista':2}.get(key.lower(),3))]
+
+
+def ui_style_choices():
+    """Installed factory styles followed by the centrally registered surfaces."""
+    return native_style_choices() + [(name, name) for name in CUSTOM_SURFACES]
 
 
 def resolve_ui_style(name):
-    if name in ('Longhorn Blue', 'Longhorn Slate'):
+    if name in CUSTOM_SURFACES:
         return name, 'Fusion', name
-    key = next((key for label, key in ui_style_choices()[:-2]
+    key = next((key for label, key in native_style_choices()
                 if isinstance(name, str) and name.lower() in (label.lower(), key.lower())), 'Fusion')
-    return key, key, 'Alapértelmezett'
+    return key, key, DEFAULT_SURFACE
 
 
 def apply_settings_style(settings):

@@ -1,4 +1,4 @@
-# Longhorn Blue és Longhorn Slate – EDPD Menedzser 2.6.2
+# Longhorn Blue és Longhorn Slate – EDPD Menedzser 2.6.3
 
 Bekapcsolás: **Beállítások → Megjelenés → Felületi stílus → Longhorn Blue vagy Longhorn Slate → Mentés**. A Mégse nem ment és nem változtat megjelenést. Ugyanitt a rendelkezésre álló **Fusion, Windows, Vista** gyári Qt-stílusok választhatók; gyári stílusra váltás teljesen megszünteti a Longhorn stíluslapot és palettát. Csak a helyileg telepített Qt-stílusok jelennek meg. A Vista címke belső neve `windowsvista`.
 
@@ -44,3 +44,5 @@ A 1280×720, 1600×900 és 1920×1080 méreteket tényleges Qt-ablakméretekkel 
 A Windows workflow a csomagolt EXE teljes, 20 pontos funkcionális önellenőrzését Alapértelmezett, Blue és Slate témával, majd Blue mellett 125% és 150% Qt-skálázással is futtatja. A `QT_SCALE_FACTOR` és `PassThrough` beállítás a folyamatra érvényes, nem módosítja a Windows asztal tényleges DPI-beállítását. A jelentés tartalmazza a tényleges device pixel ratio értékét. A Windows DPI-beállításának célgépes váltása és a valódi Windows 10 1607 x64 átvétel külön szükséges.
 
 A csomagolt EXE QSS-ellenőrzőösszegeit összevetjük a forrással: a témák Python-modulokban vannak, külső képet vagy stíluslapot nem kell futás közben letölteni. A Windows-jelentések és a csomagolt programból készült további képek a kiadási ZIP-ben is megtalálhatók.
+
+A 2.6.3-ban ugyanebbe a választóba került a [Windows XP Luna Blue](XP-LUNA.md), önálló krémszínű/királykék QSS-sel. A két Longhorn-stíluslap ellenőrzőösszege változatlan; az új stílus nem írja át a Longhorn-palettákat.

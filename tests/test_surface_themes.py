@@ -14,6 +14,7 @@ from edpd.ui.themes import manager, set_theme, THEME_NAMES
 from edpd.ui.icons import set_theme as set_icons, icon, THEME_NAMES as ICON_NAMES
 from edpd.ui.main_window import MainWindow, row_appearance
 from edpd.ui.settings_dialog import SettingsDialog
+from edpd.surface_styles import CUSTOM_SURFACES, LUNA
 from test_ui import wait_for
 
 
@@ -41,7 +42,8 @@ def test_choices_cancel_and_old_configuration(app,tmp_path):
     settings.save(path)
     before=path.read_bytes()
     dialog=SettingsDialog(settings,None)
-    assert tuple(dialog.style_combo.itemText(i) for i in range(dialog.style_combo.count()))[-2:]==THEME_NAMES[1:]
+    assert tuple(dialog.style_combo.itemData(i) for i in range(dialog.style_combo.count())
+                 if dialog.style_combo.itemData(i) in CUSTOM_SURFACES)==CUSTOM_SURFACES
     assert not hasattr(dialog, 'surface_combo')
     assert dialog.style_combo.currentData()=='Fusion'
     dialog.style_combo.setCurrentText('Longhorn Blue')
@@ -50,7 +52,8 @@ def test_choices_cancel_and_old_configuration(app,tmp_path):
     assert manager().name=='Alapértelmezett'
 
 
-def test_saved_change_is_immediate_without_network_or_document_reload(app,folders,monkeypatch):
+@pytest.mark.parametrize('surface',['Longhorn Blue',LUNA])
+def test_saved_change_is_immediate_without_network_or_document_reload(app,folders,monkeypatch,surface):
     source,target=folders
     window=MainWindow(Settings(source=str(source),target=str(target)),auto_refresh=False)
     window.show()
@@ -59,19 +62,19 @@ def test_saved_change_is_immediate_without_network_or_document_reload(app,folder
     import edpd.ui.main_window as module
     monkeypatch.setattr(module,'check_settings',lambda *_:pytest.fail('Surface switch accessed network'))
     def choose(dialog):
-        dialog.style_combo.setCurrentText('Longhorn Blue')
+        dialog.style_combo.setCurrentText(surface)
         return dialog.Accepted
     monkeypatch.setattr(SettingsDialog,'exec_',choose)
     try:
         window.configure()
         wait_for(app,lambda:not window.jobs)
-        assert manager().name=='Longhorn Blue' and 'qlineargradient' in app.styleSheet()
-        assert Settings.load().surface_theme=='Longhorn Blue'
+        assert manager().name==surface and 'qlineargradient' in app.styleSheet()
+        assert Settings.load().surface_theme==surface
         assert window.viewer.theme_title.isVisible()
         assert window.source_generation==generation
         dialog=SettingsDialog(window.settings,window)
-        assert dialog.style_combo.currentData()=='Longhorn Blue'
-        assert dialog.style_combo.currentText()=='Longhorn Blue'
+        assert dialog.style_combo.currentData()==surface
+        assert dialog.style_combo.currentText()==surface
         dialog.reject()
         set_theme('Alapértelmezett')
         assert app.styleSheet()=='' and not window.viewer.theme_title.isVisible()
@@ -136,11 +139,16 @@ def test_selected_status_colours_are_actually_painted(app,folders,surface):
             assert item.foreground().color().name()==expected
             rect=table.visualItemRect(item)
             capture=table.viewport().grab(rect).toImage()
+            from edpd.ui.themes.widgets import selected_text_colour
+            from PySide2.QtGui import QColor
+            expected_colour=selected_text_colour(QColor(expected),surface)
             coloured=0
             for y in range(capture.height()):
                 for x in range(capture.width()):
                     c=capture.pixelColor(x,y)
-                    if row==0: good=c.green()>c.red()*1.4 and c.green()>c.blue()*1.2
+                    if surface==LUNA:
+                        good=max(abs(c.red()-expected_colour.red()),abs(c.green()-expected_colour.green()),abs(c.blue()-expected_colour.blue()))<15
+                    elif row==0: good=c.green()>c.red()*1.4 and c.green()>c.blue()*1.2
                     elif row==1: good=c.red()>c.green()*1.25 and c.green()>c.blue()*1.7
                     else: good=c.red()>c.green()*1.5 and c.red()>c.blue()*1.5
                     coloured+=bool(good)
@@ -176,7 +184,7 @@ def test_repeated_restore_is_exact_and_does_not_accumulate_objects(app,folders):
         growth=tracemalloc.get_traced_memory()[0]-before
         assert growth<180_000,growth
         assert len(app.allWidgets())<=baseline+1
-        assert manager().name=='Longhorn Slate'
+        assert manager().name==THEME_NAMES[-1]
         set_theme('Alapértelmezett')
         app.processEvents()
         assert app.styleSheet()=='' and app.palette()==palette
@@ -262,6 +270,7 @@ def test_coloured_pdf_and_combo_arrows_are_preserved(app,folders):
     ({'qt_style':'Windows','surface_theme':'Longhorn Slate'},'Longhorn Slate'),
     ({'qt_style':'Windows','surface_theme':'Alapértelmezett'},'Windows'),
     ({'qt_style':'Fusion'},'Fusion'),
+    ({'qt_style':'Windows','surface_theme':LUNA},LUNA),
     ({'qt_style':None,'surface_theme':None},'Fusion'),
     ({'ui_style':43,'qt_style':'Fusion'},'Fusion'),
 ])
@@ -278,13 +287,13 @@ def test_unified_style_profile_migration_preserves_workflow(tmp_path,legacy,expe
     assert Settings.load(path)==settings
 
 
-@pytest.mark.parametrize('choice',['Longhorn Blue','Longhorn Slate','Fusion','Missing style','Vista'])
+@pytest.mark.parametrize('choice',['Longhorn Blue','Longhorn Slate',LUNA,'Fusion','Missing style','Vista'])
 def test_unified_choice_restores_native_palette_and_synchronizes_legacy_fields(app,choice):
     from edpd.ui.appearance import apply_settings_style,resolve_ui_style,ui_style_choices
     settings=Settings(ui_style=choice)
     apply_settings_style(settings)
     assert (settings.ui_style,settings.qt_style,settings.surface_theme)==resolve_ui_style(choice)
-    assert bool(app.styleSheet())==(settings.ui_style in ('Longhorn Blue','Longhorn Slate'))
+    assert bool(app.styleSheet())==(settings.ui_style in CUSTOM_SURFACES)
     dialog=SettingsDialog(settings,None)
     assert [(dialog.style_combo.itemText(i),dialog.style_combo.itemData(i)) for i in range(dialog.style_combo.count())]==ui_style_choices()
     result=dialog.result_settings()

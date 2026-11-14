@@ -12,6 +12,12 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 
 **A 2.6.2 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** 179 sikeres Windows-teszt, öt csomagolt EXE-futtatás 100 sikeres funkcionális ellenőrzéssel, 12 indítási tesztcsoport és 12 ikontéma, köztük **SE98**. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzés, méret/indulás és célgépes korlátok](docs/RELEASE-2.6.2.md).
 
+## Újdonság a 2.6.3 változatban
+
+Választható **Windows XP Luna Blue** felület: Beállítások → Megjelenés → Felületi stílus. Krémszínű eszköztárak, királykék panelcímek, klasszikus domború gombok, narancsos kiemelés és zöld folyamatjelző. Mind a 12 ikontéma használható; a korábbi Qt- és Longhorn-megjelenések teljesen visszaállíthatók. Nincs új grafikai rendszerfüggőség vagy XP-ből másolt témacsomag.
+
+[Használat és tényleges alkalmazásképek](docs/XP-LUNA.md) · [Luna–Longhorn összehasonlítás](docs/xp-luna-theme-comparison.png).
+
 ## Újdonság a 2.6.2 változatban
 
 Az **SE98** választható a Beállítások → Megjelenés → Ikontéma listában. 18 saját szerep, a szélességigazításhoz Crystal-helyettesítés; a többi téma és a dokumentumkezelés megmaradt. A kiválasztás újraindítás nélkül érvényes és megőrződik. [Aktuális forrás-/licencadatok és a 13 jelölt állapota](docs/ICON-THEME-AUDIT-2.6.2.md).
@@ -110,7 +116,7 @@ Linuxon: `QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m pytest -q`. A meglé
 A csomagolt EXE önellenőrzése:
 
 ```bat
-EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.6.2-1607.json"
+EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.6.3-1607.json"
 ```
 
 A Windows workflow natív DLL-auditot, EXE-ikonerőforrás-vizsgálatot, a csomagolt ikonfájlok összehasonlítását és az EXE húsz funkcionális önellenőrzését is végzi. A `v*` címkéhez sikeres build után Release-t készít. [Windows 1607 útmutató](docs/WINDOWS1607.md). A modern runner sikere nem helyettesíti a valódi 1607-es célgépes próbát; a korábban ott ellenőrzött 0.2.1 kiadás sikere az új változatot nem minősíti.

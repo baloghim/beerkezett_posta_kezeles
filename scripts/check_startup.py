@@ -189,7 +189,8 @@ def verify(command, root, *, copied_command=None):
             assert result['icon_theme'] == theme
             harness.finish(themed)
         checks.append('all_saved_icon_themes_start_in_real_processes')
-        for surface in ('Alapértelmezett','Longhorn Blue','Longhorn Slate'):
+        from edpd.surface_styles import SURFACE_NAMES
+        for surface in SURFACE_NAMES:
             harness.settings(surface_theme=surface)
             run=harness.start('surface-'+str(len(surface)),lifetime=150)
             result=harness.loaded(run)

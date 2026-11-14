@@ -116,6 +116,7 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
             apply_style(window.settings.qt_style)
             # Exercise the same two appearance controls in the frozen EXE too.
             from .ui.appearance import ui_style_choices, apply_settings_style
+            from .surface_styles import CUSTOM_SURFACES
             from .ui.settings_dialog import SettingsDialog
             result['ui_styles'] = []
             for label, choice in ui_style_choices():
@@ -126,7 +127,7 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
                         len(dialog.style_combo.parentWidget().findChildren(type(dialog.style_combo))) != 2 or
                         dialog.style_combo.currentData() != candidate.ui_style or
                         dialog.result_settings().ui_style != candidate.ui_style or
-                        bool(app.styleSheet()) != choice.startswith('Longhorn ')):
+                        bool(app.styleSheet()) != (choice in CUSTOM_SURFACES)):
                     raise RuntimeError('Hibás egységes felületi stílusválasztó: ' + choice)
                 result['ui_styles'].append({'label': label, 'choice': choice,
                                            'qt_style': candidate.qt_style, 'surface': candidate.surface_theme})
@@ -241,6 +242,14 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
             window.extract()
             if not window.extracting or not window.extraction_bar.isVisible():
                 raise RuntimeError('A kicsomagolás folyamatjelzője nem jelent meg.')
+            from .surface_styles import LUNA
+            if surface_theme == LUNA:
+                screenshots=report.parent/(report.stem+'-screenshots')
+                screenshots.mkdir(parents=True,exist_ok=True)
+                filename='xp-luna-extraction.png'
+                if not window.extraction_dialog.grab().save(str(screenshots/filename)):
+                    raise RuntimeError('Nem menthető a tényleges Luna folyamatablak képe.')
+                result['extraction_screenshot']=filename
             wait(lambda: not window.extracting and not window.jobs)
             if window.extraction_bar.isVisible() or list(target.glob('*.csv')):
                 raise RuntimeError('Hibás kicsomagolási befejezés.')
@@ -317,6 +326,8 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
             result['checks'].append('all_live_icon_themes')
             from .ui.themes.validation import validate_surfaces
             result['surface_validation'] = validate_surfaces(window, report.parent / (report.stem + '-screenshots'))
+            if result.get('extraction_screenshot'):
+                result['surface_validation']['screenshots'].append(result['extraction_screenshot'])
             result['checks'].extend(['surface_style_icon_matrix_pdf_integrity',
                                      'surface_repeat_restore_and_objects', 'surface_viewport_sweep'])
             window.close()

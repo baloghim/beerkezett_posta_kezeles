@@ -6,9 +6,10 @@ from PySide2.QtWidgets import QApplication
 import shiboken2
 from .palettes import PALETTES, REQUIRED_KEYS
 from .styles import stylesheet
+from ...surface_styles import SURFACE_NAMES, DEFAULT_SURFACE, LUNA
 
-THEME_NAMES = ('Alapértelmezett', 'Longhorn Blue', 'Longhorn Slate')
-DEFAULT = THEME_NAMES[0]
+THEME_NAMES = SURFACE_NAMES
+DEFAULT = DEFAULT_SURFACE
 
 
 class SurfaceThemeManager(QObject):
@@ -62,6 +63,8 @@ class SurfaceThemeManager(QObject):
                 palette.setColor(role, QColor(colours[key]))
             palette.setColor(QPalette.Disabled, QPalette.Text, QColor(colours['disabled']))
             palette.setColor(QPalette.Disabled, QPalette.ButtonText, QColor(colours['disabled']))
+            if name == LUNA:
+                palette.setColor(QPalette.HighlightedText, QColor('#ffffff'))
             app.setPalette(palette)
             app.setStyleSheet(css)
             self.used_palette = True

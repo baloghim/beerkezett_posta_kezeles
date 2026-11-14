@@ -1,4 +1,5 @@
-"""Small colour tables; both Longhorn variants use exactly the same widgets/QSS."""
+"""Small colour tables; Longhorn shares QSS, Luna has its own control surfaces."""
+from ...surface_styles import LUNA
 PALETTES = {
     'Longhorn Blue': dict(window='#e8f1fe', top='#f9fcff', middle='#dcecff', bottom='#bed5f4',
         edge='#789dcc', shine='#ffffff', title_top='#94c6f9', title_mid='#467fca',
@@ -12,6 +13,12 @@ PALETTES = {
         text='#202c3d', alternate='#edf1f7', selection='#c7d5e8', selection_edge='#627fa4',
         hover_top='#f8fbff', hover_bottom='#bdcde1', pressed='#9caec7', disabled='#717d8d',
         viewport='#606a79', field='#ffffff'),
+    LUNA: dict(window='#ece9d8', top='#fffef7', middle='#f4f1e2', bottom='#e2dfce',
+        edge='#7f9db9', shine='#ffffff', title_top='#5d9bff', title_mid='#1259e4',
+        title_bottom='#003bb4', title_edge='#003caa', title_text='#ffffff',
+        text='#111111', alternate='#f3f7ff', selection='#316ac5', selection_edge='#003c74',
+        hover_top='#fff8df', hover_bottom='#ffd27d', pressed='#c9d8ed', disabled='#77776c',
+        viewport='#808c9f', field='#ffffff'),
 }
 
 REQUIRED_KEYS = frozenset(next(iter(PALETTES.values())))
