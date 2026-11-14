@@ -193,6 +193,7 @@ def verify(command, root, *, copied_command=None):
             run=harness.start('surface-'+str(len(surface)),lifetime=150)
             result=harness.loaded(run)
             assert result['surface_theme']==surface
+            timings['surface_'+surface]=result
             harness.finish(run)
         checks.append('three_saved_surface_themes_start_in_real_processes')
 
