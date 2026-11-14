@@ -1,10 +1,12 @@
 # EDPD Menedzser – ikontémák
 
-A Beállítások → Megjelenés → Ikontéma választó első öt, megőrzött témája: **Crystal SVG**, **Nuvola**, **KDE Modern Classic**, **Papirus**, **We10X**. Az alapérték Crystal SVG. A Felületi stílus és az Ikontéma két külön választó; összesen 11 ikontéma van. Hat új készlet és a 13 jelölt teljes vizsgálata: [2.6.1 audit](ICON-THEME-AUDIT-2.6.1.md). A mentett `icon_theme` mező a változatlan `%APPDATA%\EDPD\settings.json` fájlban található. Mentés után az ikonok újraindítás nélkül frissülnek; egy pusztán megjelenést érintő változtatás nem indít hálózati ellenőrzést vagy ZIP-újraolvasást.
+A Beállítások → Megjelenés → Ikontéma választó első öt, megőrzött témája: **Crystal SVG**, **Nuvola**, **KDE Modern Classic**, **Papirus**, **We10X**. Az alapérték Crystal SVG. A Felületi stílus és az Ikontéma két külön választó; összesen 12 ikontéma van. A 2.6.2-ben az SE98 is bekerült; a 13 jelölt aktuális állapota: [2.6.2 audit](ICON-THEME-AUDIT-2.6.2.md). A mentett `icon_theme` mező a változatlan `%APPDATA%\EDPD\settings.json` fájlban található. Mentés után az ikonok újraindítás nélkül frissülnek; egy pusztán megjelenést érintő változtatás nem indít hálózati ellenőrzést vagy ZIP-újraolvasást.
 
 A központi `edpd.ui.icons.IconThemeManager` logikai szerepeket old fel és gyorsítótárazza a QIcon objektumokat. A fő és PDF-eszköztár, a napi és munkamappa-lista, a helyi menük és a kicsomagolási/betekintési párbeszéd ikonfrissítési jelre váltanak. A Névjegy **gombja** témát vált; az alkalmazás saját emblémája és az EXE hétméretű ICO-erőforrása állandó.
 
 Hiányzó szerepnél először az azonos Crystal SVG funkció, azután Qt standard ikon jelenik meg. Ismeretlen vagy nem telepített téma esetén Crystal SVG lép életbe. A Nuvola szélességigazító szerepe dokumentált Crystal fallback; a többi 18 szerep saját Nuvola-fájl. Az Oxygen, Win10Sur, WhiteSur és Diagonal 19 saját szerepet ad; Oxylite 18-at (width fallback), Modern Office Day 15-öt (zoom_in, zoom_out, width, page fallback). Papirus és We10X 19 szerepe megmarad, a hat főikon színes lett.
+
+Az SE98 18 saját szerepet tartalmaz; `width` esetén Crystal fallback. A korábban ismertetett fájljogi bizonytalanságot a beépítés nem oldja fel; az eredeti GPL2 nyilatkozat és eredetleírás a `licenses/se98/` alatt megmarad.
 
 ## Eredet és licencek
 
@@ -28,8 +30,8 @@ A változatlan eredeti SVG/PNG-k az `assets/themes/<azonosító>/original/` mapp
 QT_QPA_PLATFORM=offscreen python scripts/generate_theme_assets.py
 ```
 
-Az [összehasonlító kép](icon-theme-comparison.png) ugyanazt a 19 szerepet mutatja 11 oszlopban, a ténylegesen beépített ikonokkal. A fallbacket felirat jelzi. A csomagellenőrzés minden erőforrás fájlbájtjait és az EXE hét ICO-képkockáját összeveti a forrással. A csomagolt önellenőrzés mind a 11 témát tényleges Qt-felületen kapcsolja át.
+Az [összehasonlító kép](icon-theme-comparison.png) ugyanazt a 19 szerepet mutatja 12 oszlopban, a ténylegesen beépített ikonokkal. A fallbacket felirat jelzi. A csomagellenőrzés minden erőforrás fájlbájtjait és az EXE hét ICO-képkockáját összeveti a forrással. A csomagolt önellenőrzés mind a 12 témát tényleges Qt-felületen kapcsolja át.
 
 A PDF-eszköztárban hat helyen további 6 pixeles térköz van; a 2.5-től a Szélesség és Teljes oldal között is. A Nyomtatás és PDF mentése natív gombkeretet használ, az ikon és felirat között kifejezett 8 pixeles hézaggal. A meglévő QActionok, engedélyezési állapotok és PDF-műveletek változatlanok.
 
-[A fő eszköztár hat ikonja mind a 11 témával](icon-toolbar-comparison.png).
+[A fő eszköztár hat ikonja mind a 12 témával](icon-toolbar-comparison.png).

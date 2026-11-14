@@ -65,7 +65,8 @@ def test_missing_role_uses_crystal_then_qt(app,tmp_path):
     assert fallback.sources['save']=='Qt standard'
 
 
-def test_all_visible_roles_switch_without_reloading_data(app,folders,monkeypatch):
+@pytest.mark.parametrize('theme',['Papirus','SE98'])
+def test_all_visible_roles_switch_without_reloading_data(app,folders,monkeypatch,theme):
     source,target=folders
     (target/'test.pdf').write_bytes(b'synthetic')
     window=MainWindow(Settings(source=str(source),target=str(target)))
@@ -80,14 +81,14 @@ def test_all_visible_roles_switch_without_reloading_data(app,folders,monkeypatch
     menu_action=menu.addAction(icon('zip'),'ZIP')
     menu_action.setProperty('icon_role','zip')
     def choose(dialog):
-        dialog.icon_combo.setCurrentText('Papirus')
+        dialog.icon_combo.setCurrentText(theme)
         return dialog.Accepted
     monkeypatch.setattr(SettingsDialog,'exec_',choose)
     import edpd.ui.main_window as mw
     monkeypatch.setattr(mw,'check_settings',lambda *_:pytest.fail('Appearance-only change accessed network'))
     window.configure()
     wait_for(app,lambda:not window.jobs)
-    assert Settings.load().icon_theme=='Papirus'
+    assert Settings.load().icon_theme==theme
     assert window.actions[0].icon().cacheKey()!=main_before
     assert window.viewer.print_action.icon().cacheKey()!=pdf_before
     assert window.docs_table.item(0,1).icon().cacheKey()!=list_before
@@ -124,8 +125,8 @@ def test_spaced_buttons_actually_paint_the_icon(app):
 
 def test_theme_manifest_coverage_licenses_and_composition_sources(app):
     metadata=json.loads((ASSETS/'themes.json').read_text())['themes']
-    assert tuple(metadata)==THEME_NAMES and len(metadata)==11
-    expected={'Nuvola':['width'],'Oxylite':['width'],
+    assert tuple(metadata)==THEME_NAMES and len(metadata)==12
+    expected={'Nuvola':['width'],'Oxylite':['width'],'SE98':['width'],
               'Modern Office Day':['page','width','zoom_in','zoom_out']}
     roles={'extract','delete','clear','refresh','settings','about','first','previous','next','last',
            'zoom_in','zoom_out','width','page','print','save','pdf','zip','warning'}

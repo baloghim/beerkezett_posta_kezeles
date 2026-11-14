@@ -32,6 +32,6 @@ A `tests/test_startup.py` friss Python-folyamatokkal futtatja a `scripts/check_s
 python scripts/check_startup.py dist/EDPD-Manager/EDPD-Manager.exe --report startup-validation.json
 ```
 
-Ellenőrzések: első indítás új profillal; második indítás élő főablak mellett; külön telepítési mappák; gyors dupla indítás és indulás alatti második indítás; mesterségesen két másodperccel késleltetett hálózati munkaszál; nem elérhető forrás/cél; hibás JSON; mind a 11 mentett ikontéma és az elérhető egységes felületi stílusok tényleges újraindításban; normál kilépés utáni és folyamatkilövés utáni újraindítás. A késleltetett munkaszálas próba ellenőrzi, hogy a főablak legalább 1,9 másodperccel a háttérbetöltés vége előtt látható.
+Ellenőrzések: első indítás új profillal; második indítás élő főablak mellett; külön telepítési mappák; gyors dupla indítás és indulás alatti második indítás; mesterségesen két másodperccel késleltetett hálózati munkaszál; nem elérhető forrás/cél; hibás JSON; mind a 12 mentett ikontéma és az elérhető egységes felületi stílusok tényleges újraindításban; normál kilépés utáni és folyamatkilövés utáni újraindítás. A késleltetett munkaszálas próba ellenőrzi, hogy a főablak legalább 1,9 másodperccel a háttérbetöltés vége előtt látható.
 
 Az időmérés kézzel is kérhető: `EDPD-Manager.exe --startup-report <jelentés.json>`. Az automatikus bezárás és mesterséges késleltetés kapcsolói csak külön jelentéssel és pozitív `--startup-exit-ms` értékkel használhatók tesztmódban; a mindennapos indításhoz nincs szükség rájuk.

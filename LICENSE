@@ -43,4 +43,12 @@ EDPD 2.6.1 további válogatott ikonok:
 - Diagonal: Tamás Csaba és a megőrzött upstream kreditek, ikonok CC-BY-4.0; licenses/diagonal/.
 - Modern Office Day: DrMcC0y, Breeze/Mint Breeze Light és a megőrzött alapforrások, GPL-3.0; licenses/modern-office/.
 Az azonos témán belüli eredeti mappa/törlésjelvény összetételeket és a PNG-konverziókat a manifest jelöli.
-A SE98 és Buuf For Many Desktops nem került be. Részletes ellenőrzés: docs/ICON-THEME-AUDIT-2.6.1.md.
+A 2.6.1-be SE98 és Buuf For Many Desktops nem került be. Részletes ellenőrzés: docs/ICON-THEME-AUDIT-2.6.1.md.
+
+EDPD 2.6.2: SE98 válogatott ikonok, a felhasználó kifejezett kérésére.
+- Forrás: https://github.com/nestoris/Win98SE
+- Eredet az upstream szerint: nestoris, Microsoft Memphis / Windows 98 SE, ME, 2000, Chicago95, Faenza.
+- A tároló GPL-2.0 nyilatkozata megőrizve: licenses/se98/LICENSE.
+- Az egyedi Microsoft-eredetű fájlok továbbterjesztési jogát nem minősítjük igazoltnak.
+- A beépítés nem keletkeztet új engedélyt. Eredeti README, someicons.md és EDPD módosításjelzés: licenses/se98/.
+- Fájlútvonalak, commit, SHA-256 és fallback: assets/themes.json, docs/ICON-THEME-AUDIT-2.6.2.md.

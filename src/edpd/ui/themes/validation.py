@@ -1,6 +1,7 @@
 """Synthetic EXE self-test only; never imported during normal application startup."""
 import hashlib
 import time
+from dataclasses import replace
 from pathlib import Path
 from PySide2.QtCore import Qt, QCoreApplication, QEvent
 from PySide2.QtGui import QPalette
@@ -90,7 +91,12 @@ def validate_surfaces(window, destination):
         set_theme('Longhorn Blue');set_icons('Nuvola');settle(app)
         assert window.grab().save(str(output/'blue-nuvola.png'))
         result['screenshots'].append('blue-nuvola.png')
-        dialog=SettingsDialog(window.settings,window);dialog.show();settle(app)
+        set_icons('SE98');settle(app)
+        assert window.grab().save(str(output/'blue-se98.png'))
+        result['screenshots'].append('blue-se98.png')
+        preview=replace(window.settings,ui_style='Longhorn Blue',qt_style='Fusion',
+                        surface_theme='Longhorn Blue',icon_theme='SE98')
+        dialog=SettingsDialog(preview,window);dialog.show();settle(app)
         assert dialog.grab().save(str(output/'blue-settings.png'))
         dialog.reject();dialog.deleteLater()
         result['screenshots'].append('blue-settings.png')

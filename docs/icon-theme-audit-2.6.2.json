@@ -1,0 +1,159 @@
+[
+  {
+    "name": "Crystal SVG",
+    "source_accessible": true,
+    "source": "https://github.com/dangvd/crystal-remix-icon-theme",
+    "commit": "f8863b558b8eedf22caea0eabe18030bfcbe0783",
+    "license_checked": true,
+    "license": "GNU LGPL (upstream version unspecified)",
+    "own_roles": 19,
+    "fallback_roles": [],
+    "included": true
+  },
+  {
+    "name": "Nuvola",
+    "source_accessible": true,
+    "source": "https://github.com/spartrekus/nuvola-icon-theme",
+    "commit": "fb94aa21035d19c2ec68d69ec0ab21697a73e7c2",
+    "license_checked": true,
+    "license": "LGPL-2.1-or-later (Nuvola-specific Debian copyright entry)",
+    "own_roles": 18,
+    "fallback_roles": [
+      "width"
+    ],
+    "included": true
+  },
+  {
+    "name": "KDE Modern Classic",
+    "source_accessible": true,
+    "source": "https://github.com/nzoomed/kde-modern-classic",
+    "commit": "466f093bf391f80c67cef60a24d4013be2536707",
+    "license_checked": true,
+    "license": "LGPL-3.0-or-later",
+    "own_roles": 19,
+    "fallback_roles": [],
+    "included": true
+  },
+  {
+    "name": "Papirus",
+    "source_accessible": true,
+    "source": "https://github.com/PapirusDevelopmentTeam/papirus-icon-theme",
+    "commit": "33d971eb2d0c8454bac58246687de78e58f960c8",
+    "license_checked": true,
+    "license": "GPL-3.0",
+    "own_roles": 19,
+    "fallback_roles": [],
+    "included": true
+  },
+  {
+    "name": "We10X",
+    "source_accessible": true,
+    "source": "https://github.com/yeyushengfan258/We10X-icon-theme",
+    "commit": "0f52ff2dce554146f8f76ab2c7a5968fd773400d",
+    "license_checked": true,
+    "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)",
+    "own_roles": 19,
+    "fallback_roles": [],
+    "included": true
+  },
+  {
+    "name": "Oxygen",
+    "source_accessible": true,
+    "source": "https://github.com/KDE/oxygen-icons",
+    "commit": "f7c05b7e0417e39eae17b9272c8880d488985bf9",
+    "license_checked": true,
+    "license": "LGPL-3.0-or-later",
+    "own_roles": 19,
+    "fallback_roles": [],
+    "included": true
+  },
+  {
+    "name": "Win10Sur",
+    "source_accessible": true,
+    "source": "https://github.com/yeyushengfan258/Win10Sur-icon-theme",
+    "commit": "2f41287774dffb79946f41aa2a20b90ee22aa648",
+    "license_checked": true,
+    "license": "GPL-3.0",
+    "own_roles": 19,
+    "fallback_roles": [],
+    "included": true
+  },
+  {
+    "name": "SE98",
+    "source_accessible": true,
+    "source": "https://github.com/nestoris/Win98SE",
+    "commit": "a837b57a47242d6eefe63cadc9e6906a5be7e7a6",
+    "license_checked": true,
+    "license": "Repository GPL-2.0; individual Microsoft-derived artwork rights not established",
+    "own_roles": 18,
+    "fallback_roles": [
+      "width"
+    ],
+    "included": true,
+    "reason": "Explicit user request to include in the next release despite previously disclosed per-file rights uncertainty; upstream declaration and notices preserved.",
+    "readme_sha256": "7c4d3d5da20d4dab00f1232503bddd1b4c559c91bbe7f9782bd50ab00e3d91e9",
+    "introduced_in": "2.6.2"
+  },
+  {
+    "name": "Oxylite",
+    "source_accessible": true,
+    "source": "https://github.com/mx-2/oxylite-icon-theme",
+    "commit": "59f49b202ad2db33c50dc8d67b7961f47786bc87",
+    "license_checked": true,
+    "license": "GPL-3.0; per-file overrides in licenses.yml",
+    "own_roles": 18,
+    "fallback_roles": [
+      "width"
+    ],
+    "included": true
+  },
+  {
+    "name": "WhiteSur",
+    "source_accessible": true,
+    "source": "https://github.com/vinceliuice/WhiteSur-icon-theme",
+    "commit": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+    "license_checked": true,
+    "license": "GPL-3.0",
+    "own_roles": 19,
+    "fallback_roles": [],
+    "included": true
+  },
+  {
+    "name": "Buuf For Many Desktops",
+    "source_accessible": false,
+    "source": "https://codeberg.org/eudaimon/buuf-for-many-desktops.git",
+    "license_checked": false,
+    "license": null,
+    "own_roles": null,
+    "fallback_roles": null,
+    "included": false,
+    "reason": "HTTPS CONNECT rejected by managed environment proxy (403), 2026-11-14. No verified official mirror or license retrieved. No assumption about license type."
+  },
+  {
+    "name": "Diagonal",
+    "source_accessible": true,
+    "source": "https://github.com/tamascsabi/Diagonal-icon-theme",
+    "commit": "9191af03b7251efe9e45ed9fd0fdeb527d5949e8",
+    "license_checked": true,
+    "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices",
+    "own_roles": 19,
+    "fallback_roles": [],
+    "included": true
+  },
+  {
+    "name": "Modern Office Day",
+    "source_accessible": true,
+    "source": "https://github.com/DrMcC0y/Modern-Office-Day-Icons",
+    "commit": "7c6466eeccac0809fa411f70da760dfafcfcc10b",
+    "license_checked": true,
+    "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+    "own_roles": 15,
+    "fallback_roles": [
+      "page",
+      "width",
+      "zoom_in",
+      "zoom_out"
+    ],
+    "included": true
+  }
+]

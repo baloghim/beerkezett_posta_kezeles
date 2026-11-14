@@ -1731,6 +1731,154 @@
         "zoom_in",
         "zoom_out"
       ]
+    },
+    "SE98": {
+      "id": "se98",
+      "source": "https://github.com/nestoris/Win98SE",
+      "commit": "a837b57a47242d6eefe63cadc9e6906a5be7e7a6",
+      "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established",
+      "authors": "nestoris; Microsoft Memphis / Windows 98 SE, ME, 2000, Chicago95, Faenza as identified by upstream README",
+      "provenance_note": "Included in 2.6.2 at the user's explicit request after disclosure of the unresolved per-file rights. This inclusion does not assert a new permission or remove upstream notices.",
+      "icons": {
+        "extract": {
+          "source": "SE98/actions/48/extract-archive.png",
+          "requested_source": "SE98/actions/48/archive-extract.png",
+          "original": "SE98__actions__48__extract-archive.png",
+          "sha256": "739e96e63b5363567a5694d73bc6c3cf471ee6528ab66c117e3938ba3e54c690",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "delete": {
+          "source": "SE98/places/48/user-trash.png",
+          "requested_source": "SE98/places/48/user-trash.png",
+          "original": "SE98__places__48__user-trash.png",
+          "sha256": "38bb23162fdf9835c675d6ec8e0718125126603e0178b2bfe9a6cc5260a4d237",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "clear": {
+          "source": "SE98/places/48/folder.png",
+          "requested_source": "SE98/places/48/folder.png",
+          "original": "SE98__places__48__folder.png",
+          "sha256": "a8300fade0094d07592abcb55dc5bdf69d0b7e97453573a68a943e62d343e827",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established",
+          "badge": {
+            "source": "SE98/actions/48/edit-delete.png",
+            "requested_source": "SE98/actions/48/edit-delete.png",
+            "original": "SE98__actions__48__edit-delete.png",
+            "sha256": "ee48653e994a8005dbccc888982e1ce291c30e77306316e05a01a0d37831e2e0",
+            "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring."
+        },
+        "refresh": {
+          "source": "SE98/actions/48/view-refresh.png",
+          "requested_source": "SE98/actions/48/view-refresh.png",
+          "original": "SE98__actions__48__view-refresh.png",
+          "sha256": "3f37460e2a111d7aea5e169e70f7464ce00ef19d5d43469aab00f20c4deeb3f8",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "settings": {
+          "source": "SE98/apps/48/preferences-system.png",
+          "requested_source": "SE98/apps/48/preferences-system.png",
+          "original": "SE98__apps__48__preferences-system.png",
+          "sha256": "b985f2c59d176b370778461f0b5db2c5d96523004b48d16eae60a20433e79318",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "about": {
+          "source": "SE98/status/48/dialog-information.png",
+          "requested_source": "SE98/status/48/dialog-information.png",
+          "original": "SE98__status__48__dialog-information.png",
+          "sha256": "d5f260d0308dea7ab65b6db1185bee55c90e870432d8571e797a9731881e6622",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "first": {
+          "source": "SE98/actions/48/go-first.png",
+          "requested_source": "SE98/actions/48/go-first.png",
+          "original": "SE98__actions__48__go-first.png",
+          "sha256": "6b3ca4fa9f552d293b7004ebbc518d9a5c5c07089f2f4917b8238eba076a79b5",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "previous": {
+          "source": "SE98/actions/48/go-previous.png",
+          "requested_source": "SE98/actions/48/go-previous.png",
+          "original": "SE98__actions__48__go-previous.png",
+          "sha256": "0b25411b270626bf86638baafcadbf8c6e1522e62164604bb198e6c070f24695",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "next": {
+          "source": "SE98/actions/48/go-next.png",
+          "requested_source": "SE98/actions/48/go-next.png",
+          "original": "SE98__actions__48__go-next.png",
+          "sha256": "0bfdb3d144ecf95f55bfdcf18511b3285e0bc90aa33e346ca4edc8d0f5af000b",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "last": {
+          "source": "SE98/actions/48/go-last.png",
+          "requested_source": "SE98/actions/48/go-last.png",
+          "original": "SE98__actions__48__go-last.png",
+          "sha256": "8842e5f05ffb2809f1328272f39e52282014d4fb5c713ec87233bee27493b97b",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "zoom_in": {
+          "source": "SE98/actions/48/zoom-in.png",
+          "requested_source": "SE98/actions/48/zoom-in.png",
+          "original": "SE98__actions__48__zoom-in.png",
+          "sha256": "22921d16e01fe81c13e6e9ff40c9ebe41cf219c435f1733f790819c3a18536ae",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "zoom_out": {
+          "source": "SE98/actions/48/zoom-out.png",
+          "requested_source": "SE98/actions/48/zoom-out.png",
+          "original": "SE98__actions__48__zoom-out.png",
+          "sha256": "b0f5698798a82c5a37320099a0acdf90b8f7821113ca14f64e47d0ff4d27cfa7",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "page": {
+          "source": "SE98/actions/48/zoom-fit.png",
+          "requested_source": "SE98/actions/48/zoom-fit-best.png",
+          "original": "SE98__actions__48__zoom-fit.png",
+          "sha256": "ed0f93a5b56274ad9bf03106f3f33e6ce965bb155fb17f0e5a74d84c2d28cd58",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "print": {
+          "source": "SE98/actions/48/document-print.png",
+          "requested_source": "SE98/actions/48/document-print.png",
+          "original": "SE98__actions__48__document-print.png",
+          "sha256": "80cfb6b47807909b0b8c51dfcf3f86d365b71cb64f40e45f435ef88c2c174cca",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "save": {
+          "source": "SE98/actions/48/document-save.png",
+          "requested_source": "SE98/actions/48/document-save.png",
+          "original": "SE98__actions__48__document-save.png",
+          "sha256": "1b9deb9084b5f222ade1e84cbac32cf6e42daca457cac9bf8ada95dba7d0e24b",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "zip": {
+          "source": "SE98/mimes/48/application-x-archive.png",
+          "requested_source": "SE98/mimes/48/application-x-archive.png",
+          "original": "SE98__mimes__48__application-x-archive.png",
+          "sha256": "2e2527c0c561d2c33b21de07af625302a0a89ccb234d5915c2d1a3eb2596b8d3",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "pdf": {
+          "source": "SE98/mimes/48/application-pdf.png",
+          "requested_source": "SE98/mimes/48/application-pdf.png",
+          "original": "SE98__mimes__48__application-pdf.png",
+          "sha256": "a22c546f627bf703aae14dc04c2ba8aa63de861bb7426af20eeed086189768bf",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        },
+        "warning": {
+          "source": "SE98/status/48/dialog-warning.png",
+          "requested_source": "SE98/status/48/dialog-warning.png",
+          "original": "SE98__status__48__dialog-warning.png",
+          "sha256": "173d26864818ae9b6318212ff8fb59488ed61c4e32e71e9539dfda6140471209",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established"
+        }
+      },
+      "own_role_count": 18,
+      "fallback_roles": [
+        "width"
+      ]
     }
   }
 }

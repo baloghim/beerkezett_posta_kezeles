@@ -2,7 +2,7 @@
 
 Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak kezeléséhez, a munkamappa PDF-jeinek megtekintéséhez és nyomtatásához. Nincs dokumentumfeltöltés, telemetria vagy külön szerver.
 
-Az EDPD Menedzser 11, futás közben váltható belső ikontémát kínál: **Crystal SVG, Nuvola, KDE Modern Classic, Papirus, We10X, Oxygen, Win10Sur, Oxylite, WhiteSur, Diagonal, Modern Office Day** (Beállítások → Megjelenés → Ikontéma). A választás a meglévő settings.json fájlban marad meg; a Felületi stílus külön választható, az EXE saját ikonja állandó. [Eredet, licencek és fallback](docs/ICON-THEMES.md), [összehasonlító kép](docs/icon-theme-comparison.png).
+Az EDPD Menedzser 12, futás közben váltható belső ikontémát kínál: **Crystal SVG, Nuvola, KDE Modern Classic, Papirus, We10X, Oxygen, Win10Sur, Oxylite, WhiteSur, Diagonal, Modern Office Day, SE98** (Beállítások → Megjelenés → Ikontéma). A választás a meglévő settings.json fájlban marad meg; a Felületi stílus külön választható, az EXE saját ikonja állandó. [Eredet, licencek és fallback](docs/ICON-THEMES.md), [összehasonlító kép](docs/icon-theme-comparison.png).
 
 Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a főablak után, háttérben fut. A munkamenetenkénti példányvédelem a külön mappákból indított 2.4-es és újabb másolatokat is összefogja. [Mérések, példányvédelem és tesztelés](docs/STARTUP.md). Az alsó lista felirata Dátum; a dátumok képzése és rendezése változatlan.
 
@@ -11,6 +11,10 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 **[EDPD Menedzser 2.6.1 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.1/EDPD-Manager-Windows-x64.zip)**
 
 **A 2.6.1 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** 177 sikeres Windows-teszt, öt csomagolt EXE-futtatás összesen 100 sikeres funkcionális ellenőrzéssel, 12 indítási ellenőrzési csoport, 11 ikontéma, öt egységes felületi stílus és 125/150%-os Qt-skálázási próba. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzési jelentés, méret/indulás és korlátok](docs/RELEASE-2.6.1.md).
+
+## Újdonság a 2.6.2 változatban
+
+Az **SE98** választható a Beállítások → Megjelenés → Ikontéma listában. 18 saját szerep, a szélességigazításhoz Crystal-helyettesítés; a többi téma és a dokumentumkezelés megmaradt. A kiválasztás újraindítás nélkül érvényes és megőrződik. [Aktuális forrás-/licencadatok és a 13 jelölt állapota](docs/ICON-THEME-AUDIT-2.6.2.md).
 
 ## Újdonságok a 2.6.1 változatban
 
@@ -106,7 +110,7 @@ Linuxon: `QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m pytest -q`. A meglé
 A csomagolt EXE önellenőrzése:
 
 ```bat
-EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.6.1-1607.json"
+EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.6.2-1607.json"
 ```
 
 A Windows workflow natív DLL-auditot, EXE-ikonerőforrás-vizsgálatot, a csomagolt ikonfájlok összehasonlítását és az EXE húsz funkcionális önellenőrzését is végzi. A `v*` címkéhez sikeres build után Release-t készít. [Windows 1607 útmutató](docs/WINDOWS1607.md). A modern runner sikere nem helyettesíti a valódi 1607-es célgépes próbát; a korábban ott ellenőrzött 0.2.1 kiadás sikere az új változatot nem minősíti.

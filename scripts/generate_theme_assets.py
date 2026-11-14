@@ -1,5 +1,6 @@
 """Render preserved upstream SVG/PNG files with Qt 5.15, without redrawing icons."""
 import json
+import argparse
 import subprocess
 import tempfile
 from pathlib import Path
@@ -12,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'src/edpd/assets'
 
 
-def build():
+def build(only_theme=None):
     manifest = json.loads((ASSETS / 'themes.json').read_text())
     def render(source, size, inkscape=False):
         if inkscape and source.suffix == '.svg':
@@ -37,6 +38,8 @@ def build():
 
     for theme, record in manifest['themes'].items():
         if theme == 'Crystal SVG':
+            continue
+        if only_theme is not None and theme != only_theme:
             continue
         directory = ASSETS / 'themes' / record['id']
         for role, item in record['icons'].items():
@@ -96,5 +99,10 @@ def build():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--theme', help='Render only this theme; comparison sheets still include every theme.')
+    args = parser.parse_args()
+    if args.theme and args.theme not in json.loads((ASSETS/'themes.json').read_text())['themes']:
+        parser.error('Unknown theme: '+args.theme)
     app = QApplication([])
-    build()
+    build(args.theme)
