@@ -41,9 +41,10 @@ def test_choices_cancel_and_old_configuration(app,tmp_path):
     settings.save(path)
     before=path.read_bytes()
     dialog=SettingsDialog(settings,None)
-    assert tuple(dialog.surface_combo.itemText(i) for i in range(dialog.surface_combo.count()))==THEME_NAMES
-    assert dialog.surface_combo.currentText()=='Alapértelmezett'
-    dialog.surface_combo.setCurrentText('Longhorn Blue')
+    assert tuple(dialog.style_combo.itemText(i) for i in range(dialog.style_combo.count()))[-2:]==THEME_NAMES[1:]
+    assert not hasattr(dialog, 'surface_combo')
+    assert dialog.style_combo.currentData()=='Fusion'
+    dialog.style_combo.setCurrentText('Longhorn Blue')
     dialog.reject()
     assert path.read_bytes()==before and settings.surface_theme=='Alapértelmezett'
     assert manager().name=='Alapértelmezett'
@@ -58,7 +59,7 @@ def test_saved_change_is_immediate_without_network_or_document_reload(app,folder
     import edpd.ui.main_window as module
     monkeypatch.setattr(module,'check_settings',lambda *_:pytest.fail('Surface switch accessed network'))
     def choose(dialog):
-        dialog.surface_combo.setCurrentText('Longhorn Blue')
+        dialog.style_combo.setCurrentText('Longhorn Blue')
         return dialog.Accepted
     monkeypatch.setattr(SettingsDialog,'exec_',choose)
     try:
@@ -69,8 +70,8 @@ def test_saved_change_is_immediate_without_network_or_document_reload(app,folder
         assert window.viewer.theme_title.isVisible()
         assert window.source_generation==generation
         dialog=SettingsDialog(window.settings,window)
-        assert dialog.style_combo.currentData().lower()==current_style_name().lower()
-        assert dialog.surface_combo.currentText()=='Longhorn Blue'
+        assert dialog.style_combo.currentData()=='Longhorn Blue'
+        assert dialog.style_combo.currentText()=='Longhorn Blue'
         dialog.reject()
         set_theme('Alapértelmezett')
         assert app.styleSheet()=='' and not window.viewer.theme_title.isVisible()
@@ -245,7 +246,7 @@ def test_coloured_pdf_and_combo_arrows_are_preserved(app,folders):
             assert window.viewer.label.pixmap().toImage()==original
         set_theme('Longhorn Blue')
         dialog=SettingsDialog(window.settings,window);dialog.show();app.processEvents()
-        combo=dialog.surface_combo
+        combo=dialog.style_combo
         option=QStyleOptionComboBox();combo.initStyleOption(option)
         area=combo.style().subControlRect(QStyle.CC_ComboBox,option,QStyle.SC_ComboBoxArrow,combo)
         pixels=combo.grab(area).toImage()
@@ -254,3 +255,39 @@ def test_coloured_pdf_and_combo_arrows_are_preserved(app,folders):
         assert dark>3
         dialog.reject()
     finally:window.close()
+
+
+@pytest.mark.parametrize('legacy,expected', [
+    ({'qt_style':'Windows','surface_theme':'Longhorn Blue'},'Longhorn Blue'),
+    ({'qt_style':'Windows','surface_theme':'Longhorn Slate'},'Longhorn Slate'),
+    ({'qt_style':'Windows','surface_theme':'Alapértelmezett'},'Windows'),
+    ({'qt_style':'Fusion'},'Fusion'),
+    ({'qt_style':None,'surface_theme':None},'Fusion'),
+    ({'ui_style':43,'qt_style':'Fusion'},'Fusion'),
+])
+def test_unified_style_profile_migration_preserves_workflow(tmp_path,legacy,expected):
+    path=tmp_path/'settings.json'
+    original=dict(source='archive',target='work',refresh_minutes=30,history_days=90,
+                  geometry='saved-layout',panels='saved-splitter',left_panels='saved-left',icon_theme='Nuvola',**legacy)
+    path.write_text(json.dumps(original))
+    settings=Settings.load(path)
+    assert settings.ui_style==expected
+    for key in ('source','target','refresh_minutes','history_days','geometry','panels','left_panels','icon_theme'):
+        assert getattr(settings,key)==original[key]
+    settings.save(path)
+    assert Settings.load(path)==settings
+
+
+@pytest.mark.parametrize('choice',['Longhorn Blue','Longhorn Slate','Fusion','Missing style','Vista'])
+def test_unified_choice_restores_native_palette_and_synchronizes_legacy_fields(app,choice):
+    from edpd.ui.appearance import apply_settings_style,resolve_ui_style,ui_style_choices
+    settings=Settings(ui_style=choice)
+    apply_settings_style(settings)
+    assert (settings.ui_style,settings.qt_style,settings.surface_theme)==resolve_ui_style(choice)
+    assert bool(app.styleSheet())==(settings.ui_style in ('Longhorn Blue','Longhorn Slate'))
+    dialog=SettingsDialog(settings,None)
+    assert [(dialog.style_combo.itemText(i),dialog.style_combo.itemData(i)) for i in range(dialog.style_combo.count())]==ui_style_choices()
+    result=dialog.result_settings()
+    assert result.ui_style==settings.ui_style
+    assert result.qt_style==settings.qt_style and result.surface_theme==settings.surface_theme
+    dialog.reject()

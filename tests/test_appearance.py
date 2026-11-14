@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QDialogButtonBox, QLabel, QStyleFactory, QWidget
 from edpd import __version__
 from edpd.config import Settings
 from edpd.ui.about_dialog import AboutDialog
-from edpd.ui.appearance import apply_style
+from edpd.ui.appearance import apply_style, ui_style_choices
 from edpd.ui.main_window import MainWindow
 from edpd.ui.pdf_viewer import PDFViewer
 from edpd.ui.settings_dialog import SettingsDialog
@@ -30,7 +30,7 @@ def test_available_styles_save_and_apply(app, folders, tmp_path, monkeypatch, st
     wait_for(app, lambda: window.source_generation > 0 and not window.jobs)
 
     def choose(dialog):
-        assert [dialog.style_combo.itemData(i) for i in range(dialog.style_combo.count())] == QStyleFactory.keys()
+        assert [dialog.style_combo.itemData(i) for i in range(dialog.style_combo.count())] == [key for label,key in ui_style_choices()]
         dialog.style_combo.setCurrentIndex(dialog.style_combo.findData(style))
         dialog.accept()
         return dialog.result()

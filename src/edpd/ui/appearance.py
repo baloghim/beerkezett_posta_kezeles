@@ -18,3 +18,24 @@ def apply_style(name, surface_theme=None):
 
 def current_style_name():
     return QApplication.instance().style().objectName() or manager().qt_style_name
+
+
+def ui_style_choices():
+    """Only installed native styles, followed by the two complete Longhorn styles."""
+    return [('Vista' if key.lower() == 'windowsvista' else key, key)
+            for key in sorted(QStyleFactory.keys(), key=lambda key:
+                              {'fusion':0, 'windows':1, 'windowsvista':2}.get(key.lower(),3))] + [(name, name) for name in
+                                               ('Longhorn Blue', 'Longhorn Slate')]
+
+
+def resolve_ui_style(name):
+    if name in ('Longhorn Blue', 'Longhorn Slate'):
+        return name, 'Fusion', name
+    key = next((key for label, key in ui_style_choices()[:-2]
+                if isinstance(name, str) and name.lower() in (label.lower(), key.lower())), 'Fusion')
+    return key, key, 'Alapértelmezett'
+
+
+def apply_settings_style(settings):
+    settings.ui_style, settings.qt_style, settings.surface_theme = resolve_ui_style(settings.ui_style)
+    apply_style(settings.qt_style, settings.surface_theme)

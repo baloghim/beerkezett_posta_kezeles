@@ -91,7 +91,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setObjectName('edpd-window')
         self.setStatusBar(ThemeStatusBar(self))
-        settings.surface_theme = set_surface_theme(settings.surface_theme)
+        from .appearance import apply_settings_style
+        apply_settings_style(settings)
         self.trace = startup_trace
         self.first_refresh_started = None
         settings.icon_theme = set_theme(settings.icon_theme)
@@ -738,8 +739,8 @@ class MainWindow(QMainWindow):
                 return candidate
             def saved(value):
                 self.settings = value
-                from .appearance import apply_style
-                apply_style(value.qt_style, value.surface_theme)
+                from .appearance import apply_settings_style
+                apply_settings_style(value)
                 value.surface_theme = surface_manager().name
                 value.icon_theme = set_theme(value.icon_theme)
                 if workflow_changed:

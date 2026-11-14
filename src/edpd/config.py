@@ -18,8 +18,18 @@ class Settings:
     qt_style: str = 'Fusion'
     icon_theme: str = 'Crystal SVG'
     surface_theme: str = 'Alapértelmezett'
+    ui_style: str = ''
 
     def __post_init__(self):
+        # Migrate 2.6 profiles without discarding unrelated, valid settings.
+        if not isinstance(self.ui_style, str) or not self.ui_style:
+            self.ui_style = (self.surface_theme if self.surface_theme in
+                             ('Longhorn Blue', 'Longhorn Slate') else
+                             self.qt_style if isinstance(self.qt_style, str) else 'Fusion')
+        if not isinstance(self.surface_theme, str):
+            self.surface_theme = 'Alapértelmezett'
+        if not isinstance(self.qt_style, str):
+            self.qt_style = 'Fusion'
         for key in ('source', 'target'):
             value = getattr(self, key)
             if not isinstance(value, str):

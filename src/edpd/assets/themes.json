@@ -4,7 +4,9 @@
       "id": "crystal",
       "license": "GNU LGPL (upstream version unspecified)",
       "source": "https://github.com/dangvd/crystal-remix-icon-theme",
-      "icons": {}
+      "icons": {},
+      "own_role_count": 19,
+      "fallback_roles": []
     },
     "Nuvola": {
       "id": "nuvola",
@@ -104,7 +106,11 @@
           "original": "save.png",
           "sha256": "976662f5ebd347ff44b6d5396d19089b72389d79580110e056b1876f42e6e69c"
         }
-      }
+      },
+      "own_role_count": 18,
+      "fallback_roles": [
+        "width"
+      ]
     },
     "KDE Modern Classic": {
       "id": "modern-classic",
@@ -207,7 +213,9 @@
           "original": "save.svg",
           "sha256": "d894e60b32824a16b842a76f7e601745b1c41e8ef3c81b16e56fc32c0605cb28"
         }
-      }
+      },
+      "own_role_count": 19,
+      "fallback_roles": []
     },
     "Papirus": {
       "id": "papirus",
@@ -216,34 +224,62 @@
       "license": "GPL-3.0",
       "icons": {
         "extract": {
-          "source": "Papirus/22x22/actions/archive-extract.svg",
-          "original": "extract.svg",
-          "sha256": "40720f2a2e7c03e53a5cdccbda57f4d838f2833802686a16e515873d46165b24"
+          "source": "Papirus/48x48/apps/ark.svg",
+          "original": "Papirus__48x48__apps__ark.svg",
+          "sha256": "d7c8dcbd854c7bd2186b94060eb3b17322576bd083f9c3d0c1fc24ef89c2542d",
+          "requested_source": "Papirus/48x48/mimetypes/application-x-archive.svg",
+          "license": "GPL-3.0"
         },
         "delete": {
-          "source": "Papirus/22x22/actions/edit-delete.svg",
-          "original": "delete.svg",
-          "sha256": "78c4bce0d0113b1d26319fbdb52c39abd12864a68c39a4d47d5bc66cb27e7a05"
+          "source": "Papirus/48x48/places/user-trash-full.svg",
+          "requested_source": "Papirus/48x48/places/user-trash-full.svg",
+          "original": "Papirus__48x48__places__user-trash-full.svg",
+          "sha256": "9cccc190580367763e85a0d28d2d01ee7a566d3522cadffb6bfceeb01676d0a3",
+          "license": "GPL-3.0",
+          "badge": {
+            "source": "Papirus/48x48/status/dialog-error.svg",
+            "requested_source": "Papirus/48x48/status/dialog-error.svg",
+            "original": "Papirus__48x48__status__dialog-error.svg",
+            "sha256": "44e63680f1b61ab0b6df6a19726e915dda1096dd69388a058a930651c9a059d4",
+            "license": "GPL-3.0"
+          },
+          "composition": "Original trash with same-theme original deletion badge, lower-right 50%; no recoloring."
         },
         "clear": {
-          "source": "Papirus/22x22/actions/edit-clear.svg",
-          "original": "clear.svg",
-          "sha256": "206f5c8fedfe23bb71ce14685bd8f9de250ca242aa2a01a1d099c7a27faf0251"
+          "source": "Papirus/48x48/places/folder-blue.svg",
+          "requested_source": "Papirus/48x48/places/folder.svg",
+          "original": "Papirus__48x48__places__folder-blue.svg",
+          "sha256": "e9335dbc48f38943156b35756b16734933b303518f384b0f8e3439222402df8f",
+          "license": "GPL-3.0",
+          "badge": {
+            "source": "Papirus/48x48/status/dialog-error.svg",
+            "requested_source": "Papirus/48x48/status/dialog-error.svg",
+            "original": "Papirus__48x48__status__dialog-error.svg",
+            "sha256": "44e63680f1b61ab0b6df6a19726e915dda1096dd69388a058a930651c9a059d4",
+            "license": "GPL-3.0"
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring."
         },
         "refresh": {
-          "source": "Papirus/22x22/actions/view-refresh.svg",
-          "original": "refresh.svg",
-          "sha256": "7519010b857b414da9601f7655f3a74ea1317fb9f3a5fdbcc3e95fdb3f3ed71a"
+          "source": "Papirus/48x48/apps/system-software-update.svg",
+          "original": "Papirus__48x48__apps__system-software-update.svg",
+          "sha256": "d99cb36d354718f1e532eaf09bbb4df7b22545dd4dc16636254ef2aa490e7e1e",
+          "requested_source": "Papirus/48x48/apps/system-software-update.svg",
+          "license": "GPL-3.0"
         },
         "settings": {
-          "source": "Papirus/22x22/actions/configure.svg",
-          "original": "settings.svg",
-          "sha256": "7fbfe03892baecb251eefb471257039f1cf2ac6cd8c11d8a20e3b9e514c35a12"
+          "source": "Papirus/48x48/apps/utilities-tweak-tool.svg",
+          "requested_source": "Papirus/48x48/apps/systemsettings.svg",
+          "original": "Papirus__48x48__apps__utilities-tweak-tool.svg",
+          "sha256": "467b23c3b05e793fad524d5f62781fd99394fcfde421d9b564d81d6c6102271f",
+          "license": "GPL-3.0"
         },
         "about": {
-          "source": "Papirus/32x32/status/dialog-information.svg",
-          "original": "about.svg",
-          "sha256": "b6c5d0e31c5785f4676cba4818bb4e4bf8b7242446b24fe404b1d8456e3a37d8"
+          "source": "Papirus/48x48/status/dialog-information.svg",
+          "original": "Papirus__48x48__status__dialog-information.svg",
+          "sha256": "07b1addef932c5ec1c8b69177cb72522a4963345c42b6c2148b877125ad6b650",
+          "requested_source": "Papirus/48x48/status/dialog-information.svg",
+          "license": "GPL-3.0"
         },
         "first": {
           "source": "Papirus/22x22/actions/go-first.svg",
@@ -310,7 +346,10 @@
           "original": "save.svg",
           "sha256": "73df8c511d3c2e1185ce0e1ac441ed474083abdf5a85dbf0abdff56e4093dd74"
         }
-      }
+      },
+      "authors": "",
+      "own_role_count": 19,
+      "fallback_roles": []
     },
     "We10X": {
       "id": "we10x",
@@ -319,34 +358,53 @@
       "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)",
       "icons": {
         "extract": {
-          "source": "src/actions/32/archive-extract.svg",
-          "original": "extract.svg",
-          "sha256": "4782db5347271bff1482631834e424b7281ffcb473123ae3c0c1422a9a1255ed"
+          "source": "src/mimes/scalable/application-x-archive.svg",
+          "original": "src__mimes__scalable__application-x-archive.svg",
+          "sha256": "f7cee4ff87850790fd768c70ae684bd92664961add6d3920bcb09d8d22e4ded9",
+          "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)"
         },
         "delete": {
-          "source": "src/actions/32/edit-delete.svg",
-          "original": "delete.svg",
-          "sha256": "64f9003d981bf8fbd0384dbc204bb317d1f904c61685470e23c027175ea83814"
+          "source": "src/places/scalable/user-trash.svg",
+          "original": "src__places__scalable__user-trash.svg",
+          "sha256": "9da9c0e45d9a2863c657cb74d0e882b97825278af44b27ed8ee36502808daf7e",
+          "requested_source": "src/places/scalable/user-trash.svg",
+          "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)"
         },
         "clear": {
-          "source": "src/places/22/folder-trash.svg",
-          "original": "clear.svg",
-          "sha256": "4c1e7e7f7c56922874eea7dfefbb5dee6d1dd13ed8a8817da28d778e1bb11169"
+          "source": "src/places/scalable/folder.svg",
+          "original": "src__places__scalable__folder.svg",
+          "sha256": "a03a897c8665e488046076dcd69988b35b1857347d985060a6d7c83d36470ed6",
+          "requested_source": "src/places/scalable/folder.svg",
+          "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)",
+          "badge": {
+            "source": "src/actions/22/edit-delete.svg",
+            "original": "src__actions__22__edit-delete.svg",
+            "sha256": "d42c3af25bd6d5c90ebaea0f05a25553701a78db04c56fce8a0e2216ecef8989",
+            "requested_source": "src/actions/22/edit-delete.svg",
+            "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)"
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring."
         },
         "refresh": {
-          "source": "src/actions/32/view-refresh.svg",
-          "original": "refresh.svg",
-          "sha256": "df2bb48891c45310ce974aa4781f6744f2c4329cfeb53f6463cc0fda08b3dd79"
+          "source": "src/apps/scalable/system-software-update.svg",
+          "original": "src__apps__scalable__system-software-update.svg",
+          "sha256": "2f05d9cf5832824c88cae856e629f15872b408365f311c481d9fd81b9b79234b",
+          "requested_source": "src/apps/scalable/system-software-update.svg",
+          "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)"
         },
         "settings": {
-          "source": "src/actions/32/configure.svg",
-          "original": "settings.svg",
-          "sha256": "d7a3bb4afb35c59568f374017de78515d16ba858de61bfbd1ab446f5d0b855f6"
+          "source": "src/apps/scalable/preferences-system.svg",
+          "original": "src__apps__scalable__preferences-system.svg",
+          "sha256": "25cad230b985f706b8bbda83661a5bca42bc9a6e37d36ef897a7ede6a20fc43a",
+          "requested_source": "src/apps/scalable/preferences-system.svg",
+          "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)"
         },
         "about": {
           "source": "src/status/32/dialog-information.svg",
-          "original": "about.svg",
-          "sha256": "9363a5a6f8a0ce47e293a5cf3a069c2f88756afc4c995fe771f4eff9cea4b1c7"
+          "original": "src__status__32__dialog-information.svg",
+          "sha256": "9363a5a6f8a0ce47e293a5cf3a069c2f88756afc4c995fe771f4eff9cea4b1c7",
+          "requested_source": "src/status/32/dialog-information.svg",
+          "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)"
         },
         "first": {
           "source": "src/actions/32/go-first.svg",
@@ -413,7 +471,1266 @@
           "original": "save.svg",
           "sha256": "53fb68e23549eee58bebda0b1106371d086c248f54b25e272d0bea526eba2fc0"
         }
-      }
+      },
+      "authors": "",
+      "own_role_count": 19,
+      "fallback_roles": []
+    },
+    "Oxygen": {
+      "id": "oxygen",
+      "icons": {
+        "first": {
+          "source": "48x48/actions/go-first.png",
+          "original": "48x48__actions__go-first.png",
+          "sha256": "5a07d7107ffff054e80ff28bd7085fbe87649e743b8a70a268ff560d1172b3f7",
+          "requested_source": "48x48/actions/go-first.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/go-first.svgz",
+            "original": "scalable__actions__go-first.svgz",
+            "sha256": "0b9f5639cec7313384cf858b53a8b853604cf668bdf8f90eae9388479b7a5207"
+          }
+        },
+        "previous": {
+          "source": "48x48/actions/go-previous.png",
+          "original": "48x48__actions__go-previous.png",
+          "sha256": "0dbf6704e248a385094a9433768af94ee133e3e6dcdbd8174ad760df0603bd2b",
+          "requested_source": "48x48/actions/go-previous.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/go-previous.svgz",
+            "original": "scalable__actions__go-previous.svgz",
+            "sha256": "bb034d54ed006c5378e07d16844b6bf6b946d8ec25ca6b49819f30a3e21e4786"
+          }
+        },
+        "next": {
+          "source": "48x48/actions/go-next.png",
+          "original": "48x48__actions__go-next.png",
+          "sha256": "7f4e852e4ef0b34555dc428d8d792d5f35cce52bf9d7dab3c0d7dcf443db8c38",
+          "requested_source": "48x48/actions/go-next.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/go-next.svgz",
+            "original": "scalable__actions__go-next.svgz",
+            "sha256": "c59b41177e7a643d2b9476d9228afffff1e28ac32b4f630e6e052fc7736cf59f"
+          }
+        },
+        "last": {
+          "source": "48x48/actions/go-last.png",
+          "original": "48x48__actions__go-last.png",
+          "sha256": "d092c060631faa6111988821dbcbf5f4f1f1ee19e1d2bf6132c6514e07181add",
+          "requested_source": "48x48/actions/go-last.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/go-last.svgz",
+            "original": "scalable__actions__go-last.svgz",
+            "sha256": "862b1a09c254a22b43f2df6834ad9400a74515befe6fd1b531ea8a48d5535773"
+          }
+        },
+        "zoom_in": {
+          "source": "48x48/actions/zoom-in.png",
+          "original": "48x48__actions__zoom-in.png",
+          "sha256": "7ee2b38d51e33283ffecbbbb6f0c402169d388db30ad13ca2c5a5209ee481f38",
+          "requested_source": "48x48/actions/zoom-in.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/small/48x48/zoom-in.svgz",
+            "original": "scalable__actions__small__48x48__zoom-in.svgz",
+            "sha256": "2047641c9a5663251a0d6c8111de86ec5e7c0e5431e2953c34d6c5fb8aa1a25d"
+          }
+        },
+        "zoom_out": {
+          "source": "48x48/actions/zoom-out.png",
+          "original": "48x48__actions__zoom-out.png",
+          "sha256": "25b1a8310da00a4f226ef47012d382dd632498299eabad2d4321e102a8774f94",
+          "requested_source": "48x48/actions/zoom-out.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/small/48x48/zoom-out.svgz",
+            "original": "scalable__actions__small__48x48__zoom-out.svgz",
+            "sha256": "823006336f0d08e6b7d5a6f1d776dc37d5a6dea0253a8611f94c0fc9e92fd171"
+          }
+        },
+        "width": {
+          "source": "48x48/actions/zoom-fit-width.png",
+          "original": "48x48__actions__zoom-fit-width.png",
+          "sha256": "f6218c9f237a8f3841beb532d7eec5192e042c0114bedc80e7da7f84cf3aade4",
+          "requested_source": "48x48/actions/zoom-fit-width.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/small/48x48/zoom-fit-width.svgz",
+            "original": "scalable__actions__small__48x48__zoom-fit-width.svgz",
+            "sha256": "11254c1dd16ab8ec7675fe57fb98524050dad9c89d42ac298f15854521ef78f3"
+          }
+        },
+        "page": {
+          "source": "48x48/actions/zoom-fit-best.png",
+          "original": "48x48__actions__zoom-fit-best.png",
+          "sha256": "92b4e93ba09b77e3342e81b6666bfa653ade5e5d24be0b70069dd505138b8c73",
+          "requested_source": "48x48/actions/zoom-fit-best.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/small/48x48/zoom-fit-best.svgz",
+            "original": "scalable__actions__small__48x48__zoom-fit-best.svgz",
+            "sha256": "40f21e8316d92dce1b94b90f78a50d92b356ae007f5780878e7b7a5ff90382f7"
+          }
+        },
+        "print": {
+          "source": "48x48/actions/document-print.png",
+          "original": "48x48__actions__document-print.png",
+          "sha256": "2a0fba251db2d7cf0b5fed0454adbe93644dd90a275369c71e735e185eefae38",
+          "requested_source": "48x48/actions/document-print.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/document-print.svgz",
+            "original": "scalable__actions__document-print.svgz",
+            "sha256": "4f6f5c04ea3864fd8fb3beb2fd001e1931bfc5dd6e9317ac6bd4a60c5f9b28ef"
+          }
+        },
+        "save": {
+          "source": "48x48/actions/document-save.png",
+          "original": "48x48__actions__document-save.png",
+          "sha256": "826fbe23c3c037e600ad668dcf6e4763cb1a49c0175b10927a322abc6c022920",
+          "requested_source": "48x48/actions/document-save.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/small/48x48/document-save.svgz",
+            "original": "scalable__actions__small__48x48__document-save.svgz",
+            "sha256": "455f690ccb5ce2b07c5f336fdfe0d93b7f6464c00519b33db88c3115b4a0ce9a"
+          }
+        },
+        "extract": {
+          "source": "48x48/apps/ark.png",
+          "requested_source": "48x48/apps/utilities-file-archiver.png",
+          "original": "48x48__apps__ark.png",
+          "sha256": "a88387f4854750d0157a39ce2dade60666b7433d64b81539cf6721dceb4e0b2d",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/apps/ark.svgz",
+            "original": "scalable__apps__ark.svgz",
+            "sha256": "483f5d993bbc47321cca259367081645cb3c4668735dd361d3a62e8f7dcb7c13"
+          }
+        },
+        "delete": {
+          "source": "48x48/places/user-trash.png",
+          "original": "48x48__places__user-trash.png",
+          "sha256": "e658fd1ae27b7933c1ddaf353931326b16d632d8dce11f0223bb0fcb3fe2e06c",
+          "requested_source": "48x48/places/user-trash.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/places/small/48x48/user-trash.svgz",
+            "original": "scalable__places__small__48x48__user-trash.svgz",
+            "sha256": "5a3f0ae4516ae7849380db61b5422798851ac149964d048a601a3bc8d52b2cdb"
+          }
+        },
+        "clear": {
+          "source": "48x48/mimetypes/inode-directory.png",
+          "original": "48x48__mimetypes__inode-directory.png",
+          "sha256": "7064550bec810efa839ab7a8df8d5313de7d8096bf0e8350171ed2f3eb96c384",
+          "requested_source": "48x48/places/folder.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/mimetypes/small/48x48/inode-directory.svgz",
+            "original": "scalable__mimetypes__small__48x48__inode-directory.svgz",
+            "sha256": "a3c77d4aa346ce8974cf33dfdf8d5f70042e991e10f373267fa6f087b2b59faa"
+          },
+          "badge": {
+            "source": "48x48/actions/edit-delete.png",
+            "original": "48x48__actions__edit-delete.png",
+            "sha256": "3e53fa2a0c7e9efe5fe3ac56afe2bd80fe9bd31a8b8f7a905a47c181ef533ec1",
+            "requested_source": "48x48/actions/edit-delete.png",
+            "license": "LGPL-3.0-or-later",
+            "editable_source": {
+              "source": "scalable/actions/edit-delete.svgz",
+              "original": "scalable__actions__edit-delete.svgz",
+              "sha256": "d29c503a48cf62cc01c52d979f36056daa810f67e292ddad90f148df0ff46272"
+            }
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring."
+        },
+        "refresh": {
+          "source": "48x48/actions/view-refresh.png",
+          "original": "48x48__actions__view-refresh.png",
+          "sha256": "937d3b7f4bd033bb68c63d2db1ba8fb318ab0d8629b95bc80634110976aeba98",
+          "requested_source": "48x48/actions/view-refresh.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/view-refresh.svgz",
+            "original": "scalable__actions__view-refresh.svgz",
+            "sha256": "1e4acc5bff53dd55038f840344432cd8c1a18f03719628692bdc941b72c666e0"
+          }
+        },
+        "settings": {
+          "source": "48x48/categories/preferences-system.png",
+          "requested_source": "48x48/categories/preferences-system.png",
+          "original": "48x48__categories__preferences-system.png",
+          "sha256": "21e283c96311a2bb2b33f07f6fa2c2ccef1da0e515f05834b83ba164d8a40cb4",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/categories/preferences-system.svgz",
+            "original": "scalable__categories__preferences-system.svgz",
+            "sha256": "4876b49840a4072ad7899209ded24ea73db642c283449fc7c05a69aefa11419f"
+          }
+        },
+        "about": {
+          "source": "48x48/actions/help-about.png",
+          "original": "48x48__actions__help-about.png",
+          "sha256": "b0a65f2a86e2dbaac40b96c227bed60c0f73d5f35e7f9868722f0aa813433b0a",
+          "requested_source": "48x48/status/dialog-information.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/actions/small/48x48/help-about.svgz",
+            "original": "scalable__actions__small__48x48__help-about.svgz",
+            "sha256": "a1587f7df4a6e249d2f9fae41f29923d6123e483b2b6174c7e317fc224151a70"
+          }
+        },
+        "zip": {
+          "source": "48x48/mimetypes/application-x-7z-compressed.png",
+          "original": "48x48__mimetypes__application-x-7z-compressed.png",
+          "sha256": "6167ae5b6bf67caadf46940aa66d3a1efd354c9a9626b49dc0d10f6269575a2f",
+          "requested_source": "48x48/mimetypes/application-zip.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/mimetypes/small/48x48/application-x-7z-compressed.svgz",
+            "original": "scalable__mimetypes__small__48x48__application-x-7z-compressed.svgz",
+            "sha256": "9f35abb1d7e6c242a975831f40b30dff6b5795fb3777cb8b42f532664bbac90a"
+          }
+        },
+        "pdf": {
+          "source": "48x48/mimetypes/application-pdf.png",
+          "original": "48x48__mimetypes__application-pdf.png",
+          "sha256": "e731aca8a36f200c48228d27e0c69fd6955876c6b66a5deca957016acc0ecb88",
+          "requested_source": "48x48/mimetypes/application-pdf.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/mimetypes/small/48x48/application-pdf.svgz",
+            "original": "scalable__mimetypes__small__48x48__application-pdf.svgz",
+            "sha256": "f6863f14fa26831a13237a50666f2505c0b13a6c159824d0432a5258a9342b15"
+          }
+        },
+        "warning": {
+          "source": "48x48/status/dialog-warning.png",
+          "original": "48x48__status__dialog-warning.png",
+          "sha256": "326c5c41912e631133c4bb6a3464c9903eb5b1c52965202cc63352529591dd04",
+          "requested_source": "48x48/status/dialog-warning.png",
+          "license": "LGPL-3.0-or-later",
+          "editable_source": {
+            "source": "scalable/status/small/48x48/dialog-warning.svgz",
+            "original": "scalable__status__small__48x48__dialog-warning.svgz",
+            "sha256": "19764464ea9cdb9dbb18d2c3df9b73063d9170de5a911d5683474c3a8ad2e2e7"
+          }
+        }
+      },
+      "source": "https://github.com/KDE/oxygen-icons",
+      "commit": "f7c05b7e0417e39eae17b9272c8880d488985bf9",
+      "license": "LGPL-3.0-or-later",
+      "authors": "The Oxygen Team; Nuno Pinheiro, David Vignoni, David Miller, Johann Ollivier Lapeyre, Kenneth Wimer, Riccardo Iaconelli",
+      "own_role_count": 19,
+      "fallback_roles": []
+    },
+    "Win10Sur": {
+      "id": "win10sur",
+      "icons": {
+        "first": {
+          "source": "src/actions/22/go-first.svg",
+          "original": "src__actions__22__go-first.svg",
+          "sha256": "aaae65c94ac2cf22403f9ace6130fb1fdcbbc31e1f5623d78680d6ebd55c53bc",
+          "requested_source": "src/actions/22/go-first.svg",
+          "license": "GPL-3.0"
+        },
+        "previous": {
+          "source": "src/actions/22/go-previous.svg",
+          "original": "src__actions__22__go-previous.svg",
+          "sha256": "c20c87434da2a44063f0cd3f09d77556d4aad7aba97660736d5b9e3fd1ab6a8c",
+          "requested_source": "src/actions/22/go-previous.svg",
+          "license": "GPL-3.0"
+        },
+        "next": {
+          "source": "src/actions/22/go-next.svg",
+          "original": "src__actions__22__go-next.svg",
+          "sha256": "53153b91baa62a903024a7ed082365fd160cfa00ae540b9a131fa7f9af2d6959",
+          "requested_source": "src/actions/22/go-next.svg",
+          "license": "GPL-3.0"
+        },
+        "last": {
+          "source": "src/actions/22/go-last.svg",
+          "original": "src__actions__22__go-last.svg",
+          "sha256": "591e82deee4f6b91bb38954506595da8b91713b0bfe7d61910addfb273502e95",
+          "requested_source": "src/actions/22/go-last.svg",
+          "license": "GPL-3.0"
+        },
+        "zoom_in": {
+          "source": "src/actions/22/zoom-in.svg",
+          "original": "src__actions__22__zoom-in.svg",
+          "sha256": "ab242bfd5a14ffec271551833d19be35cd9cbca872af27dcd80239a784546190",
+          "requested_source": "src/actions/22/zoom-in.svg",
+          "license": "GPL-3.0"
+        },
+        "zoom_out": {
+          "source": "src/actions/22/zoom-out.svg",
+          "original": "src__actions__22__zoom-out.svg",
+          "sha256": "1b0b10fb8c7c8d9ce8291568d9f8a7f25a989a5f51c8f30db282202b1a2330fd",
+          "requested_source": "src/actions/22/zoom-out.svg",
+          "license": "GPL-3.0"
+        },
+        "width": {
+          "source": "src/actions/22/zoom-fit-width.svg",
+          "original": "src__actions__22__zoom-fit-width.svg",
+          "sha256": "b422132974a0efb5c2f596f64f16ed4964a33a253a8129d4cf6fd60cd289fab0",
+          "requested_source": "src/actions/22/zoom-fit-width.svg",
+          "license": "GPL-3.0"
+        },
+        "page": {
+          "source": "src/actions/22/zoom-fit-best.svg",
+          "original": "src__actions__22__zoom-fit-best.svg",
+          "sha256": "645664d6decaf21f0a2c025cfa0edc6f36bc6d809151d3653d3aa6bf590dfbea",
+          "requested_source": "src/actions/22/zoom-fit-best.svg",
+          "license": "GPL-3.0"
+        },
+        "print": {
+          "source": "src/actions/22/document-print.svg",
+          "original": "src__actions__22__document-print.svg",
+          "sha256": "be8c87954285d97c13bd7d21756e64183c3737cc60250acfbdec938068fe8447",
+          "requested_source": "src/actions/22/document-print.svg",
+          "license": "GPL-3.0"
+        },
+        "save": {
+          "source": "src/actions/22/document-save.svg",
+          "original": "src__actions__22__document-save.svg",
+          "sha256": "7f4a82de708b4db67ca0e9e92512c93179f354ee3bada3786d98ccb893ac3489",
+          "requested_source": "src/actions/22/document-save.svg",
+          "license": "GPL-3.0"
+        },
+        "extract": {
+          "source": "src/mimes/48/application-x-archive.svg",
+          "original": "src__mimes__48__application-x-archive.svg",
+          "sha256": "fbaae7f11951de77074bc72989fa4dc6d327551f7d0bdcd6781d6b5053141de5",
+          "requested_source": "src/mimes/48/application-x-archive.svg",
+          "license": "GPL-3.0"
+        },
+        "delete": {
+          "source": "src/places/48/user-trash.svg",
+          "original": "src__places__48__user-trash.svg",
+          "sha256": "9da9c0e45d9a2863c657cb74d0e882b97825278af44b27ed8ee36502808daf7e",
+          "requested_source": "src/places/48/user-trash.svg",
+          "license": "GPL-3.0"
+        },
+        "clear": {
+          "source": "src/places/48/folder.svg",
+          "original": "src__places__48__folder.svg",
+          "sha256": "9a3e2f1a96bc7ed45d48f67e38a4384a2908a01165d3bfbcd6a0945d8534c2c5",
+          "requested_source": "src/places/48/folder.svg",
+          "license": "GPL-3.0",
+          "badge": {
+            "source": "src/actions/22/edit-delete.svg",
+            "original": "src__actions__22__edit-delete.svg",
+            "sha256": "d42c3af25bd6d5c90ebaea0f05a25553701a78db04c56fce8a0e2216ecef8989",
+            "requested_source": "src/actions/22/edit-delete.svg",
+            "license": "GPL-3.0"
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring."
+        },
+        "refresh": {
+          "source": "src/apps/scalable/system-software-update.svg",
+          "original": "src__apps__scalable__system-software-update.svg",
+          "sha256": "3f0d0d230182e045608924ddc52d35d445e83d7f6a9904eb117ffaa13c4812ad",
+          "requested_source": "src/apps/scalable/system-software-update.svg",
+          "license": "GPL-3.0"
+        },
+        "settings": {
+          "source": "src/apps/scalable/preferences-system.svg",
+          "original": "src__apps__scalable__preferences-system.svg",
+          "sha256": "07e61adb6c080cfe00faf4783a5197a49e78c3d1ad5f37fa541263093e8d3bae",
+          "requested_source": "src/apps/scalable/preferences-system.svg",
+          "license": "GPL-3.0"
+        },
+        "about": {
+          "source": "src/status/32/dialog-information.svg",
+          "original": "src__status__32__dialog-information.svg",
+          "sha256": "d327f8a044b06fcaf32e74588a095bd14995446b92199c06a459ac8622abab24",
+          "requested_source": "src/status/32/dialog-information.svg",
+          "license": "GPL-3.0"
+        },
+        "zip": {
+          "source": "src/mimes/48/application-x-archive.svg",
+          "original": "src__mimes__48__application-x-archive.svg",
+          "sha256": "fbaae7f11951de77074bc72989fa4dc6d327551f7d0bdcd6781d6b5053141de5",
+          "requested_source": "src/mimes/48/application-x-archive.svg",
+          "license": "GPL-3.0"
+        },
+        "pdf": {
+          "source": "src/mimes/48/application-pdf.svg",
+          "original": "src__mimes__48__application-pdf.svg",
+          "sha256": "17bbf11716d74bb9a599fde07319e1f9c3630225df59ecaba984927724666bfc",
+          "requested_source": "src/mimes/48/application-pdf.svg",
+          "license": "GPL-3.0"
+        },
+        "warning": {
+          "source": "src/status/32/dialog-warning.svg",
+          "original": "src__status__32__dialog-warning.svg",
+          "sha256": "b9ac4c5d8f7adb7b0e8bb7432b6c060fead0a5f032d89f9850c56217d04d22e9",
+          "requested_source": "src/status/32/dialog-warning.svg",
+          "license": "GPL-3.0"
+        }
+      },
+      "source": "https://github.com/yeyushengfan258/Win10Sur-icon-theme",
+      "commit": "2f41287774dffb79946f41aa2a20b90ee22aa648",
+      "license": "GPL-3.0",
+      "authors": "yeyushengfan258; OSX_ONE source credited by AUTHORS",
+      "own_role_count": 19,
+      "fallback_roles": []
+    },
+    "Oxylite": {
+      "id": "oxylite",
+      "icons": {
+        "first": {
+          "source": "actions/go-first.svg",
+          "original": "actions__go-first.svg",
+          "sha256": "dbe78a6e6aa020bbcce41c69ef77e59989f661da33ddf7c56c76fcfeb03518c6",
+          "requested_source": "actions/go-first.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "go-down.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              },
+              {
+                "file": "list-remove.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "previous": {
+          "source": "actions/go-previous.svg",
+          "original": "actions__go-previous.svg",
+          "sha256": "3d06fac946a21c2dd776612f63b9569e60c4d470b7d7c4894b61ad0f1c267f96",
+          "requested_source": "actions/go-previous.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "go-down.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "next": {
+          "source": "actions/go-next.svg",
+          "original": "actions__go-next.svg",
+          "sha256": "a617c9bc1ca0b5e9abb4f7f07cdea13ac0ef36f9694df4e3163f208d99da7f3a",
+          "requested_source": "actions/go-next.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "go-down.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "last": {
+          "source": "actions/go-last.svg",
+          "original": "actions__go-last.svg",
+          "sha256": "a023bcd90f088e40a65e2a7d709850b28374c6313addc9fb7f00159ad7ab2311",
+          "requested_source": "actions/go-last.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "go-down.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              },
+              {
+                "file": "list-remove.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "zoom_in": {
+          "source": "actions/zoom-in.svg",
+          "original": "actions__zoom-in.svg",
+          "sha256": "0e6c46a50474503a9de536575145a3696f41b5286b33216c50010ee843014c3d",
+          "requested_source": "actions/zoom-in.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "emblem-symbolic-link.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "zoom_out": {
+          "source": "actions/zoom-out.svg",
+          "original": "actions__zoom-out.svg",
+          "sha256": "a1aa1a16644ed8bc0657a21b6fc7ff0219604eaec9dced3acf1f41297d0c5a33",
+          "requested_source": "actions/zoom-out.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "emblem-symbolic-link.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "page": {
+          "source": "actions/zoom-fit-best.svg",
+          "original": "actions__zoom-fit-best.svg",
+          "sha256": "58cf69c3c098b8d5314f52bb3279d6159bf69030ce086bfc99509c814791c662",
+          "requested_source": "actions/zoom-fit-best.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "emblem-symbolic-link.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "print": {
+          "source": "status/printer-printing.svg",
+          "original": "status__printer-printing.svg",
+          "sha256": "684098f05abc3ce4a4e5495a3f2a0fdf36a88d5125082d8789a3b77859272c53",
+          "requested_source": "actions/document-print.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "printer.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              },
+              {
+                "file": "go-up.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "save": {
+          "source": "actions/document-save.svg",
+          "original": "actions__document-save.svg",
+          "sha256": "65faa91f752a51a8f7b08fb4d68004ca35842d8cac3a9b6caaf31131560ec3d6",
+          "requested_source": "actions/document-save.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "drive-harddisk.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              },
+              {
+                "file": "go-up.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "extract": {
+          "source": "actions/archive-extract.svg",
+          "original": "actions__archive-extract.svg",
+          "sha256": "5011376221767ed514ff34c76cd8916a0d62c33c3afeb15b3743336ece6b525f",
+          "requested_source": "actions/archive-extract.svg",
+          "license_details": {
+            "license": "LGPL-3.0",
+            "based_on": [
+              {
+                "file": "go-down.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              },
+              {
+                "file": "packages.svg",
+                "url": "https://github.com/GNOME/adwaita-icon-theme/tree/gnome-3-13/src/fullcolor",
+                "license": "LGPL-3.0"
+              }
+            ]
+          },
+          "license": "LGPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "delete": {
+          "source": "places/user-trash.svg",
+          "original": "places__user-trash.svg",
+          "sha256": "4b4734df6b9596d88b78bb3fc53c01391fdcda486bcbfe26d432afaacaa069dd",
+          "requested_source": "places/user-trash.svg",
+          "license_details": {
+            "license": "LGPL-3.0",
+            "based_on": [
+              {
+                "file": "trash.svg",
+                "url": "https://github.com/GNOME/adwaita-icon-theme/tree/gnome-3-13/src/fullcolor",
+                "license": "LGPL-3.0"
+              }
+            ]
+          },
+          "license": "LGPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "clear": {
+          "source": "places/folder.svg",
+          "original": "places__folder.svg",
+          "sha256": "4a9cc9130fe12f8b79cedc3904a7c421d2ba840a1ff620ce01d77ac779a40ee8",
+          "requested_source": "places/folder.svg",
+          "license_details": {
+            "license": "LGPL-3.0",
+            "based_on": [
+              {
+                "file": "folders.svg",
+                "url": "https://github.com/GNOME/adwaita-icon-theme/tree/gnome-3-13/src/fullcolor",
+                "license": "LGPL-3.0"
+              }
+            ]
+          },
+          "license": "LGPL-3.0",
+          "badge": {
+            "source": "actions/edit-delete.svg",
+            "original": "actions__edit-delete.svg",
+            "sha256": "19302f1019d79f5c355ce1f8ce95a901f69233963c6732f27c7a31d23f3259d6",
+            "requested_source": "actions/edit-delete.svg",
+            "license_details": {
+              "license": "LGPL-3.0-or-later",
+              "based_on": [
+                {
+                  "file": "dialog-close.svgz",
+                  "url": "https://github.com/KDE/oxygen-icons",
+                  "license": "LGPL-3.0-or-later"
+                }
+              ]
+            },
+            "license": "LGPL-3.0-or-later"
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring.",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "refresh": {
+          "source": "actions/view-refresh.svg",
+          "original": "actions__view-refresh.svg",
+          "sha256": "76469ca94e24bf0dd928defea4ade9c2c12f518c4d91269131d0d564f90dd644",
+          "requested_source": "actions/view-refresh.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "edit-redo.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "settings": {
+          "source": "actions/configure.svg",
+          "original": "actions__configure.svg",
+          "sha256": "3860caf949b621264f7dfe2564de5bb92274aa664a925c7f2003b17c3565fad5",
+          "requested_source": "actions/configure.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "configure.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "about": {
+          "source": "actions/help-about.svg",
+          "original": "actions__help-about.svg",
+          "sha256": "04eb7f876e238b7d3b8ba58c4106d1bec3afbc2440713df20aac0a42e2912409",
+          "requested_source": "status/dialog-information.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "help-about.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "zip": {
+          "source": "mimetypes/package-x-generic.svg",
+          "original": "mimetypes__package-x-generic.svg",
+          "sha256": "b0c6736fb3a5e70b8928e16e027dfa28c1a6988f64ae97f736f7e5c5d8f83eb0",
+          "requested_source": "mimetypes/application-zip.svg",
+          "license_details": {
+            "license": "LGPL-3.0",
+            "based_on": [
+              {
+                "file": "packages.svg",
+                "url": "https://github.com/GNOME/adwaita-icon-theme/tree/gnome-3-13/src/fullcolor",
+                "license": "LGPL-3.0"
+              }
+            ]
+          },
+          "license": "LGPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "pdf": {
+          "source": "mimetypes/application-pdf.svg",
+          "original": "mimetypes__application-pdf.svg",
+          "sha256": "0c310dbd9312ab7eeab7e0cd0e4957ed2f282dca211fc928065b8db252b58af3",
+          "requested_source": "mimetypes/application-pdf.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "application-pdf.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              },
+              {
+                "file": "text-plain.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        },
+        "warning": {
+          "source": "actions/dialog-warning.svg",
+          "original": "actions__dialog-warning.svg",
+          "sha256": "baa5a73d9c7711f16f95af58f6b9d1087de769aa7a85e30a259788ce7fb2fa53",
+          "requested_source": "actions/dialog-warning.svg",
+          "license_details": {
+            "license": "LGPL-3.0-or-later",
+            "based_on": [
+              {
+                "file": "dialog-warning.svgz",
+                "url": "https://github.com/KDE/oxygen-icons",
+                "license": "LGPL-3.0-or-later"
+              }
+            ]
+          },
+          "license": "LGPL-3.0-or-later",
+          "renderer": "Inkscape 1.4 (SVG filters); build-time PNG, Qt 5 runtime"
+        }
+      },
+      "source": "https://github.com/mx-2/oxylite-icon-theme",
+      "commit": "59f49b202ad2db33c50dc8d67b7961f47786bc87",
+      "license": "GPL-3.0; per-file overrides in licenses.yml",
+      "authors": "mx-2; Oxygen, Adwaita and individual authors in licenses.yml",
+      "own_role_count": 18,
+      "fallback_roles": [
+        "width"
+      ]
+    },
+    "WhiteSur": {
+      "id": "whitesur",
+      "icons": {
+        "first": {
+          "source": "src/actions/22/go-first.svg",
+          "original": "src__actions__22__go-first.svg",
+          "sha256": "aaae65c94ac2cf22403f9ace6130fb1fdcbbc31e1f5623d78680d6ebd55c53bc",
+          "requested_source": "src/actions/22/go-first.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "previous": {
+          "source": "src/actions/22/go-previous.svg",
+          "original": "src__actions__22__go-previous.svg",
+          "sha256": "c20c87434da2a44063f0cd3f09d77556d4aad7aba97660736d5b9e3fd1ab6a8c",
+          "requested_source": "src/actions/22/go-previous.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "next": {
+          "source": "src/actions/22/go-next.svg",
+          "original": "src__actions__22__go-next.svg",
+          "sha256": "53153b91baa62a903024a7ed082365fd160cfa00ae540b9a131fa7f9af2d6959",
+          "requested_source": "src/actions/22/go-next.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "last": {
+          "source": "src/actions/22/go-last.svg",
+          "original": "src__actions__22__go-last.svg",
+          "sha256": "591e82deee4f6b91bb38954506595da8b91713b0bfe7d61910addfb273502e95",
+          "requested_source": "src/actions/22/go-last.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "zoom_in": {
+          "source": "src/actions/22/zoom-in.svg",
+          "original": "src__actions__22__zoom-in.svg",
+          "sha256": "ab242bfd5a14ffec271551833d19be35cd9cbca872af27dcd80239a784546190",
+          "requested_source": "src/actions/22/zoom-in.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "zoom_out": {
+          "source": "src/actions/22/zoom-out.svg",
+          "original": "src__actions__22__zoom-out.svg",
+          "sha256": "1b0b10fb8c7c8d9ce8291568d9f8a7f25a989a5f51c8f30db282202b1a2330fd",
+          "requested_source": "src/actions/22/zoom-out.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "width": {
+          "source": "src/actions/22/zoom-fit-width.svg",
+          "original": "src__actions__22__zoom-fit-width.svg",
+          "sha256": "b422132974a0efb5c2f596f64f16ed4964a33a253a8129d4cf6fd60cd289fab0",
+          "requested_source": "src/actions/22/zoom-fit-width.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "page": {
+          "source": "src/actions/22/zoom-fit-best.svg",
+          "original": "src__actions__22__zoom-fit-best.svg",
+          "sha256": "645664d6decaf21f0a2c025cfa0edc6f36bc6d809151d3653d3aa6bf590dfbea",
+          "requested_source": "src/actions/22/zoom-fit-best.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "print": {
+          "source": "src/actions/22/document-print.svg",
+          "original": "src__actions__22__document-print.svg",
+          "sha256": "664bcdcb5e48e14c44f2a1f5821fe4337e975d312d5a856c9f32bfc3c8bf5b00",
+          "requested_source": "src/actions/22/document-print.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "save": {
+          "source": "src/actions/22/document-save.svg",
+          "original": "src__actions__22__document-save.svg",
+          "sha256": "7f4a82de708b4db67ca0e9e92512c93179f354ee3bada3786d98ccb893ac3489",
+          "requested_source": "src/actions/22/document-save.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "extract": {
+          "source": "src/mimes/scalable/application-x-archive.svg",
+          "original": "src__mimes__scalable__application-x-archive.svg",
+          "sha256": "8203145c986d866283855d6e71d2c0c4059e07f75332b103f98c624766b3959e",
+          "requested_source": "src/mimes/scalable/application-x-archive.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "delete": {
+          "source": "src/places/scalable/user-trash.svg",
+          "original": "src__places__scalable__user-trash.svg",
+          "sha256": "ee94664588ebe4a53cedf6574a88e7095e1fb97368df03f095366a8e11078f61",
+          "requested_source": "src/places/scalable/user-trash.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "clear": {
+          "source": "src/places/scalable/folder.svg",
+          "original": "src__places__scalable__folder.svg",
+          "sha256": "5b8a851804bf43d949d56e022d2eec06a5cc6461df3617f4f9be480b52035e60",
+          "requested_source": "src/places/scalable/folder.svg",
+          "license": "GPL-3.0",
+          "badge": {
+            "source": "src/actions/22/edit-delete.svg",
+            "original": "src__actions__22__edit-delete.svg",
+            "sha256": "d42c3af25bd6d5c90ebaea0f05a25553701a78db04c56fce8a0e2216ecef8989",
+            "requested_source": "src/actions/22/edit-delete.svg",
+            "license": "GPL-3.0"
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring.",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "refresh": {
+          "source": "src/apps/scalable/system-software-update.svg",
+          "original": "src__apps__scalable__system-software-update.svg",
+          "sha256": "f53d2e0f35ae279b0caf34049df0635d0df49e927310b057a89b3cf50ffd6364",
+          "requested_source": "src/apps/scalable/system-software-update.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "settings": {
+          "source": "src/apps/scalable/preferences-system.svg",
+          "original": "src__apps__scalable__preferences-system.svg",
+          "sha256": "6b112edac87fe35b127206326e76f4a58e258bcfc2b2dfe0f1f661fef8bef20b",
+          "requested_source": "src/apps/scalable/preferences-system.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "about": {
+          "source": "src/status/32/dialog-information.svg",
+          "original": "src__status__32__dialog-information.svg",
+          "sha256": "9363a5a6f8a0ce47e293a5cf3a069c2f88756afc4c995fe771f4eff9cea4b1c7",
+          "requested_source": "src/status/32/dialog-information.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "zip": {
+          "source": "src/mimes/scalable/application-x-archive.svg",
+          "original": "src__mimes__scalable__application-x-archive.svg",
+          "sha256": "8203145c986d866283855d6e71d2c0c4059e07f75332b103f98c624766b3959e",
+          "requested_source": "src/mimes/scalable/application-x-archive.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "pdf": {
+          "source": "src/mimes/scalable/application-pdf.svg",
+          "original": "src__mimes__scalable__application-pdf.svg",
+          "sha256": "ea81a1dd40d3af79472572fbee459a521716d52c9edf3037144364ceda40133c",
+          "requested_source": "src/mimes/scalable/application-pdf.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "warning": {
+          "source": "src/status/32/dialog-warning.svg",
+          "original": "src__status__32__dialog-warning.svg",
+          "sha256": "aa7a62094a250141c8e3c4f098175aba0cab96f8d35ccd65479a91eb45602af2",
+          "requested_source": "src/status/32/dialog-warning.svg",
+          "license": "GPL-3.0",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        }
+      },
+      "source": "https://github.com/vinceliuice/WhiteSur-icon-theme",
+      "commit": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+      "license": "GPL-3.0",
+      "authors": "Vince Liuice and original SVG metadata authors",
+      "own_role_count": 19,
+      "fallback_roles": []
+    },
+    "Diagonal": {
+      "id": "diagonal",
+      "icons": {
+        "first": {
+          "source": "base/actions/22/go-first.svg",
+          "original": "base__actions__22__go-first.svg",
+          "sha256": "ffdb34490d83f7d4ead84bf2fcec40ab87416d45e8a39e424ec5837b8b942e33",
+          "requested_source": "base/actions/22/go-first.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "previous": {
+          "source": "base/actions/22/go-previous.svg",
+          "original": "base__actions__22__go-previous.svg",
+          "sha256": "ae6efe923477f10418adfdc832c8e07e4d08f0169ad7f1862de499a8d0365814",
+          "requested_source": "base/actions/22/go-previous.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "next": {
+          "source": "base/actions/22/go-next.svg",
+          "original": "base__actions__22__go-next.svg",
+          "sha256": "aba1144920b6274499eb269a4ea5243b21dcdfab2583d66835538173027a0eab",
+          "requested_source": "base/actions/22/go-next.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "last": {
+          "source": "base/actions/22/go-last.svg",
+          "original": "base__actions__22__go-last.svg",
+          "sha256": "11538ab9a9d4d8345c7d19be44132cf345a365a0faad0ab7a9cc8557acac4f72",
+          "requested_source": "base/actions/22/go-last.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "zoom_in": {
+          "source": "base/actions/22/zoom-in.svg",
+          "original": "base__actions__22__zoom-in.svg",
+          "sha256": "1141a0bab2c1e417b6bb8b35e0c7f88fc0857c1bf138e7960e4f233a50509e5b",
+          "requested_source": "base/actions/22/zoom-in.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "zoom_out": {
+          "source": "base/actions/22/zoom-out.svg",
+          "original": "base__actions__22__zoom-out.svg",
+          "sha256": "75a1a3ca6c5b697274f86c289b2cb7f7ed1c4dde04d1fe387c5662087e03ba51",
+          "requested_source": "base/actions/22/zoom-out.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "width": {
+          "source": "base/actions/22/zoom-fit-width.svg",
+          "original": "base__actions__22__zoom-fit-width.svg",
+          "sha256": "dca17a550482c5cac60167938a82e09e41b11bb31e84f4f3a0c84602b1d74c6e",
+          "requested_source": "base/actions/22/zoom-fit-width.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "page": {
+          "source": "base/actions/22/zoom-fit-best.svg",
+          "original": "base__actions__22__zoom-fit-best.svg",
+          "sha256": "a81dce523c4600e44f3583a6df5ead894fe927281b63b2f0807781001e8d7a55",
+          "requested_source": "base/actions/22/zoom-fit-best.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "print": {
+          "source": "base/actions/22/document-print.svg",
+          "original": "base__actions__22__document-print.svg",
+          "sha256": "c64641103da32e144aeec1978438c9711c685ac68d06c1e0cf05ee221b4ff051",
+          "requested_source": "base/actions/22/document-print.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "save": {
+          "source": "base/actions/22/document-save.svg",
+          "original": "base__actions__22__document-save.svg",
+          "sha256": "c436eb2bca248b617f5da6ab752c567936c9a0a148c4d64f1b89d50a3214c8e4",
+          "requested_source": "base/actions/22/document-save.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "extract": {
+          "source": "base/scalable/apps/file-roller.svg",
+          "original": "base__scalable__apps__file-roller.svg",
+          "sha256": "45f16c7d4353fd964541f7f94de77b43dde3f987070336efee8a1d17cdfd65ca",
+          "requested_source": "base/scalable/apps/archive-extract.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "delete": {
+          "source": "base/scalable/places/user-trash.svg",
+          "original": "base__scalable__places__user-trash.svg",
+          "sha256": "6d6fbfdc16924d41dc21e1469692430349572ee77cb653e480b6a6c2e2744a9b",
+          "requested_source": "base/scalable/places/user-trash.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "clear": {
+          "source": "base/scalable/places/folder.svg",
+          "original": "base__scalable__places__folder.svg",
+          "sha256": "b22f4d3b6b3a255b0ec0289c5d2c0972ae7aa53c08bf36820ab9a8c8eddcf37b",
+          "requested_source": "base/scalable/places/folder.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices",
+          "badge": {
+            "source": "base/actions/22/edit-delete-shred.svg",
+            "original": "base__actions__22__edit-delete-shred.svg",
+            "sha256": "39af0e6da1b7fcd79a159ffad66a20a3b4101a83847991f7a31b2f854fa396a4",
+            "requested_source": "base/actions/22/edit-delete.svg",
+            "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring."
+        },
+        "refresh": {
+          "source": "base/scalable/apps/system-software-update.svg",
+          "original": "base__scalable__apps__system-software-update.svg",
+          "sha256": "6e85a953c60b42807324f203904a5c575dc883b8ad708dc93ffbe4c4f3a246e7",
+          "requested_source": "base/scalable/apps/system-software-update.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "settings": {
+          "source": "base/scalable/apps/applications-system.svg",
+          "original": "base__scalable__apps__applications-system.svg",
+          "sha256": "c8c8817008a8908073aa391e8a12ef3eec4e25bbf1fac804d4c5d1e2de5f857f",
+          "requested_source": "base/scalable/apps/preferences-system.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "about": {
+          "source": "base/scalable/apps/userinfo.svg",
+          "original": "base__scalable__apps__userinfo.svg",
+          "sha256": "417b2500cc04ca061d663072e8ff3ce1e0eef286f35c9fc443535808c74f7ad1",
+          "requested_source": "base/scalable/apps/dialog-information.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "zip": {
+          "source": "base/scalable/mimetypes/package-x-generic.svg",
+          "original": "base__scalable__mimetypes__package-x-generic.svg",
+          "sha256": "45f16c7d4353fd964541f7f94de77b43dde3f987070336efee8a1d17cdfd65ca",
+          "requested_source": "base/scalable/mimetypes/application-x-archive.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "pdf": {
+          "source": "base/scalable/mimetypes/application-postscript.svg",
+          "original": "base__scalable__mimetypes__application-postscript.svg",
+          "sha256": "9bf629c3c807c33c05427c2a43b5ac92f99339db72b5091a9c5197dbff136031",
+          "requested_source": "base/scalable/mimetypes/application-pdf.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        },
+        "warning": {
+          "source": "base/status/64/dialog-warning.svg",
+          "original": "base__status__64__dialog-warning.svg",
+          "sha256": "3ec5f9755801a2d602f348e6a70f98f9a0b10d3fe58a99860747cc30d3fbf20e",
+          "requested_source": "base/status/64/dialog-warning.svg",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices"
+        }
+      },
+      "source": "https://github.com/tamascsabi/Diagonal-icon-theme",
+      "commit": "9191af03b7251efe9e45ed9fd0fdeb527d5949e8",
+      "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices",
+      "authors": "Tamás Csaba; credits in AUTHORS.md and original SVG metadata",
+      "own_role_count": 19,
+      "fallback_roles": []
+    },
+    "Modern Office Day": {
+      "id": "modern-office",
+      "icons": {
+        "first": {
+          "source": "actions/16/go-first.svg",
+          "original": "actions__16__go-first.svg",
+          "sha256": "829d084f304bd08d3e28f0805b77882a4a1e2989ae76c267d9f3c9cdfacacba4",
+          "requested_source": "actions/16/go-first.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "previous": {
+          "source": "actions/16/go-previous.svg",
+          "original": "actions__16__go-previous.svg",
+          "sha256": "57d1902207df3ca49ca083c9f954949c3e2c836103f0225368b3649dc6be8a16",
+          "requested_source": "actions/16/go-previous.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "next": {
+          "source": "actions/16/go-next.svg",
+          "original": "actions__16__go-next.svg",
+          "sha256": "74d4eeded75bb3a44e133f81d100a51b24963af952e5413e1e097b92415732cd",
+          "requested_source": "actions/16/go-next.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "last": {
+          "source": "actions/16/go-last.svg",
+          "original": "actions__16__go-last.svg",
+          "sha256": "e3616352c2a6040e60f94b2fcc162843c4e0cd44141a80cd0242e813184546fc",
+          "requested_source": "actions/16/go-last.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "print": {
+          "source": "actions/16/document-print.svg",
+          "original": "actions__16__document-print.svg",
+          "sha256": "94bd6cd2613f955574b2075e2c29954abf1be56e43109af5248901ab452cfd62",
+          "requested_source": "actions/16/document-print.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "save": {
+          "source": "actions/16/document-save.svg",
+          "original": "actions__16__document-save.svg",
+          "sha256": "468d0a1096c5767df6e53ffeb5291e00971480076fd3242fc6577c98c459aa68",
+          "requested_source": "actions/16/document-save.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "extract": {
+          "source": "apps/48/ark.svg",
+          "original": "apps__48__ark.svg",
+          "sha256": "4b25ec3ce914666c4ec542d6b0ed6dbbc9cb5b15a75775d3af02a64877633b88",
+          "requested_source": "apps/48/utilities-file-archiver.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "delete": {
+          "source": "places/16/user-trash.svg",
+          "original": "places__16__user-trash.svg",
+          "sha256": "a63363a1f45e544ecc040503c053ab99956a13d15eb96c8e6244e1d46e14133b",
+          "requested_source": "places/16/user-trash.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "clear": {
+          "source": "places/16/folder.svg",
+          "original": "places__16__folder.svg",
+          "sha256": "1e59cac6d82474c40736dba318b5a2185370f6d3db85818d8ce67c1e3bb9a5e3",
+          "requested_source": "places/16/folder.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "badge": {
+            "source": "actions/16/edit-delete.svg",
+            "original": "actions__16__edit-delete.svg",
+            "sha256": "49101998bb71f8359215e5eac058de145288c62ec73575fcb7bf5ba428499270",
+            "requested_source": "actions/16/edit-delete.svg",
+            "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained"
+          },
+          "composition": "Original folder with same-theme original deletion badge, lower-right 50%; no recoloring.",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "refresh": {
+          "source": "apps/48/system-software-update.svg",
+          "original": "apps__48__system-software-update.svg",
+          "sha256": "3fb3b6fade93474b85b6eb098900a0d713b0aa4bf07e6fc4ca4462e826775bb4",
+          "requested_source": "apps/48/system-software-update.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "settings": {
+          "source": "apps/48/preferences-system.svg",
+          "original": "apps__48__preferences-system.svg",
+          "sha256": "ded575376f875e2454cb512844b35079265aa5784820b185ce07e0ca10238a1d",
+          "requested_source": "apps/48/preferences-system.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "about": {
+          "source": "status/64/dialog-information.svg",
+          "original": "status__64__dialog-information.svg",
+          "sha256": "012077bd955c3053bbef7dd4aef66dd6284c89d9bc90eae3c07f953db0914732",
+          "requested_source": "status/64/dialog-information.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "zip": {
+          "source": "mimetypes/32/package-x-generic.svg",
+          "original": "mimetypes__32__package-x-generic.svg",
+          "sha256": "5afc9720394d45c6bf321aa8f99292dac2a44f0ca621c38336a3f92b9715fae9",
+          "requested_source": "mimetypes/32/application-x-archive.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "pdf": {
+          "source": "mimetypes/32/application-pdf.svg",
+          "original": "mimetypes__32__application-pdf.svg",
+          "sha256": "4c5300defedf6e28fb653cfe914e57e1613b618e4a8507f145b564dabab9b77e",
+          "requested_source": "mimetypes/32/application-pdf.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        },
+        "warning": {
+          "source": "status/64/dialog-warning.svg",
+          "original": "status__64__dialog-warning.svg",
+          "sha256": "7125e502861ad9f2b0b576fae7cf45fbb2a7437fb4a3c0fb2753258eb4b7c03b",
+          "requested_source": "status/64/dialog-warning.svg",
+          "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+          "renderer": "Inkscape 1.4 (SVG2 href / effects); build-time PNG, Qt 5 runtime"
+        }
+      },
+      "source": "https://github.com/DrMcC0y/Modern-Office-Day-Icons",
+      "commit": "7c6466eeccac0809fa411f70da760dfafcfcc10b",
+      "license": "GPL-3.0 (theme); original Breeze LGPL-3.0-or-later notices retained",
+      "authors": "DrMcC0y; Breeze / Mint Breeze Light, Numix-Circle, Papirus, Hicolor as credited by upstream",
+      "own_role_count": 15,
+      "fallback_roles": [
+        "page",
+        "width",
+        "zoom_in",
+        "zoom_out"
+      ]
     }
   }
 }

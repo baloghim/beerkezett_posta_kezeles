@@ -120,3 +120,43 @@ def test_spaced_buttons_actually_paint_the_icon(app):
     without_icon=button.grab().toImage()
     assert with_icon!=without_icon
     button.close()
+
+
+def test_theme_manifest_coverage_licenses_and_composition_sources(app):
+    metadata=json.loads((ASSETS/'themes.json').read_text())['themes']
+    assert tuple(metadata)==THEME_NAMES and len(metadata)==11
+    expected={'Nuvola':['width'],'Oxylite':['width'],
+              'Modern Office Day':['page','width','zoom_in','zoom_out']}
+    roles={'extract','delete','clear','refresh','settings','about','first','previous','next','last',
+           'zoom_in','zoom_out','width','page','print','save','pdf','zip','warning'}
+    for theme,record in metadata.items():
+        assert record['fallback_roles']==expected.get(theme,[])
+        set_theme(theme)
+        for role in roles:
+            icon(role)
+            assert manager().sources[role]==('Crystal SVG' if role in record['fallback_roles'] else theme)
+        if theme=='Crystal SVG':continue
+        assert record['own_role_count']==len(record['icons'])==19-len(record['fallback_roles'])
+        for role,item in record['icons'].items():
+            for key in ('badge','editable_source'):
+                if key in item:
+                    original=ASSETS/'themes'/record['id']/'original'/item[key]['original']
+                    assert hashlib.sha256(original.read_bytes()).hexdigest()==item[key]['sha256']
+            if theme=='Oxylite':
+                assert item['license']==item['license_details']['license']
+                assert item['license'].startswith('LGPL-3.0')
+        if theme in ('Papirus','We10X','Oxygen','Win10Sur','Oxylite','WhiteSur','Diagonal','Modern Office Day'):
+            assert 'badge' in record['icons']['clear']
+            assert 'no recoloring' in record['icons']['clear']['composition']
+
+
+@pytest.mark.parametrize('theme',['Papirus','We10X'])
+def test_colorful_main_toolbar_renders_real_colored_artwork(app,theme):
+    set_theme(theme)
+    for role in ('extract','delete','clear','refresh','settings','about'):
+        image=icon(role).pixmap(40,40).toImage()
+        colored=sum(1 for y in range(image.height()) for x in range(image.width())
+                    if image.pixelColor(x,y).alpha()>100 and
+                    max(image.pixelColor(x,y).red(),image.pixelColor(x,y).green(),image.pixelColor(x,y).blue())-
+                    min(image.pixelColor(x,y).red(),image.pixelColor(x,y).green(),image.pixelColor(x,y).blue())>25)
+        assert colored>40,(theme,role,colored)

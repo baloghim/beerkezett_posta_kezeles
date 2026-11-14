@@ -102,8 +102,8 @@ def main():
             settings = Settings()
         trace.add('settings_load_ms', (time.perf_counter() - before) * 1000)
         before = time.perf_counter()
-        from .ui.appearance import apply_style
-        apply_style(settings.qt_style, settings.surface_theme)
+        from .ui.appearance import apply_settings_style
+        apply_settings_style(settings)
         set_theme(settings.icon_theme)
         trace.add('appearance_setup_ms', (time.perf_counter() - before) * 1000)
         before = time.perf_counter()
@@ -118,7 +118,7 @@ def main():
         trace.mark('main_window_visible')
         trace.publish('visible', configuration_error=configuration_error, icon_theme=settings.icon_theme,
                       display_name=DISPLAY_NAME, window_title=window.windowTitle(),
-                      surface_theme=settings.surface_theme)
+                      surface_theme=settings.surface_theme, ui_style=settings.ui_style)
         activation_timer = QTimer(window)
         activation_timer.timeout.connect(lambda: guard.poll_activation(window))
         activation_timer.start(100)

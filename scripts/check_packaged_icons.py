@@ -44,7 +44,7 @@ def verify(bundle, source):
         target=bundle/'_internal/licenses'/path.relative_to(license_source)
         assert target.is_file() and target.read_bytes()==path.read_bytes(),target
     themes=json.loads((packaged/'themes.json').read_text(encoding='utf-8'))
-    assert len(themes['themes'])==5
+    assert themes == json.loads((source/'themes.json').read_text(encoding='utf-8'))
     return {'passed':True,'ico_sizes':sorted(verified),'asset_files':len(files),
             'license_files':len(license_files),'themes':list(themes['themes'])}
 

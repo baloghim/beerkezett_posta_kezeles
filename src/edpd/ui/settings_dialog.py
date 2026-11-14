@@ -6,8 +6,7 @@ from PySide2.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPu
 from ..file_service import validate_paths
 from ..paths import normalize_path
 from .icons import THEME_NAMES
-from .themes import THEME_NAMES as SURFACE_THEMES
-from .appearance import current_style_name
+from .appearance import ui_style_choices, resolve_ui_style
 from .themes.widgets import SurfaceComboBox as QComboBox
 
 
@@ -51,17 +50,11 @@ class SettingsDialog(QDialog):
         appearance = QGroupBox('Megjelenés')
         appearance_form = QFormLayout(appearance)
         self.style_combo = QComboBox()
-        for key in QStyleFactory.keys():
-            self.style_combo.addItem('Vista' if key.lower() == 'windowsvista' else key, key)
-        current = current_style_name()
-        selected = next((i for i in range(self.style_combo.count())
-                         if self.style_combo.itemData(i).lower() == current.lower()), 0)
-        self.style_combo.setCurrentIndex(selected)
-        appearance_form.addRow('Qt-stílus', self.style_combo)
-        self.surface_combo = QComboBox()
-        self.surface_combo.addItems(SURFACE_THEMES)
-        self.surface_combo.setCurrentText(settings.surface_theme if settings.surface_theme in SURFACE_THEMES else SURFACE_THEMES[0])
-        appearance_form.addRow('Felületi téma', self.surface_combo)
+        for label, key in ui_style_choices():
+            self.style_combo.addItem(label, key)
+        current = resolve_ui_style(settings.ui_style)[0]
+        self.style_combo.setCurrentIndex(self.style_combo.findData(current))
+        appearance_form.addRow('Felületi stílus', self.style_combo)
         self.icon_combo = QComboBox()
         self.icon_combo.addItems(THEME_NAMES)
         self.icon_combo.setCurrentText(settings.icon_theme if settings.icon_theme in THEME_NAMES else 'Crystal SVG')
@@ -83,10 +76,11 @@ class SettingsDialog(QDialog):
             edit.setText(path)
 
     def result_settings(self):
+        ui_style, qt_style, surface = resolve_ui_style(self.style_combo.currentData())
         return replace(self.original, source=normalize_path(self.source.text()), target=normalize_path(self.target.text()),
                        history_days=self.history.currentData(),
-                       refresh_minutes=self.slider.value() * 5, qt_style=self.style_combo.currentData(), icon_theme=self.icon_combo.currentText(),
-                       surface_theme=self.surface_combo.currentText())
+                       refresh_minutes=self.slider.value() * 5, qt_style=qt_style, icon_theme=self.icon_combo.currentText(),
+                       surface_theme=surface, ui_style=ui_style)
 
 
 def check_settings(settings):

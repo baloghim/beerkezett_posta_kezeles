@@ -2,7 +2,7 @@
 
 Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak kezeléséhez, a munkamappa PDF-jeinek megtekintéséhez és nyomtatásához. Nincs dokumentumfeltöltés, telemetria vagy külön szerver.
 
-Az EDPD Menedzser öt, futás közben váltható belső ikontémát kínál: **Crystal SVG, Nuvola, KDE Modern Classic, Papirus, We10X** (Beállítások → Megjelenés → Ikontéma). A választás a meglévő settings.json fájlban marad meg; a Qt-stílus külön választható, az EXE saját ikonja állandó. [Eredet, licencek és fallback](docs/ICON-THEMES.md), [összehasonlító kép](docs/icon-theme-comparison.png).
+Az EDPD Menedzser 11, futás közben váltható belső ikontémát kínál: **Crystal SVG, Nuvola, KDE Modern Classic, Papirus, We10X, Oxygen, Win10Sur, Oxylite, WhiteSur, Diagonal, Modern Office Day** (Beállítások → Megjelenés → Ikontéma). A választás a meglévő settings.json fájlban marad meg; a Felületi stílus külön választható, az EXE saját ikonja állandó. [Eredet, licencek és fallback](docs/ICON-THEMES.md), [összehasonlító kép](docs/icon-theme-comparison.png).
 
 Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a főablak után, háttérben fut. A munkamenetenkénti példányvédelem a külön mappákból indított 2.4-es és újabb másolatokat is összefogja. [Mérések, példányvédelem és tesztelés](docs/STARTUP.md). Az alsó lista felirata Dátum; a dátumok képzése és rendezése változatlan.
 
@@ -12,9 +12,15 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 
 **A 2.6.0 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** 157 sikeres Windows-teszt, öt csomagolt EXE-futtatás összesen 100 sikeres önellenőrzéssel, 12 indítási ellenőrzés, mindhárom felületi téma és 125/150%-os Qt-skálázási próba szerepel a csomag jelentéseiben. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzési jelentés és mérési korlátok](docs/RELEASE-2.6.0.md).
 
+## Újdonságok a 2.6.1 változatban
+
+A Megjelenés csoportban két választó maradt: **Felületi stílus** és **Ikontéma**. Az első a telepített Fusion/Windows/Vista gyári stílusokat és a Longhorn Blue/Slate változatot tartalmazza. Gyári stílusra visszaváltva a Longhorn dekoráció teljesen megszűnik. A korábbi beállítások átvétele automatikus; a mentés azonnal érvényes, a Mégse változatlanul hagyja a megjelenést.
+
+Színes Papirus és We10X főikonok, hat új, valódi upstream ikontéma. [Mind a 13 jelölt forrás- és licencvizsgálata, pontos fallbackek](docs/ICON-THEME-AUDIT-2.6.1.md). [A hat főikon mind a 11 témával](docs/icon-toolbar-comparison.png). A Nuvola és KDE Modern Classic korábbi ikonválasztása megmaradt.
+
 ## Újdonságok a 2.6 változatban
 
-Választható **Longhorn Blue** és **Longhorn Slate** felület: Beállítások → Megjelenés → **Felületi téma**. Fényes, kék-ezüst vagy kékesszürke eszköztárak és panelcímek, egységes táblázatok és párbeszédablakok. A gyári Qt-stílus és az öt ikontéma külön választható. Az **Alapértelmezett** visszaállítja a dekoráció nélküli Qt-felületet; régi beállításokkal ez marad az induló megjelenés. Az alkalmazás három panelje, tényleges oszlopai és dokumentumkezelési működése megmaradt.
+Választható **Longhorn Blue** és **Longhorn Slate** felület: Beállítások → Megjelenés → **Felületi stílus**. Fényes, kék-ezüst vagy kékesszürke eszköztárak és panelcímek, egységes táblázatok és párbeszédablakok. A gyári Qt-stílusra ugyanebben a választóban lehet visszaváltani; az ikontéma ettől független. Az alkalmazás három panelje, tényleges oszlopai és dokumentumkezelési működése megmaradt.
 
 [Használat, megvalósítás és tényleges alkalmazásképek](docs/LONGHORN.md)
 
@@ -29,7 +35,7 @@ Választható **Longhorn Blue** és **Longhorn Slate** felület: Beállítások 
 
 ## A 2.3-ban bevezetett, megőrzött funkciók
 
-- 40 pixeles fő eszköztár, kisebb PDF-eszköztár. Félkövér, kissé nagyobb panelcímek, kényelmesebb táblázatsorok. A gyári Qt-stílusok megmaradtak, nincs dekoratív QSS.
+- 40 pixeles fő eszköztár, kisebb PDF-eszköztár. Félkövér, kissé nagyobb panelcímek, kényelmesebb táblázatsorok. A gyári Qt-stílusok megmaradtak; csak Longhorn mellett aktív a dekoratív QSS.
 - Arányos, kézzel átméretezhető oszlopok. Kiindulóarányok fent: 18/44/10/28%. Lent: **Dátum – Fájlnév – Méret**, 21/64/15%, olvashatóságot védő minimális szélességekkel. A Dátum az eredeti ZIP dátuma (`ÉÉÉÉ.HH.NN.`); a sorrend dátum szerint csökkenő, azon belül fájlnév szerint növekvő. Ismeretlen és többértelmű eredet a dátumos tételek után marad. A munkamappa továbbra is kizárólag a célmappa közvetlen PDF-jeiből áll; a felső kijelölés nem szűri.
 - A További forráskeresés gomb csak további ZIP-ek esetén látszik, a keresés végén eltűnik.
 - A kicsomagolás külön **modális folyamatablakban** fut, Crystal ikonnal, dátummal, valós fájlszámmal és Mégse gombbal. A Qt eseményciklusa működik, a főablakot a művelet fogja.
@@ -49,7 +55,7 @@ Frissítés előtt zárja be a futó korábbi EDPD-példányt. A 2.4-es és úja
 - A folyamatjelző előkészítéskor/ellenőrzéskor határozatlan, PDF-feldolgozáskor a tényleges darabszámot mutatja. A művelet háttérszálon fut; a főablakot a modális ablak fogja. A sikeres kicsomagolás eredménye a státuszsorban jelenik meg.
 - Közös hálózati jelölési rendszer továbbra sincs. A régi `shared_data` kulcsot betöltéskor figyelmen kívül hagyjuk, új mentésbe nem kerül. A korábbi hálózati mappát és fájljait nem töröljük és nem nyitjuk meg.
 - Valódi Crystal Remix ikonok: 40 pixeles fő eszköztár, kisebb 22 pixeles PDF-eszköztár, ZIP/PDF-listaikonok és hétméretes EDPD ICO. [Ikonforrások, licencek és módosítások](docs/ICONS.md).
-- A Qt-stílusválasztó megmarad, a `WindowsVista` megjelenített neve **Vista**, a tárolt tényleges stílusnév változatlan. A választékot a `QStyleFactory.keys()` adja. Sikeres mentés után azonnali váltás; Mégse esetén nincs módosítás. Hiányzó stílusnál Fusion az alapérték. Nincs globális dekoratív QSS.
+- Az egységes felületi stílusválasztóban a `WindowsVista` megjelenített neve **Vista**, a tárolt tényleges stílusnév változatlan. A választékot a `QStyleFactory.keys()` adja. Sikeres mentés után azonnali váltás; Mégse esetén nincs módosítás. Hiányzó stílusnál Fusion az alapérték. Gyári stílus mellett nincs dekoratív QSS.
 
 ![A ténylegesen beépített ikonok](docs/icon-comparison.png)
 
@@ -100,10 +106,10 @@ Linuxon: `QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m pytest -q`. A meglé
 A csomagolt EXE önellenőrzése:
 
 ```bat
-EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.5.0-1607.json"
+EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.6.1-1607.json"
 ```
 
-A Windows workflow natív DLL-auditot, EXE-ikonerőforrás-vizsgálatot, a csomagolt ikonfájlok összehasonlítását és az EXE tizenhárom funkcionális önellenőrzését is végzi. A `v*` címkéhez sikeres build után Release-t készít. [Windows 1607 útmutató](docs/WINDOWS1607.md). A modern runner sikere nem helyettesíti a valódi 1607-es célgépes próbát; a korábban ott ellenőrzött 0.2.1 kiadás sikere az új változatot nem minősíti.
+A Windows workflow natív DLL-auditot, EXE-ikonerőforrás-vizsgálatot, a csomagolt ikonfájlok összehasonlítását és az EXE húsz funkcionális önellenőrzését is végzi. A `v*` címkéhez sikeres build után Release-t készít. [Windows 1607 útmutató](docs/WINDOWS1607.md). A modern runner sikere nem helyettesíti a valódi 1607-es célgépes próbát; a korábban ott ellenőrzött 0.2.1 kiadás sikere az új változatot nem minősíti.
 
 ## Licencek
 

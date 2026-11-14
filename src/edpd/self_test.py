@@ -114,6 +114,24 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
                     raise RuntimeError('A gyári Qt-stílus nem alkalmazható: ' + style)
                 result['qt_styles'].append(style)
             apply_style(window.settings.qt_style)
+            # Exercise the same two appearance controls in the frozen EXE too.
+            from .ui.appearance import ui_style_choices, apply_settings_style
+            from .ui.settings_dialog import SettingsDialog
+            result['ui_styles'] = []
+            for label, choice in ui_style_choices():
+                candidate = Settings(ui_style=choice)
+                apply_settings_style(candidate)
+                dialog = SettingsDialog(candidate, window)
+                if (hasattr(dialog, 'surface_combo') or
+                        len(dialog.style_combo.parentWidget().findChildren(type(dialog.style_combo))) != 2 or
+                        dialog.style_combo.currentData() != candidate.ui_style or
+                        dialog.result_settings().ui_style != candidate.ui_style or
+                        bool(app.styleSheet()) != choice.startswith('Longhorn ')):
+                    raise RuntimeError('Hibás egységes felületi stílusválasztó: ' + choice)
+                result['ui_styles'].append({'label': label, 'choice': choice,
+                                           'qt_style': candidate.qt_style, 'surface': candidate.surface_theme})
+                dialog.reject()
+            apply_settings_style(window.settings)
             result['checks'].append('three_panel_gui_and_zip_scan')
             from .ui.about_dialog import AboutDialog
             about = AboutDialog(window)
@@ -296,7 +314,7 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
                     raise RuntimeError('A PDF eszköztár ikonja nem frissült.')
                 result['icon_themes'].append(theme)
             set_theme(window.settings.icon_theme)
-            result['checks'].append('five_live_icon_themes')
+            result['checks'].append('all_live_icon_themes')
             from .ui.themes.validation import validate_surfaces
             result['surface_validation'] = validate_surfaces(window, report.parent / (report.stem + '-screenshots'))
             result['checks'].extend(['surface_style_icon_matrix_pdf_integrity',

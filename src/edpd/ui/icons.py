@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QApplication, QStyle, QMenu
 import shiboken2
 
 ASSETS = Path(__file__).resolve().parents[1] / 'assets'
-THEME_NAMES = ('Crystal SVG', 'Nuvola', 'KDE Modern Classic', 'Papirus', 'We10X')
+THEME_NAMES = tuple(json.loads((ASSETS / 'themes.json').read_text(encoding='utf-8'))['themes'])
 ALIASES = {'delete_day':'delete','clear_workdir':'clear','pdf_save':'save','pdf_print':'print',
            'first_page':'first','prev_page':'previous','next_page':'next','last_page':'last',
            'fit_width':'width','fit_page':'page','zip_item':'zip','pdf_item':'pdf','info':'about'}

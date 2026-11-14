@@ -181,13 +181,14 @@ def verify(command, root, *, copied_command=None):
         harness.finish(invalid)
         checks.append('invalid_settings_file')
 
-        for theme in ('Crystal SVG','Nuvola','KDE Modern Classic','Papirus','We10X'):
+        manifest = Path(__file__).resolve().parents[1]/'src/edpd/assets/themes.json'
+        for theme in json.loads(manifest.read_text(encoding='utf-8'))['themes']:
             harness.settings(icon_theme=theme)
             themed = harness.start('theme-'+theme.replace(' ','-'), lifetime=150)
             result = harness.loaded(themed)
             assert result['icon_theme'] == theme
             harness.finish(themed)
-        checks.append('five_saved_themes_start_in_real_processes')
+        checks.append('all_saved_icon_themes_start_in_real_processes')
         for surface in ('Alapértelmezett','Longhorn Blue','Longhorn Slate'):
             harness.settings(surface_theme=surface)
             run=harness.start('surface-'+str(len(surface)),lifetime=150)
@@ -195,7 +196,15 @@ def verify(command, root, *, copied_command=None):
             assert result['surface_theme']==surface
             timings['surface_'+surface]=result
             harness.finish(run)
-        checks.append('three_saved_surface_themes_start_in_real_processes')
+        from edpd.ui.appearance import ui_style_choices, resolve_ui_style
+        for label, choice in ui_style_choices():
+            harness.settings(ui_style=choice)
+            run=harness.start('ui-'+choice.replace(' ','-'),lifetime=150)
+            result=harness.loaded(run)
+            assert result['ui_style']==resolve_ui_style(choice)[0]
+            timings['ui_'+choice]=result
+            harness.finish(run)
+        checks.append('all_saved_ui_styles_start_in_real_processes')
 
         harness.settings()
         crashed = harness.start('crash', lifetime=30000)

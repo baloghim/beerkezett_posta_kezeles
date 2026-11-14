@@ -1,10 +1,10 @@
 # EDPD Menedzser – ikontémák
 
-A Beállítások → Megjelenés → Ikontéma választó öt témája: **Crystal SVG**, **Nuvola**, **KDE Modern Classic**, **Papirus**, **We10X**. Az alapérték Crystal SVG. A natív Qt-stílus és az ikontéma külön beállítás. A mentett `icon_theme` mező a változatlan `%APPDATA%\EDPD\settings.json` fájlban található. Mentés után az ikonok újraindítás nélkül frissülnek; egy pusztán megjelenést érintő változtatás nem indít hálózati ellenőrzést vagy ZIP-újraolvasást.
+A Beállítások → Megjelenés → Ikontéma választó első öt, megőrzött témája: **Crystal SVG**, **Nuvola**, **KDE Modern Classic**, **Papirus**, **We10X**. Az alapérték Crystal SVG. A Felületi stílus és az Ikontéma két külön választó; összesen 11 ikontéma van. Hat új készlet és a 13 jelölt teljes vizsgálata: [2.6.1 audit](ICON-THEME-AUDIT-2.6.1.md). A mentett `icon_theme` mező a változatlan `%APPDATA%\EDPD\settings.json` fájlban található. Mentés után az ikonok újraindítás nélkül frissülnek; egy pusztán megjelenést érintő változtatás nem indít hálózati ellenőrzést vagy ZIP-újraolvasást.
 
 A központi `edpd.ui.icons.IconThemeManager` logikai szerepeket old fel és gyorsítótárazza a QIcon objektumokat. A fő és PDF-eszköztár, a napi és munkamappa-lista, a helyi menük és a kicsomagolási/betekintési párbeszéd ikonfrissítési jelre váltanak. A Névjegy **gombja** témát vált; az alkalmazás saját emblémája és az EXE hétméretű ICO-erőforrása állandó.
 
-Hiányzó szerepnél először az azonos Crystal SVG funkció, azután Qt standard ikon jelenik meg. Ismeretlen vagy nem telepített téma esetén Crystal SVG lép életbe. A Nuvola szélességigazító szerepe dokumentált Crystal fallback; a többi 18 szerep saját Nuvola-fájl. A másik három új téma mind a 19 szerephez saját fájlt tartalmaz.
+Hiányzó szerepnél először az azonos Crystal SVG funkció, azután Qt standard ikon jelenik meg. Ismeretlen vagy nem telepített téma esetén Crystal SVG lép életbe. A Nuvola szélességigazító szerepe dokumentált Crystal fallback; a többi 18 szerep saját Nuvola-fájl. Az Oxygen, Win10Sur, WhiteSur és Diagonal 19 saját szerepet ad; Oxylite 18-at (width fallback), Modern Office Day 15-öt (zoom_in, zoom_out, width, page fallback). Papirus és We10X 19 szerepe megmarad, a hat főikon színes lett.
 
 ## Eredet és licencek
 
@@ -22,12 +22,14 @@ A `src/edpd/assets/themes.json` szerepenként megadja az eredeti upstream fájln
 
 ## Újra előállítható erőforrások és összehasonlítás
 
-A változatlan eredeti SVG/PNG-k az `assets/themes/<azonosító>/original/` mappákban vannak. A `scripts/generate_theme_assets.py` Qt 5.15 SVG-rendereléssel/méretezéssel 22 és 40 pixeles PNG-t készít belőlük; ez képfájlformátum-konverzió, nem új ikonok rajzolása. Futás közben az EDPD a PNG-ket tölti, SVG-rasterizálásra nincs szükség. A források, az átalakító és a licencek a Git-repóban vannak; az eredeti fájlok és licencek a Windows ZIP-be is bekerülnek.
+A változatlan eredeti SVG/PNG-k az `assets/themes/<azonosító>/original/` mappákban vannak. A `scripts/generate_theme_assets.py` Qt 5.15 SVG-rendereléssel/méretezéssel, a manifestben jelölt SVG2/effektusos fájloknál buildidejű Inkscape használatával 22 és 40 pixeles PNG-t készít belőlük; ez képfájlformátum-konverzió, nem új ikonok rajzolása. Futás közben az EDPD a PNG-ket tölti, SVG-rasterizálásra nincs szükség. A források, az átalakító és a licencek a Git-repóban vannak; az eredeti fájlok és licencek a Windows ZIP-be is bekerülnek.
 
 ```bash
 QT_QPA_PLATFORM=offscreen python scripts/generate_theme_assets.py
 ```
 
-Az [összehasonlító kép](icon-theme-comparison.png) ugyanazt a 19 szerepet mutatja öt oszlopban, a ténylegesen beépített ikonokkal. A fallbacket felirat jelzi. A csomagellenőrzés minden erőforrás fájlbájtjait és az EXE hét ICO-képkockáját összeveti a forrással. A csomagolt önellenőrzés mind az öt témát tényleges Qt-felületen kapcsolja át.
+Az [összehasonlító kép](icon-theme-comparison.png) ugyanazt a 19 szerepet mutatja 11 oszlopban, a ténylegesen beépített ikonokkal. A fallbacket felirat jelzi. A csomagellenőrzés minden erőforrás fájlbájtjait és az EXE hét ICO-képkockáját összeveti a forrással. A csomagolt önellenőrzés mind a 11 témát tényleges Qt-felületen kapcsolja át.
 
 A PDF-eszköztárban hat helyen további 6 pixeles térköz van; a 2.5-től a Szélesség és Teljes oldal között is. A Nyomtatás és PDF mentése natív gombkeretet használ, az ikon és felirat között kifejezett 8 pixeles hézaggal. A meglévő QActionok, engedélyezési állapotok és PDF-műveletek változatlanok.
+
+[A fő eszköztár hat ikonja mind a 11 témával](icon-toolbar-comparison.png).

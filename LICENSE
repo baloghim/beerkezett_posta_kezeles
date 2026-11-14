@@ -34,3 +34,13 @@ EDPD 2.4 további belső ikontémák (válogatott, eredeti upstream fájlok):
 - We10X: yeyushengfan258, Ubuntu Yaru közreműködők, GPL-3.0; licenses/we10x/.
 Pontos fájleredet, commitok, SHA-256, módosítások és licencértelmezés:
 assets/themes.json és docs/ICON-THEMES.md.
+
+EDPD 2.6.1 további válogatott ikonok:
+- Oxygen: The Oxygen Team, LGPL-3.0-or-later; licenses/oxygen/.
+- Win10Sur: yeyushengfan258, OSX_ONE kredit, GPL-3.0; licenses/win10sur/.
+- Oxylite: mx-2, Oxygen és Adwaita alkotók, fájlonként LGPL-3.0 / LGPL-3.0-or-later; licenses/oxylite/licenses.yml.
+- WhiteSur: Vince Liuice, GPL-3.0; licenses/whitesur/.
+- Diagonal: Tamás Csaba és a megőrzött upstream kreditek, ikonok CC-BY-4.0; licenses/diagonal/.
+- Modern Office Day: DrMcC0y, Breeze/Mint Breeze Light és a megőrzött alapforrások, GPL-3.0; licenses/modern-office/.
+Az azonos témán belüli eredeti mappa/törlésjelvény összetételeket és a PNG-konverziókat a manifest jelöli.
+A SE98 és Buuf For Many Desktops nem került be. Részletes ellenőrzés: docs/ICON-THEME-AUDIT-2.6.1.md.

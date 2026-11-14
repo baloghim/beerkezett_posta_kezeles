@@ -1,8 +1,8 @@
-# Longhorn Blue és Longhorn Slate – EDPD Menedzser 2.6
+# Longhorn Blue és Longhorn Slate – EDPD Menedzser 2.6.1
 
-Bekapcsolás: **Beállítások → Megjelenés → Felületi téma → Longhorn Blue vagy Longhorn Slate → Mentés**. A mentett választás újraindítás után is érvényes. A Mégse nem ment és nem változtatja meg az aktív megjelenést. Az **Alapértelmezett → Mentés** visszaállítja a kiválasztott gyári Qt-stílust, dekoratív stíluslap nélkül. Új telepítés és régi beállításfájl esetén ez az alapérték.
+Bekapcsolás: **Beállítások → Megjelenés → Felületi stílus → Longhorn Blue vagy Longhorn Slate → Mentés**. A Mégse nem ment és nem változtat megjelenést. Ugyanitt a rendelkezésre álló **Fusion, Windows, Vista** gyári Qt-stílusok választhatók; gyári stílusra váltás teljesen megszünteti a Longhorn stíluslapot és palettát. Csak a helyileg telepített Qt-stílusok jelennek meg. A Vista címke belső neve `windowsvista`.
 
-A három választó független: a Qt-stílus (Fusion/Windows/Vista stb.), a felületi téma és az öt ikontéma (Crystal SVG, Nuvola, KDE Modern Classic, Papirus, We10X). A felületi téma nem választ másik ikonkészletet. Az EXE ikonja és a `%APPDATA%\EDPD\settings.json` helye változatlan; az új JSON-mező `surface_theme`. Ismeretlen, sérült vagy nem elérhető felületi téma az alapértelmezett megjelenésre áll vissza.
+A Megjelenés csoportnak **két választója** van: Felületi stílus és Ikontéma (11 készlet). Longhorn belső alapja Fusion; ehhez nincs külön felhasználói választó. Az EXE ikonja és a `%APPDATA%\EDPD\settings.json` helye változatlan. Az új `ui_style` mező a régi `surface_theme` aktív Longhorn-választását veszi át elsőként, egyébként a `qt_style` értékét. Ismeretlen/hiányzó gyári stílus Fusionra esik vissza. A régi mezőket szinkronban megőrizzük a korábbi verziókkal; a többi beállítás nem vész el. Az új telepítés Fusionnal indul.
 
 ## Megvalósítás
 
@@ -37,7 +37,7 @@ QT_QPA_PLATFORM=offscreen python scripts/capture_longhorn.py --output docs
 
 ## Ellenőrzések és korlátok
 
-A tesztek vizsgálják a mentést, a Mégse működését, a korábbi profilok kompatibilitását, a teljes paletta-visszaállítást, az összes gyári Qt-stílus és öt ikontéma kombinációját, a kijelölt szemantikus színek tényleges festését, a színes PDF-pixelek és eredeti PDF-bájtok megőrzését, valamint az ismételt váltás utáni objektumszámot és Python-memóriát. A véges stresszpróba nem minden lehetséges környezetre kiterjedő memóriaszivárgás-bizonyíték.
+A tesztek vizsgálják a mentést, a Mégse működését, a korábbi profilok kompatibilitását, a teljes paletta-visszaállítást, az összes gyári Qt-stílus és 11 ikontéma kombinációját, a kijelölt szemantikus színek tényleges festését, a színes PDF-pixelek és eredeti PDF-bájtok megőrzését, valamint az ismételt váltás utáni objektumszámot és Python-memóriát. A véges stresszpróba nem minden lehetséges környezetre kiterjedő memóriaszivárgás-bizonyíték.
 
 A 1280×720, 1600×900 és 1920×1080 méreteket tényleges Qt-ablakméretekkel vizsgáljuk. A Linux mérés a `longhorn-visual-validation.json` fájlban van. Nagyon keskenyre húzott panelen az eredeti QToolBar túlcsorduló menüje továbbra is elérhető; a négy PDF-művelet szöveges felirata nem válik ikon nélküli vagy névtelen műveletté.
 
