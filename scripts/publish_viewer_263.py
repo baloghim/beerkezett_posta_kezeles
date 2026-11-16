@@ -51,15 +51,26 @@ def publish(folder, run_id, commit):
     names = {asset['name']: asset for asset in before['assets']}
     protected = {name: names[name] for name in ('EDPD-Manager-Windows-x64.zip',
                                                'EDPD-Manager-Windows-x64.zip.sha256')}
-    assert ASSET not in names and ASSET+'.sha256' not in names, 'Viewer assets already exist; refusing overwrite'
-    # No --clobber: existing assets are never replaced.
-    gh('release', 'upload', TAG, str(folder/ASSET), str(folder/(ASSET+'.sha256')), '--repo', REPO)
+    existing = ASSET in names or ASSET+'.sha256' in names
+    if existing:
+        # Resume validation after a completed upload without replacing either file.
+        assert ASSET in names and ASSET+'.sha256' in names, 'Incomplete existing viewer upload'
+        assert names[ASSET]['digest'] == 'sha256:'+digest, 'Different viewer ZIP exists; refusing overwrite'
+        checksum_digest = hashlib.sha256((folder/(ASSET+'.sha256')).read_bytes()).hexdigest()
+        assert names[ASSET+'.sha256']['digest'] == 'sha256:'+checksum_digest
+    else:
+        # No --clobber: existing assets are never replaced.
+        gh('release', 'upload', TAG, str(folder/ASSET), str(folder/(ASSET+'.sha256')), '--repo', REPO)
     after = api(f'releases/tags/{TAG}')
     uploaded = {asset['name']: asset for asset in after['assets']}
     assert uploaded[ASSET]['digest'] == 'sha256:'+digest
     for name, original in protected.items():
         assert all(uploaded[name][key] == original[key] for key in ('id', 'size', 'digest', 'updated_at'))
     assert api(f'git/ref/tags/{TAG}')['object']['sha'] == original_tag
+    previous_body = before['body'].replace('\r\n', '\n').replace('\\n', '\n')
+    header = f'[**EDPD Menedzser 2.6.3 – Windows x64**](https://github.com/{REPO}/releases/download/{TAG}/EDPD-Manager-Windows-x64.zip)'
+    if previous_body.startswith(header) and commit in previous_body and '\n\n---\n\n' in previous_body:
+        previous_body = previous_body.split('\n\n---\n\n', 1)[1]
     notes = f'''[**EDPD Menedzser 2.6.3 – Windows x64**](https://github.com/{REPO}/releases/download/{TAG}/EDPD-Manager-Windows-x64.zip)
 
 [**EDPD Betekintő 2.6.3 – Windows x64**](https://github.com/{REPO}/releases/download/{TAG}/{ASSET})
@@ -76,12 +87,13 @@ Betekintő ZIP SHA-256: `{digest}`. Mindkét ZIP mellett külön `.sha256` fájl
 
 ---
 
-'''+before['body'].replace('\\n', '\n')
+'''+previous_body
     with tempfile.TemporaryDirectory(prefix='edpd-release-notes-') as tmp:
         path = Path(tmp)/'notes.md'
-        path.write_text(notes, encoding='utf-8')
+        with path.open('w', encoding='utf-8', newline='\n') as stream:
+            stream.write(notes)
         gh('release', 'edit', TAG, '--repo', REPO, '--notes-file', str(path))
-    assert api(f'releases/tags/{TAG}')['body'] == notes
+    assert api(f'releases/tags/{TAG}')['body'].replace('\r\n', '\n') == notes
     print(json.dumps({'published': True, 'source_commit': commit, 'sha256': digest,
                       'release': before['html_url'], 'build': run['html_url']}, indent=2))
 
