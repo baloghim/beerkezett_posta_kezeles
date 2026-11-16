@@ -18,7 +18,7 @@ concurrency:
 jobs:
   publish:
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: windows-2022
     permissions:
       actions: read
       contents: write
@@ -31,8 +31,11 @@ jobs:
           run-id: ${{ inputs.build_run_id }}
           github-token: ${{ github.token }}
       - name: Ellenőrzött Betekintő hozzáadása felülírás nélkül
+        shell: bash
         env:
+          PYTHONUTF8: '1'
+          PYTHONIOENCODING: utf-8
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN_ID: ${{ inputs.build_run_id }}
           SOURCE_COMMIT: ${{ inputs.source_commit }}
-        run: python3 scripts/publish_viewer_263.py --folder viewer-artifact --run-id "$BUILD_RUN_ID" --commit "$SOURCE_COMMIT"
+        run: python scripts/publish_viewer_263.py --folder viewer-artifact --run-id "$BUILD_RUN_ID" --commit "$SOURCE_COMMIT"
