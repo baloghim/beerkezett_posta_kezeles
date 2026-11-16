@@ -2,6 +2,7 @@
 import json
 import os
 import sys
+import subprocess
 import tempfile
 import time
 import traceback
@@ -134,7 +135,18 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
             try:
                 for namespace in ('manager-selftest-'+str(os.getpid()),'viewer-selftest-'+str(os.getpid())):
                     guard=InstanceGuard(namespace);with_guard.append(guard);assert guard.acquire()
-                second=InstanceGuard('viewer-selftest-'+str(os.getpid()));with_guard.append(second);assert not second.acquire()
+                # Windows mutexes are recursive for their owning thread; a second
+                # process is required to test the actual application contract.
+                child_report = base/'second-launch.json'
+                command = [sys.executable] if getattr(sys, 'frozen', False) else [sys.executable, '-m', 'edpd.viewer_main']
+                child = subprocess.run([*command, '--startup-report', str(child_report),
+                                        '--startup-exit-ms', '100', '--startup-test-namespace',
+                                        'viewer-selftest-'+str(os.getpid())],
+                                       capture_output=True, timeout=20)
+                assert child.returncode == 0, child.stderr.decode('utf-8', errors='replace')
+                secondary = json.loads(child_report.read_text(encoding='utf-8'))
+                assert secondary['outcome'] == 'secondary'
+                assert 'qt_core_import_ms' not in secondary['durations_ms']
             finally:
                 for guard in reversed(with_guard): guard.close()
             result['checks'].append('independent_instance_guards')
