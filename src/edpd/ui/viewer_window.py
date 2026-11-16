@@ -223,6 +223,10 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
         self.clear_preview()
         if doc is None:
             return
+        day = self.current_day()
+        if day and day.error:
+            self.error(day.error)
+            return
         self.selected_signature = self.signature(doc)
         request = (doc, self.preview_generation, self.selected_signature)
         if self.preview_busy:

@@ -248,3 +248,14 @@ def test_manager_and_viewer_real_processes_run_together(app, tmp_path):
     finally:
         for process in processes:
             if process.poll() is None:process.kill();process.wait()
+
+
+
+def test_daily_size_limit_blocks_preview(browser, app, monkeypatch):
+    import edpd.zip_service as module
+    monkeypatch.setattr(module, 'MAX_DAY', 1)
+    browser.refresh(); wait(app, lambda:not browser.jobs)
+    assert browser.current_day().error
+    browser.docs_table.setCurrentCell(0, 0)
+    app.processEvents()
+    assert browser.viewer.pdf is None and not browser.jobs
