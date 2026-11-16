@@ -112,7 +112,8 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
             window.day_table.setCurrentCell(0,0)
             window.docs_table.setCurrentCell(0,0);window.docs_table.setCurrentCell(1,0)
             wait(lambda:not window.jobs)
-            assert window.current_document().archive==archives[1] and window.viewer.pdf.data==data
+            assert window.current_document().archive.samefile(archives[1])
+            assert window.viewer.pdf.data==data
             result['checks'].append('rapid_document_selection')
             dialog=SettingsDialog(settings,window)
             assert not hasattr(dialog,'target') and not hasattr(dialog.result_settings(),'target')
