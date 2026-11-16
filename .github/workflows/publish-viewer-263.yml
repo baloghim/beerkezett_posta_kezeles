@@ -1,0 +1,38 @@
+name: Betekintő 2.6.3 hozzáadása a meglévő kiadáshoz
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: 'Sikeres Windows kiadás workflow-futás azonosítója'
+        required: true
+        type: string
+      source_commit:
+        description: 'A sikeres Windows-build teljes forráscommitja'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: append-viewer-263
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: EDPD-Betekinto-Windows-x64
+          path: viewer-artifact
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ github.token }}
+      - name: Ellenőrzött Betekintő hozzáadása felülírás nélkül
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RUN_ID: ${{ inputs.build_run_id }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: python3 scripts/publish_viewer_263.py --folder viewer-artifact --run-id "$BUILD_RUN_ID" --commit "$SOURCE_COMMIT"
