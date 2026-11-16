@@ -14,6 +14,7 @@ dev = ["pytest==8.3.5", "pyinstaller==6.12.0", "pyinstaller-hooks-contrib==2025.
 
 [project.scripts]
 edpd-manager = "edpd.main:main"
+edpd-betekinto = "edpd.viewer_main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

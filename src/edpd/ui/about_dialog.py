@@ -6,7 +6,8 @@ from .icons import icon
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(f'{DISPLAY_NAME} – Névjegy')
+        display_name = getattr(parent, 'display_name', DISPLAY_NAME)
+        self.setWindowTitle(f'{display_name} – Névjegy')
         self.resize(640, 540)
         self.setWindowIcon(icon('app'))
         layout = QVBoxLayout(self)
@@ -14,10 +15,13 @@ class AboutDialog(QDialog):
         self.app_icon.setPixmap(icon('app').pixmap(64, 64))
         layout.addWidget(self.app_icon)
         self.info = QTextBrowser()
+        description = ('Napi ZIP-csomagok és PDF-dokumentumok közvetlen böngészése, nyomtatása és egyenkénti mentése. '
+                       'A Betekintő nem használ munkamappát.' if display_name == 'EDPD Betekintő' else
+                       'A Magyar Posta EDPD szolgáltatásán keresztül érkező, digitalizált postai '
+                       'dokumentumok napi ZIP-csomagjainak kezelése, kicsomagolása, megtekintése és nyomtatása.')
         self.info.setHtml(
-            f'<h2>{DISPLAY_NAME}</h2><p>Verzió: {__version__}</p>'
-            '<p>A Magyar Posta EDPD szolgáltatásán keresztül érkező, digitalizált postai '
-            'dokumentumok napi ZIP-csomagjainak kezelése, kicsomagolása, megtekintése és nyomtatása.</p>'
+            f'<h2>{display_name}</h2><p>Verzió: {__version__}</p>'
+            f'<p>{description}</p>'
             '<p>Helyben futó, telemetria nélküli alkalmazás.<br>'
             '<a href="https://github.com/baloghim/beerkezett_posta_kezeles">GitHub projekt</a></p>'
             '<p>Technológiák: Python 3.10, PySide2 / Qt 5.15, PyMuPDF / MuPDF.</p>'
@@ -26,7 +30,7 @@ class AboutDialog(QDialog):
             'a komponens feltételei szerint.<br>PyMuPDF / MuPDF: GNU AGPLv3 vagy Artifex kereskedelmi licenc.'
             '<br>PyInstaller: GPLv2, a terjesztett alkalmazásra vonatkozó kivétellel.</p>'
             '<p>Crystal Remix ikonok: Everaldo Coelho; modern átdolgozás: Viet Dang (Đặng Việt Dũng). '
-            f'GNU LGPL (az upstream nem jelöl verziót). Az {DISPLAY_NAME} színezett és kombinált változatokat is használ. '
+            f'GNU LGPL (az upstream nem jelöl verziót). Az {display_name} színezett és kombinált változatokat is használ. '
             'A források és licencszövegek a csomag assets és licenses mappáiban találhatók.</p>'
             '<p>Választható belső ikonok:<br>Crystal SVG: Everaldo Coelho, Viet Dang; GNU LGPL (verziójelölés nélkül).<br>'
             'Nuvola: David Vignoni; LGPL-2.1-or-later.<br>'

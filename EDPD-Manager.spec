@@ -1,5 +1,6 @@
 # Rögzített Python 3.10 + Qt 5.15 csomagolás. Csak Windows x64-en futtatandó.
 import sys
+import os
 from pathlib import Path
 import PySide2
 from PyInstaller.utils.hooks import collect_all, collect_data_files
@@ -7,8 +8,14 @@ from PyInstaller.utils.hooks import collect_all, collect_data_files
 if sys.platform != 'win32' or sys.version_info[:2] != (3, 10):
     raise RuntimeError('A kiadáshoz Windows x64 és Python 3.10 szükséges.')
 
+variant = os.environ.get('EDPD_BUILD_VARIANT', 'manager')
+if variant not in ('manager', 'viewer'):
+    raise RuntimeError('Unknown application variant')
+app_name = 'EDPD-Betekinto' if variant == 'viewer' else 'EDPD-Manager'
+entry = 'run_betekinto.py' if variant == 'viewer' else 'run_edpd.py'
+
 fitz_data, fitz_binaries, fitz_imports = collect_all('fitz')
-a = Analysis(['run_edpd.py'], pathex=['src'], binaries=fitz_binaries,
+a = Analysis([entry], pathex=['src'], binaries=fitz_binaries,
              datas=fitz_data + collect_data_files('edpd') + [('licenses', 'licenses')], hiddenimports=fitz_imports,
              excludes=['PySide6', 'PyQt6', 'PyQt5', 'tkinter', 'numpy'],
              noarchive=False)
@@ -43,6 +50,6 @@ for name, source in vc.items():
         cleaned.append((Path(source).name, source, 'BINARY'))
 a.binaries = cleaned
 pyz = PYZ(a.pure)
-exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name='EDPD-Manager',
+exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name=app_name,
           debug=False, strip=False, upx=False, console=False, icon='src/edpd/assets/edpd.ico')
-coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name='EDPD-Manager')
+coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False, name=app_name)

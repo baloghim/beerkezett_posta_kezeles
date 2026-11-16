@@ -31,7 +31,7 @@ class Settings:
             self.surface_theme = 'Alapértelmezett'
         if not isinstance(self.qt_style, str):
             self.qt_style = 'Fusion'
-        for key in ('source', 'target'):
+        for key in ('source', 'target') if hasattr(self, 'target') else ('source',):
             value = getattr(self, key)
             if not isinstance(value, str):
                 raise ValueError('Érvénytelen mappaútvonal.')
@@ -39,7 +39,7 @@ class Settings:
 
     @classmethod
     def load(cls, path=None):
-        path = path or settings_path()
+        path = path or default_settings_path(cls)
         if not path.exists():
             return cls()
         data = json.loads(path.read_text(encoding='utf-8'))
@@ -57,7 +57,7 @@ class Settings:
         return result
 
     def save(self, path=None):
-        path = path or settings_path()
+        path = path or default_settings_path(type(self))
         path.parent.mkdir(parents=True, exist_ok=True)
         fd, temporary = tempfile.mkstemp(dir=path.parent, prefix='.settings-')
         try:
@@ -77,3 +77,34 @@ def settings_path():
 def cache_directory():
     # A nagyobb metaadat-index ne a roaming közös profilját terhelje.
     return Path(os.environ.get('LOCALAPPDATA', str(settings_path().parent.parent))) / 'EDPD' / 'zip-index'
+
+
+def default_settings_path(cls):
+    return viewer_settings_path() if cls is ViewerSettings else settings_path()
+
+
+def viewer_settings_path():
+    return settings_path().parent.parent / 'EDPD-Betekinto' / 'settings.json'
+
+
+def viewer_cache_directory():
+    return Path(os.environ.get('LOCALAPPDATA', str(settings_path().parent.parent))) / 'EDPD-Betekinto' / 'zip-index'
+
+
+@dataclass
+class ViewerSettings:
+    # Deliberately no workspace field, including when loading a manager profile.
+    source: str = Settings.__dataclass_fields__['source'].default
+    refresh_minutes: int = 15
+    history_days: int | None = 14
+    geometry: str = ''
+    panels: str = ''
+    left_panels: str = ''
+    qt_style: str = 'Fusion'
+    icon_theme: str = 'Crystal SVG'
+    surface_theme: str = 'Alapértelmezett'
+    ui_style: str = ''
+
+    __post_init__ = Settings.__post_init__
+    load = classmethod(Settings.load.__func__)
+    save = Settings.save

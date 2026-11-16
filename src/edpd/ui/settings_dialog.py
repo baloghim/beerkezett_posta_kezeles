@@ -20,8 +20,12 @@ class SettingsDialog(QDialog):
         form = QFormLayout()
         layout.addLayout(form)
         self.source = QLineEdit(settings.source)
-        self.target = QLineEdit(settings.target)
-        for title, edit in [('Forrásarchívum (csak olvasás)', self.source), ('Ideiglenes munkamappa', self.target)]:
+        self.viewer_mode = not hasattr(settings, 'target')
+        paths = [('Forrásarchívum (csak olvasás)', self.source)]
+        if not self.viewer_mode:
+            self.target = QLineEdit(settings.target)
+            paths.append(('Ideiglenes munkamappa', self.target))
+        for title, edit in paths:
             row = QHBoxLayout()
             row.addWidget(edit)
             browse = QPushButton('Tallózás…')
@@ -46,7 +50,8 @@ class SettingsDialog(QDialog):
         reset.clicked.connect(lambda: self.slider.setValue(3))
         row.addWidget(reset)
         form.addRow('Automatikus frissítés', row)
-        layout.addWidget(QLabel('Mappaváltoztatáskor háttérben ellenőrizzük az útvonalakat és az írási jogosultságot.'))
+        layout.addWidget(QLabel('A forrásarchívum olvashatóságát ellenőrizzük.' if self.viewer_mode else
+                                'Mappaváltoztatáskor háttérben ellenőrizzük az útvonalakat és az írási jogosultságot.'))
         appearance = QGroupBox('Megjelenés')
         appearance_form = QFormLayout(appearance)
         self.style_combo = QComboBox()
@@ -77,7 +82,8 @@ class SettingsDialog(QDialog):
 
     def result_settings(self):
         ui_style, qt_style, surface = resolve_ui_style(self.style_combo.currentData())
-        return replace(self.original, source=normalize_path(self.source.text()), target=normalize_path(self.target.text()),
+        paths = {} if self.viewer_mode else {'target': normalize_path(self.target.text())}
+        return replace(self.original, source=normalize_path(self.source.text()), **paths,
                        history_days=self.history.currentData(),
                        refresh_minutes=self.slider.value() * 5, qt_style=qt_style, icon_theme=self.icon_combo.currentText(),
                        surface_theme=surface, ui_style=ui_style)

@@ -179,6 +179,21 @@ class PDFViewer(QWidget):
         self.save_action.setEnabled(self.save_job is None)
         self.render()
 
+    def clear(self):
+        self.fit_timer.stop()
+        self.scroll_reset_timer.stop()
+        if self.pdf:
+            self.pdf.close()
+        self.pdf = None
+        self.page = 0
+        self.document_folders = ()
+        self.label.clear()
+        self.label.setText('Válasszon egy dokumentumot a betekintéshez.')
+        self.label.adjustSize()
+        self.page_label.setText('Nincs megnyitott PDF')
+        self.print_action.setEnabled(False)
+        self.save_action.setEnabled(False)
+
     def move(self, page):
         if self.pdf:
             self.page = min(max(0, page), self.pdf.pages - 1)

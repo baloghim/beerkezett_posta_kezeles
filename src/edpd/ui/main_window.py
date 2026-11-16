@@ -18,34 +18,12 @@ from ..zip_service import ZipService, read_document, MAX_PDF
 from .pdf_viewer import PDFViewer
 from .icons import icon, manager, set_theme, ThemedMenu as QMenu
 from .settings_dialog import SettingsDialog, check_settings
-from .proportional_table import ProportionalTable
+from .browser_widgets import BrowserWidgets
+from .jobs import Job
 from .extraction_dialog import ExtractionDialog
 from .themes import manager as surface_manager, set_theme as set_surface_theme
 from .themes.widgets import StatusItemDelegate, ThemeStatusBar
 from ..processed_store import ProcessedStore, packet_id
-
-
-class Signals(QObject):
-    done = Signal(object)
-    failed = Signal(str)
-    finished = Signal()
-    progress = Signal(str, int, int)
-
-
-class Job(QRunnable):
-    def __init__(self, function, with_progress=False):
-        super().__init__()
-        self.function = function
-        self.with_progress = with_progress
-        self.signals = Signals()
-
-    def run(self):
-        try:
-            self.signals.done.emit(self.function(self.signals.progress.emit) if self.with_progress else self.function())
-        except Exception as exc:
-            self.signals.failed.emit(str(exc))
-        finally:
-            self.signals.finished.emit()
 
 
 @dataclass(frozen=True)
@@ -86,7 +64,7 @@ def row_appearance(state):
     return None, False
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, BrowserWidgets):
     def __init__(self, settings, capabilities=Capabilities(), today_provider=date.today, startup_trace=None, auto_refresh=True):
         super().__init__()
         self.setObjectName('edpd-window')
@@ -220,38 +198,6 @@ class MainWindow(QMainWindow):
         self.refresh_icons()
         if auto_refresh:
             QTimer.singleShot(0, self.refresh)
-
-    def table(self, headers, ratios=None):
-        table = ProportionalTable(headers, ratios) if ratios else QTableWidget(0, len(headers))
-        table.setHorizontalHeaderLabels(headers)
-        table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
-        table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
-        table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        table.verticalHeader().hide()
-        if ratios is None:
-            table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
-            table.horizontalHeader().setStretchLastSection(True)
-        table.verticalHeader().setDefaultSectionSize(max(table.verticalHeader().defaultSectionSize() + 4, table.fontMetrics().height() + 10))
-        table.setAlternatingRowColors(True)
-        return table
-
-    def panel(self, title, table):
-        panel = QWidget()
-        panel.setObjectName('edpd-panel')
-        layout = QVBoxLayout(panel)
-        label = QLabel(title)
-        label.setObjectName('panel-title')
-        font = label.font()
-        font.setBold(True)
-        font.setPointSizeF(max(8, font.pointSizeF()) + 1)
-        label.setFont(font)
-        panel.title_label = label
-        layout.addWidget(label)
-        layout.addWidget(table)
-        return panel
-
-    def update_timer(self):
-        self.timer.start(self.settings.refresh_minutes * 60_000)
 
     def update_actions(self):
         day = self.current_day()

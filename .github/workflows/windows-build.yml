@@ -41,6 +41,30 @@ jobs:
         run: python scripts/ci_run.py python -m pytest -q --junitxml=test-results.xml
       - name: Önálló Windows x64 alkalmazás
         run: python scripts/ci_run.py python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
+      - name: Önálló Betekintő Windows x64 alkalmazás
+        env:
+          EDPD_BUILD_VARIANT: viewer
+        run: python scripts/ci_run.py python -m PyInstaller --noconfirm --clean EDPD-Manager.spec
+      - name: Betekintő natív DLL- és erőforrás-audit
+        run: |
+          python scripts/ci_run.py python scripts/audit_windows_binary.py dist/EDPD-Betekinto --report viewer-native-dependencies.json
+          python scripts/ci_run.py python scripts/check_packaged_icons.py dist/EDPD-Betekinto --report viewer-icon-audit.json
+      - name: Betekintő csomagolt EXE önellenőrzés minden felületi témával
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $surfaces = @('Alapértelmezett', 'Longhorn Blue', 'Longhorn Slate', 'Windows XP Luna Blue')
+          for ($i = 0; $i -lt $surfaces.Count; $i++) {
+            $report = Join-Path $pwd ("viewer-selftest-$i.json")
+            $process = Start-Process dist/EDPD-Betekinto/EDPD-Betekinto.exe -ArgumentList @('--self-test', '--self-test-surface', ('"' + $surfaces[$i] + '"'), '--report', ('"' + $report + '"')) -PassThru
+            if (-not $process.WaitForExit(90000)) { $process.Kill(); throw 'Betekintő self-test timeout' }
+            $process.Refresh()
+            if ($process.ExitCode -ne 0 -or -not (Test-Path $report)) { throw 'Betekintő self-test failed' }
+            $result = Get-Content -Raw $report | ConvertFrom-Json
+            if (-not $result.passed -or -not $result.host.frozen -or $result.checks.Count -lt 15 -or $result.application_version -ne (python -c "from edpd import __version__; print(__version__)")) { throw (Get-Content -Raw $report) }
+          }
+      - name: Mindkét csomagolt EXE együtt fut, Betekintő második indítás aktivál
+        run: python scripts/ci_run.py python scripts/check_viewer_startup.py --manager dist/EDPD-Manager/EDPD-Manager.exe --viewer dist/EDPD-Betekinto/EDPD-Betekinto.exe --report viewer-startup-validation.json
       - name: Natív DLL-leltár és statikus kompatibilitási ellenőrzés
         run: |
           python scripts/ci_run.py python scripts/audit_windows_binary.py dist/EDPD-Manager --report native-dependencies.json
@@ -76,6 +100,23 @@ jobs:
           Copy-Item surface-reports, modern-runner-selftest-screenshots dist/EDPD-Manager/ -Recurse
           Compress-Archive -Path dist/EDPD-Manager -DestinationPath EDPD-Manager-Windows-x64.zip
           (Get-FileHash EDPD-Manager-Windows-x64.zip -Algorithm SHA256).Hash.ToLower() + '  EDPD-Manager-Windows-x64.zip' | Out-File EDPD-Manager-Windows-x64.zip.sha256 -Encoding ascii
+      - name: Betekintő ZIP és SHA-256
+        shell: pwsh
+        run: |
+          Copy-Item README.md, LICENSE dist/EDPD-Betekinto/
+          New-Item -ItemType Directory -Force dist/EDPD-Betekinto/docs | Out-Null
+          Copy-Item docs/BETEKINTO.md, docs/betekinto-2.6.3.png dist/EDPD-Betekinto/docs/
+          Copy-Item viewer-native-dependencies.json, viewer-icon-audit.json, viewer-selftest-*.json, viewer-selftest-*-screenshot.png dist/EDPD-Betekinto/
+          git rev-parse HEAD | Out-File dist/EDPD-Betekinto/SOURCE-COMMIT.txt -Encoding ascii
+          Compress-Archive -Path dist/EDPD-Betekinto -DestinationPath EDPD-Betekinto-Windows-x64.zip
+          (Get-FileHash EDPD-Betekinto-Windows-x64.zip -Algorithm SHA256).Hash.ToLower() + '  EDPD-Betekinto-Windows-x64.zip' | Out-File EDPD-Betekinto-Windows-x64.zip.sha256 -Encoding ascii
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EDPD-Betekinto-Windows-x64
+          path: |
+            EDPD-Betekinto-Windows-x64.zip
+            EDPD-Betekinto-Windows-x64.zip.sha256
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: EDPD-Manager-Windows-x64
@@ -88,6 +129,8 @@ jobs:
         with:
           name: build-diagnostics
           path: |
+            viewer-*.json
+            viewer-*-screenshot.png
             modern-runner-selftest.json
             native-dependencies.json
             icon-audit.json
@@ -143,7 +186,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: EDPD-Manager-Windows-x64
+          pattern: EDPD-*-Windows-x64
+          merge-multiple: true
           path: release
       - name: Verziózott GitHub Release
         env:
@@ -151,5 +195,6 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          printf '%s\n' "EDPD Menedzser $RELEASE_TAG – választható Windows XP Luna Blue, Longhorn Blue és Longhorn Slate felület, teljesen visszaállítható gyári Qt-megjelenéssel, egyetlen felületi stílusválasztóval és 12 ikontémával; krémszínű Luna eszköztárakkal, királykék panelcímekkel és változatlan ikonokkal. A korábbi fájl/PDF-műveletek, a példányvédelem és az indulási visszajelzés megmaradnak." 'Változatlan Windows 10 1607 x64 technológiai alap: Python 3.10.11, Qt 5.15.2 / PySide2 5.15.2.1, PyMuPDF 1.23.26.' 'A Windows build, a tesztek, mind a 12 ikontéma erőforrás-auditja, a csomagolt EXE önellenőrzése, 12 valódi folyamatindítási ellenőrzés, mind a négy felületi téma, az EXE teljes önellenőrzése Blue és Luna mellett 125/150 százalékos Qt-skálázással és a statikus DLL-vizsgálat a kiadást készítő workflow részei. Részletes időmérések: startup-validation.json a ZIP-ben. A célgépes Windows 10 1607 és többfelhasználós munkahelyi próba külön szükséges.' > release-notes.txt
-          gh release create "$RELEASE_TAG" release/EDPD-Manager-Windows-x64.zip release/EDPD-Manager-Windows-x64.zip.sha256 --verify-tag --notes-file release-notes.txt --title "EDPD Menedzser $RELEASE_TAG"
+          VERSION="${RELEASE_TAG#v}"
+          printf '%s\n' "[EDPD Menedzser $VERSION – Windows x64](https://github.com/$GH_REPO/releases/download/$RELEASE_TAG/EDPD-Manager-Windows-x64.zip)" '' "[EDPD Betekintő $VERSION – Windows x64](https://github.com/$GH_REPO/releases/download/$RELEASE_TAG/EDPD-Betekinto-Windows-x64.zip)" '' "Mindkét program forráscommitja: $GITHUB_SHA. Python 3.10.11 / Qt 5.15.2; natív Windows build és funkcionális EXE-ellenőrzések. A tényleges Windows 10 1607 célgépes próba külön szükséges." > release-notes.txt
+          gh release create "$RELEASE_TAG" release/*.zip release/*.sha256 --verify-tag --notes-file release-notes.txt --title "EDPD Menedzser és Betekintő $RELEASE_TAG"

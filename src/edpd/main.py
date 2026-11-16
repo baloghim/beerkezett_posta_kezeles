@@ -1,9 +1,10 @@
 import sys
 import time
-from . import DISPLAY_NAME
+from . import DISPLAY_NAME as MANAGER_NAME
 
 
-def main():
+def main(viewer=False):
+    DISPLAY_NAME = "EDPD Betekintő" if viewer else MANAGER_NAME
     started = time.perf_counter_ns()
     import argparse
     parser = argparse.ArgumentParser(description=DISPLAY_NAME)
@@ -11,7 +12,8 @@ def main():
     parser.add_argument('--self-test-surface', help='Önellenőrzés felületi témája')
     parser.add_argument('--report', help='Az önellenőrzés JSON-eredménye')
     parser.add_argument('--require-windows1607', action='store_true')
-    parser.add_argument('--recover-extraction', help='Megőrzött .edpd-recovery-* mappa helyreállítása')
+    if not viewer:
+        parser.add_argument('--recover-extraction', help='Megőrzött .edpd-recovery-* mappa helyreállítása')
     parser.add_argument('--startup-report', help='Csak időadatokat tartalmazó indítási jelentés')
     parser.add_argument('--startup-exit-ms', type=int, default=0, help='Izolált indítási mérés automatikus bezárása')
     parser.add_argument('--startup-test-namespace', default='')
@@ -23,7 +25,7 @@ def main():
     probing = bool(args.startup_report and args.startup_exit_ms > 0)
     if (args.startup_test_namespace or args.startup_delay_ms or args.startup_network_delay_ms) and not probing:
         parser.error('A tesztparaméterekhez startup-report és startup-exit-ms szükséges.')
-    if args.recover_extraction:
+    if getattr(args, 'recover_extraction', None):
         if args.self_test or args.report or args.require_windows1607:
             parser.error('A helyreállítás külön művelet.')
         from .extraction_transaction import recover
@@ -41,15 +43,18 @@ def main():
     if args.self_test:
         if not args.report:
             parser.error('Az önellenőrzéshez --report útvonal szükséges.')
-        from .self_test import run
+        if viewer:
+            from .viewer_self_test import run
+        else:
+            from .self_test import run
         sys.exit(run(args.report, args.require_windows1607, args.self_test_surface or 'Alapértelmezett'))
     if args.report or args.require_windows1607:
         parser.error('Ezek a kapcsolók csak --self-test mellett használhatók.')
     from .startup_trace import StartupTrace
-    trace = StartupTrace(started, args.startup_report)
+    trace = StartupTrace(started, args.startup_report, "EDPD-Betekinto" if viewer else "EDPD")
     trace.network_delay_ms = max(0, args.startup_network_delay_ms)
     from .single_instance import InstanceGuard
-    guard = InstanceGuard(args.startup_test_namespace or 'manager-v1')
+    guard = InstanceGuard(args.startup_test_namespace or ('viewer-v1' if viewer else 'manager-v1'), DISPLAY_NAME)
     try:
         before = time.perf_counter()
         if not guard.acquire():
@@ -94,6 +99,8 @@ def main():
         trace.mark('splash_visible')
         before = time.perf_counter()
         from .config import Settings
+        if viewer:
+            from .config import ViewerSettings as Settings
         configuration_error = None
         try:
             settings = Settings.load()
@@ -107,7 +114,10 @@ def main():
         set_theme(settings.icon_theme)
         trace.add('appearance_setup_ms', (time.perf_counter() - before) * 1000)
         before = time.perf_counter()
-        from .ui.main_window import MainWindow
+        if viewer:
+            from .ui.viewer_window import ViewerWindow as MainWindow
+        else:
+            from .ui.main_window import MainWindow
         trace.add('main_modules_pdf_print_import_ms', (time.perf_counter() - before) * 1000)
         before = time.perf_counter()
         window = MainWindow(settings, startup_trace=trace, auto_refresh=False)

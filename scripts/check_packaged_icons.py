@@ -14,7 +14,7 @@ def verify(bundle, source):
     for i in range(count):
         w,h,_,_,_,_,size,offset=struct.unpack_from('<BBBBHHII',ico,6+16*i)
         expected[w or 256]=ico[offset:offset+size]
-    pe=pefile.PE(str(bundle/'EDPD-Manager.exe'))
+    pe=pefile.PE(str(bundle/(bundle.name+'.exe')))
     resources={}
     for kind in pe.DIRECTORY_ENTRY_RESOURCE.entries:
         for name in kind.directory.entries:

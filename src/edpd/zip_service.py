@@ -32,7 +32,8 @@ def safe_name(info):
 
 
 class ZipService:
-    def __init__(self, cache_dir=None, startup_trace=None):
+    def __init__(self, cache_dir=None, startup_trace=None, *, archive_browser=False):
+        self.archive_browser = archive_browser
         self.trace = startup_trace
         self.cache = {}
         self.mutex = threading.RLock()
@@ -174,7 +175,7 @@ class ZipService:
                     documents = tuple(Document(entry.path, i.filename, safe_name(i), i.file_size, i.CRC)
                                       for i in archive.infolist()
                                       if not i.is_dir() and i.filename.lower().endswith('.pdf'))
-                names = [d.name.casefold() for d in documents]
+                names = [d.member if self.archive_browser else d.name.casefold() for d in documents]
                 if len(names) != len(set(names)):
                     raise EDPDError('Azonos PDF-fájlnevek ütköznek a ZIP-ben.')
                 after = entry.path.stat()
@@ -212,7 +213,7 @@ class ZipService:
                 if error:
                     errors.append(error)
             names = [d.name.casefold() for d in documents]
-            if len(names) != len(set(names)):
+            if not self.archive_browser and len(names) != len(set(names)):
                 errors.append('Azonos PDF-fájlnevek ütköznek a napi csomagon belül.')
             if sum(d.size for d in documents) > MAX_DAY:
                 errors.append('A napi PDF-adag meghaladja a 2 GiB biztonsági korlátot.')

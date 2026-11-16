@@ -8,7 +8,8 @@ from pathlib import Path
 
 
 class StartupTrace:
-    def __init__(self, started_ns, report=None):
+    def __init__(self, started_ns, report=None, app_directory="EDPD"):
+        self.app_directory = app_directory
         self.started_ns = started_ns
         self.report = Path(report) if report else None
         self.metrics = {}
@@ -39,7 +40,7 @@ class StartupTrace:
             base = os.environ.get('LOCALAPPDATA') or os.environ.get('APPDATA')
             if not base:
                 return
-            path = Path(base) / 'EDPD' / 'startup-last.json'
+            path = Path(base) / self.app_directory / 'startup-last.json'
         def write():
             temporary = None
             try:

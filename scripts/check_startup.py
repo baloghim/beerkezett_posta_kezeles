@@ -69,13 +69,13 @@ class Harness:
             time.sleep(.025)
         raise AssertionError('Startup report timeout')
 
-    def loaded(self, run):
+    def loaded(self, run, display_name="EDPD Menedzser"):
         result = self.wait(run, lambda r:r.get('outcome') == 'loaded')
         result['process_to_python_entry_ms'] = round((result['entry_perf_counter_ns']-run[2])/1e6, 3)
         result['process_to_splash_ms'] = round(result['process_to_python_entry_ms']+result['events_ms']['splash_visible'], 3)
         result['process_to_main_ms'] = round(result['process_to_python_entry_ms']+result['events_ms']['main_window_visible'], 3)
-        assert result['display_name']=='EDPD Menedzser'
-        assert result['window_title'].startswith('EDPD Menedzser ')
+        assert result['display_name']==display_name
+        assert result['window_title'].startswith(display_name+' ')
         assert result['events_ms']['splash_visible'] <= result['events_ms']['main_window_visible']
         assert result['events_ms']['main_window_visible'] <= result['events_ms']['first_background_load_finished']
         return result

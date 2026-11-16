@@ -7,7 +7,8 @@ from . import DISPLAY_NAME
 
 
 class InstanceGuard:
-    def __init__(self, namespace='manager-v1'):
+    def __init__(self, namespace='manager-v1', display_name=DISPLAY_NAME):
+        self.display_name = display_name
         self.primary = False
         self.handle = None
         self.socket = None
@@ -134,7 +135,7 @@ class InstanceGuard:
         x = (self.user.GetSystemMetrics(0) - width) // 2
         y = (self.user.GetSystemMetrics(1) - height) // 2
         hwnd = self.user.CreateWindowExW(0x88, 'STATIC',
-            f'{DISPLAY_NAME}\nAz {DISPLAY_NAME} már indul…',
+            f'{self.display_name}\nAz {self.display_name} már indul…',
             0x90000001, x, y, width, height, None, None, None, None)
         if not hwnd:
             return

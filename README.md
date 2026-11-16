@@ -1,4 +1,17 @@
-# EDPD Menedzser
+# EDPD Menedzser és EDPD Betekintő
+
+## Két önálló Windows-program – 2.6.3
+
+[**EDPD Menedzser 2.6.3 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.3/EDPD-Manager-Windows-x64.zip)
+
+[**EDPD Betekintő 2.6.3 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.3/EDPD-Betekinto-Windows-x64.zip)
+
+A **Menedzser** a teljes dokumentumkezelő: kicsomagolás, munkamappa, törlés és helyi feldolgozottsági jelölés. A **Betekintő** a napi ZIP-eket és azok PDF-jeit közvetlenül böngészi, nyomtatja és egyenként menti; munkamappát nem használ. Külön EXE, saját beállítások és példányvédelem, közös ZIP/PDF-, téma- és felületi komponensek. Mindkettő önállóan és egymás mellett is futtatható.
+
+[Betekintő használata, képernyőkép és fejlesztési útmutató](docs/BETEKINTO.md)
+
+Az alábbi Menedzser-funkciók változatlanul elérhetők a Menedzserben.
+
 
 Magyar nyelvű, helyben futó Windows-alkalmazás a Magyar Posta napi EDPD ZIP-csomagjainak kezeléséhez, a munkamappa PDF-jeinek megtekintéséhez és nyomtatásához. Nincs dokumentumfeltöltés, telemetria vagy külön szerver.
 
