@@ -114,6 +114,8 @@ class PDFViewer(QWidget):
             self.toolbar.widgetForAction(action).setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.scroll = QScrollArea()
         self.scroll.setObjectName('pdf-scroll')
+        # Keep fit-to-width stable when the rendered page crosses the scroll threshold.
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.scroll.viewport().setAttribute(Qt.WA_StyledBackground, True)
         self.scroll.viewport().setObjectName('pdf-viewport')
         self.scroll.setAlignment(Qt.AlignmentFlag.AlignCenter)
