@@ -1,10 +1,10 @@
 # EDPD Menedzser és EDPD Betekintő
 
-## Két önálló Windows-program – 2.6.6
+## Két önálló Windows-program
 
-[**EDPD Menedzser 2.6.6 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.6/EDPD-Manager-Windows-x64.zip)
+[**EDPD Menedzser – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/latest/download/EDPD-Manager-Windows-x64.zip)
 
-[**EDPD Betekintő 2.6.6 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.6/EDPD-Betekinto-Windows-x64.zip)
+[**EDPD Betekintő – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/latest/download/EDPD-Betekinto-Windows-x64.zip)
 
 A **Menedzser** a teljes dokumentumkezelő: kicsomagolás, munkamappa, törlés és helyi feldolgozottsági jelölés. A **Betekintő** a napi ZIP-eket és azok PDF-jeit közvetlenül böngészi, nyomtatja és egyenként menti; munkamappát nem használ. Külön EXE, saját beállítások és példányvédelem, közös ZIP/PDF-, téma- és felületi komponensek. Mindkettő önállóan és egymás mellett is futtatható.
 
@@ -21,9 +21,19 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 
 ## Windows letöltés
 
-**[EDPD Menedzser 2.6.6 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.6/EDPD-Manager-Windows-x64.zip)**
+**[EDPD Menedzser – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/latest/download/EDPD-Manager-Windows-x64.zip)**
 
 **A 2.6.3 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** Windows XP Luna Blue, mind a 12 meglévő ikontémával. 188 sikeres Windows-teszt, nyolc csomagolt EXE-futtatás 160 sikeres funkcionális ellenőrzéssel, 12 indítási tesztcsoport, Blue és Luna 125/150%-os Qt-skálázási próbája. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzés, képek, méret/indulás és célgépes korlátok](docs/RELEASE-2.6.3.md).
+
+## Közös munkamappa a Menedzserben (2.7.0)
+
+A **Beállítások** ablakban az **Ideiglenes munkamappa** alatt jelölje be az **Ez egy közös mappa** négyzetet. Az ugyanazt a munkamappát használó munkatársak a **Feldolgozva** oszlopban közös állapotot látnak. Mások változásai a következő, 15 másodpercenkénti ellenőrzéskor jelennek meg. A nézet kézzel is aktualizálható a **Frissítés** gombbal. A beállítás alapértelmezésben ki van kapcsolva, és mentéskor újraindítás nélkül lép életbe. A helyi és a közös jelzők külön tárolódnak. A mappaútvonalak, a megjelenés és a többi beállítás a saját profilban maradnak.
+
+A munkamappa gyökerében az `.edpd-processed.json` tárolja a közös jelzőket, az `.edpd-processed.bak` pedig az előző érvényes állapotot. Első bekapcsoláskor, ha egyik állomány sem létezik, a Menedzser üres közös állapotot hoz létre. A már működő közös módban váratlanul eltűnt állomány hibát jelez. Az `.edpd-operation.lock` állandó zárolási fájl, amelyet a futó alkalmazások közös használata közben tilos törölni. A Menedzser PDF-törlő és munkamappa-ürítő műveletei megőrzik ezeket a technikai állományokat. A Betekintő a saját, külön beállításaival működik.
+
+Windows alatt az állapot és a mentése **Hidden** (rejtett) és **Read-only** (írásvédett) attribútumot kap. Zárolt csere idejére a Menedzser szükség szerint oldja az írásvédelmet és ellenőrzi a visszaállítását. Az attribútumok a véletlen módosítás ellen nyújtanak védelmet. A hozzáférést az SMB-megosztási és fájlrendszer-jogosultságok szabályozzák. A munkatársaknak olvasási, létrehozási, írási, attribútum-módosítási, átnevezési és törlési jogosultság szükséges a munkamappában, valamint az SMB-kiszolgálón működő fájlzárolás. A forrásarchívumhoz olvasási hozzáférés elegendő. A közös azonosító a dátumból, a ZIP-nevekből és a PDF-bejegyzések metaadataiból készül, ezért a forrásarchívum meghajtóbetűjeles és UNC-útvonalán azonos.
+
+Sérült vagy hiányzó elsődleges állomány esetén, ha a mentés érvényes, a Menedzser felkínálja a **Közös jelzők helyreállítása…** lehetőséget. A jóváhagyott helyreállításkor a sérült példányt lehetőség szerint `.edpd-processed.damaged` néven őrzi meg. Ha a mentés is sérült vagy hiányzik, a jelölések írása szünetel. Ilyenkor a megosztás kezelője ellenőrizze az állományokat és a jogosultságokat, majd a Menedzserben kattintson a **Frissítés** gombra.
 
 ## Újdonság a 2.6.6 változatban
 

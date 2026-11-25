@@ -4,7 +4,7 @@ import time
 from pathlib import Path
 from dataclasses import dataclass
 from PySide2.QtCore import Qt, QTimer, QObject, Signal, QSize, QRunnable, QThreadPool, QByteArray
-from PySide2.QtGui import QColor, QBrush, QPalette, QFontMetrics
+from PySide2.QtGui import QColor, QBrush, QPalette, QFontMetrics, QIcon
 from .. import __version__, DISPLAY_NAME
 from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView,
@@ -25,6 +25,7 @@ from .extraction_dialog import ExtractionDialog
 from .themes import manager as surface_manager, set_theme as set_surface_theme
 from .themes.widgets import StatusItemDelegate, ThemeStatusBar
 from ..processed_store import ProcessedStore, packet_id
+from ..shared_processed_store import SharedProcessedStore, SharedState, shared_packet_id
 
 
 @dataclass(frozen=True)
@@ -51,6 +52,7 @@ class Snapshot:
     processed: frozenset = frozenset()
     mark_error: str = ''
     source_identity: str = ''
+    shared_state: SharedState | None = None
 
 
 def row_appearance(state):
@@ -96,6 +98,10 @@ class MainWindow(QMainWindow, BrowserWidgets):
         self.origin_requested = False
         self.processed, self.mark_error = frozenset(), ''
         self.source_identity = settings.source
+        self.shared_state = None
+        self.shared_mark_rows = {}
+        self.mark_polling = False
+        self.mark_generation = 0
         self.jobs = set()
         self.busy = self.preview_busy = self.origin_busy = False
         self.preview_generation = self.source_generation = 0
@@ -180,6 +186,10 @@ class MainWindow(QMainWindow, BrowserWidgets):
         self.access_notice = QLabel()
         self.access_notice.setWordWrap(True)
         top.layout().insertWidget(1, self.access_notice)
+        self.restore_marks_button = QPushButton('Közös jelzők helyreállítása…')
+        self.restore_marks_button.clicked.connect(self.restore_shared_marks)
+        self.restore_marks_button.hide()
+        top.layout().insertWidget(2, self.restore_marks_button)
         self.left.addWidget(top)
         self.workspace_panel = self.panel('A munkamappa dokumentumai', self.docs_table)
         self.origin_button = QPushButton('További forráskeresés')
@@ -207,6 +217,10 @@ class MainWindow(QMainWindow, BrowserWidgets):
         self.docs_table.itemSelectionChanged.connect(self.select_document)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.refresh)
+        self.mark_timer = QTimer(self)
+        self.mark_timer.setInterval(15_000)
+        self.mark_timer.timeout.connect(self.poll_shared_marks)
+        self.update_mark_timer()
         self.origin_timer = QTimer(self)
         self.origin_timer.setSingleShot(True)
         self.origin_timer.timeout.connect(self.lookup_origins)
@@ -230,7 +244,12 @@ class MainWindow(QMainWindow, BrowserWidgets):
         self.actions[2].setEnabled(not (self.busy or self.extracting) and self.capabilities.delete and not self.access_error)
         self.processed_action.setVisible(self.capabilities.processed)
         self.processed_action.setEnabled(not (self.busy or self.extracting) and day is not None and not self.mark_error and self.capabilities.processed)
-        marked = day is not None and packet_id(self.source_identity, day, canonical=True) in self.processed
+        if self.uses_shared_marks() and day is not None and day.error:
+            self.processed_action.setEnabled(False)
+        can_restore = self.shared_state is not None and self.shared_state.recovery is not None
+        self.restore_marks_button.setVisible(can_restore)
+        self.restore_marks_button.setEnabled(not (self.busy or self.extracting))
+        marked = day is not None and self.mark_key(day) in self.processed
         self.processed_action.setText('Feldolgozás visszavonása' if marked else 'Feldolgozva')
         self.update_origin_button()
 
@@ -239,6 +258,7 @@ class MainWindow(QMainWindow, BrowserWidgets):
             return
         if kind == 'main':
             self.busy = True
+            self.mark_generation += 1
             self.update_actions()
         job = Job(function, with_progress=progress is not None)
         if progress is not None:
@@ -271,6 +291,8 @@ class MainWindow(QMainWindow, BrowserWidgets):
                 load, generation, filename = self.preview_pending
                 self.preview_pending = None
                 QTimer.singleShot(0, lambda: self.launch_preview(load, generation, filename))
+        elif kind == 'marks':
+            self.mark_polling = False
         else:
             self.origin_busy = False
         if self.origin_requested and self.files and self.origin_pending and not self.origin_busy:
@@ -340,12 +362,16 @@ class MainWindow(QMainWindow, BrowserWidgets):
             origins, pending, complete = {name: 'Ismeretlen' for name in files}, (), False
         else:
             origins, pending, complete = self.zip.origin_state(source, files, entries)
-        try:
-            processed = frozenset(ProcessedStore(settings.source, settings.target).read()) if self.capabilities.processed else frozenset()
-            mark_error = ''
-        except Exception as exc:
-            processed, mark_error = frozenset(), 'Helyi Feldolgozva állapot nem olvasható: ' + str(exc)
-        return Snapshot(DailyArchiveModel(days, daily, entries), WorkspaceModel(files, sizes, origins), pending, complete, access_error, processed, mark_error, str(source) if source is not None else settings.source)
+        state = self.read_shared_marks(settings) if self.uses_shared_marks() else None
+        processed, mark_error = frozenset(), ''
+        if state is None and self.capabilities.processed:
+            try:
+                processed = frozenset(ProcessedStore(settings.source, settings.target).read())
+            except Exception as exc:
+                mark_error = 'Helyi Feldolgozva állapot nem olvasható: ' + str(exc)
+        return Snapshot(DailyArchiveModel(days, daily, entries), WorkspaceModel(files, sizes, origins),
+                        pending, complete, access_error, processed, mark_error,
+                        str(source) if source is not None else settings.source, state)
 
     def refresh(self):
         if not self.busy and not self.extracting:
@@ -361,34 +387,31 @@ class MainWindow(QMainWindow, BrowserWidgets):
         self.archive_model, self.workspace_model = snapshot.archive, snapshot.workspace
         self.days, self.files, self.sizes = snapshot.archive.days, snapshot.workspace.files, snapshot.workspace.sizes
         self.access_error = snapshot.access_error
-        self.processed, self.mark_error = snapshot.processed, snapshot.mark_error
+        if snapshot.shared_state is None:
+            self.processed, self.mark_error = snapshot.processed, snapshot.mark_error
+        else:
+            self.receive_shared_state(snapshot.shared_state, update_table=False)
         self.source_identity = snapshot.source_identity
         self.entries, self.origin_pending = snapshot.archive.entries, snapshot.pending
         self.origins_complete = snapshot.origins_complete
         if not self.origin_pending:
             self.origin_requested = False
-        notice = self.access_error or self.mark_error
-        self.access_notice.setText(notice)
-        self.access_notice.setVisible(bool(notice))
+        self.update_mark_notice()
         self.day_table.blockSignals(True)
         self.day_table.setUpdatesEnabled(False)
         self.day_table.setRowCount(len(self.days))
         row = 0
+        self.shared_mark_rows = {}
         for index, day in enumerate(self.days):
             state = snapshot.archive.states[day.date]
             self.fill(self.day_table, index,
                       [day.date.strftime('%Y.%m.%d.'), ', '.join(p.name for p in day.archives), str(len(day.documents)), state, ''],
                       appearance=row_appearance(state), tooltip=day.error or state)
             self.day_table.item(index, 2).setTextAlignment(Qt.AlignCenter)
-            marker = self.day_table.item(index, 4)
-            if self.mark_error:
-                marker.setToolTip(self.mark_error)
-            elif packet_id(self.source_identity, day, canonical=True) in self.processed:
-                marker.setData(Qt.UserRole, 'processed')
-                marker.setIcon(icon('processed'))
-                marker.setToolTip('Feldolgozva')
-            else:
-                marker.setToolTip('')
+            key = self.mark_key(day)
+            if self.uses_shared_marks():
+                self.shared_mark_rows.setdefault(key, []).append(index)
+            self.set_mark_cell(index, key)
             self.day_table.item(index, 1).setIcon(icon('warning' if day.error or state == 'Fájlütközés' else 'zip'))
             if selected and day.date == selected.date:
                 row = index
@@ -585,10 +608,99 @@ class MainWindow(QMainWindow, BrowserWidgets):
             action.triggered.connect(lambda: self.mark_day(day))
         menu.exec_(self.day_table.viewport().mapToGlobal(pos))
 
+    def uses_shared_marks(self):
+        return self.capabilities.processed and self.settings.shared_workspace
+
+    def mark_key(self, day):
+        if self.uses_shared_marks():
+            return shared_packet_id(day)
+        return packet_id(self.source_identity, day, canonical=True)
+
+    def update_mark_timer(self):
+        if self.uses_shared_marks():
+            self.mark_timer.start()
+        else:
+            self.mark_timer.stop()
+
+    def update_mark_notice(self):
+        notice = '\n'.join(filter(None, (self.access_error, self.mark_error)))
+        self.access_notice.setText(notice)
+        self.access_notice.setVisible(bool(notice))
+
+    def set_mark_cell(self, row, key):
+        marker = self.day_table.item(row, 4)
+        marked = key in self.processed and (self.uses_shared_marks() or not self.mark_error)
+        marker.setData(Qt.UserRole, 'processed' if marked else None)
+        marker.setIcon(icon('processed') if marked else QIcon())
+        local_error = '' if self.uses_shared_marks() else self.mark_error
+        marker.setToolTip(local_error or ('Feldolgozva' if marked else ''))
+
+    @staticmethod
+    def read_shared_marks(settings, cached=None):
+        try:
+            return SharedProcessedStore(settings.source, settings.target).inspect(cached)
+        except Exception as exc:
+            return SharedState(error=f'A közös feldolgozottsági állapot nem olvasható: {exc}')
+
+    def receive_shared_state(self, state, *, update_table=True):
+        if state == self.shared_state and update_table:
+            return
+        previous = self.processed
+        self.shared_state = state
+        self.mark_error = state.error
+        if state.packets is not None:
+            self.processed = state.packets
+        if update_table:
+            self.update_mark_notice()
+            for key in previous ^ self.processed:
+                for row in self.shared_mark_rows.get(key, ()):
+                    self.set_mark_cell(row, key)
+            self.update_actions()
+
+    def poll_shared_marks(self):
+        if not self.uses_shared_marks() or self.busy or self.extracting or self.mark_polling:
+            return
+        self.mark_polling = True
+        settings, cached, generation = self.settings, self.shared_state, self.mark_generation
+        def received(state):
+            if generation == self.mark_generation and self.uses_shared_marks():
+                self.receive_shared_state(state)
+        self.submit(lambda: self.read_shared_marks(settings, cached), received, kind='marks')
+
+    def shared_write_failed(self, text):
+        self.receive_shared_state(SharedState(error=f'A közös művelet nem ellenőrizhető: {text}'))
+        self.error(self.mark_error)
+        QTimer.singleShot(0, self.poll_shared_marks)
+
+    def restore_shared_marks(self):
+        if (not self.uses_shared_marks() or self.busy or self.extracting
+                or self.shared_state is None or self.shared_state.recovery is None):
+            return
+        expected = self.shared_state.recovery
+        settings = self.settings
+        if QMessageBox.question(self, 'Közös jelzők helyreállítása',
+                                'Visszaállítja a közös jelzőket a biztonsági másolatból? '
+                                'Az utolsó módosítás elveszhet.',
+                                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+            return
+        if self.settings is not settings or self.extracting:
+            return
+        store = SharedProcessedStore(settings.source, settings.target)
+        self.submit(lambda: store.restore(expected), self.receive_shared_state, failure=self.shared_write_failed)
+
     def mark_day(self, day):
         if not day or not self.capabilities.processed or self.busy or self.extracting or self.mark_error:
             return
-        desired = packet_id(self.source_identity, day, canonical=True) not in self.processed
+        key = self.mark_key(day)
+        desired = key not in self.processed
+        if self.uses_shared_marks():
+            if day.error or self.shared_state is None:
+                return
+            store = SharedProcessedStore(self.settings.source, self.settings.target)
+            self.submit(lambda: store.set_processed(key, desired), self.receive_shared_state,
+                        failure=self.shared_write_failed)
+            return
+
         def write():
             ProcessedStore(self.settings.source, self.settings.target, self.capabilities).set_processed(day, desired)
             return self.snapshot()
@@ -706,13 +818,26 @@ class MainWindow(QMainWindow, BrowserWidgets):
             path_changed = (candidate.source, candidate.target) != (previous.source, previous.target)
             workflow_changed = any(getattr(candidate, field) != getattr(previous, field)
                                    for field in ('source', 'target', 'history_days', 'refresh_minutes'))
+            mark_storage_changed = (candidate.shared_workspace != previous.shared_workspace
+                                    or (candidate.shared_workspace and candidate.target != previous.target))
             def save():
                 if path_changed:
                     check_settings(candidate)
+                if self.capabilities.processed and candidate.shared_workspace and (mark_storage_changed or path_changed):
+                    SharedProcessedStore(candidate.source, candidate.target).prepare()
                 candidate.save()
                 return candidate
             def saved(value):
                 self.settings = value
+                if mark_storage_changed:
+                    self.processed = frozenset()
+                    self.shared_state = None
+                    self.mark_error = 'Feldolgozottsági jelzők betöltése…'
+                    self.update_mark_timer()
+                    self.update_mark_notice()
+                    for row, day in enumerate(self.days):
+                        self.set_mark_cell(row, self.mark_key(day))
+                    QTimer.singleShot(0, self.refresh)
                 from .appearance import apply_settings_style
                 apply_settings_style(value)
                 value.surface_theme = surface_manager().name
@@ -724,7 +849,8 @@ class MainWindow(QMainWindow, BrowserWidgets):
                     self.preview_generation += 1
                     self.source_generation += 1
                     self.update_timer()
-                    QTimer.singleShot(0, self.refresh)
+                    if not mark_storage_changed:
+                        QTimer.singleShot(0, self.refresh)
             self.submit(save, saved)
 
     def refresh_icons(self):
@@ -756,6 +882,7 @@ class MainWindow(QMainWindow, BrowserWidgets):
             event.ignore()
             return
         self.origin_timer.stop()
+        self.mark_timer.stop()
         self.settings.geometry = bytes(self.saveGeometry().toBase64()).decode()
         self.settings.panels = bytes(self.split.saveState().toBase64()).decode()
         self.settings.left_panels = bytes(self.left.saveState().toBase64()).decode()

@@ -20,6 +20,7 @@ class Settings:
     icon_theme: str = 'SE98'
     surface_theme: str = 'Alapértelmezett'
     ui_style: str = ''
+    shared_workspace: bool = False
 
     def __post_init__(self):
         # A fresh Manager profile has no native style to migrate.
@@ -60,7 +61,9 @@ class Settings:
         if (type(result.refresh_minutes) is not int or
                 result.refresh_minutes not in range(5, 61, 5) or
                 (result.history_days is not None and (type(result.history_days) is not int or result.history_days not in (14, 30, 90, 180))) or
-                any(not isinstance(getattr(result, key), str) for key in allowed if key not in ('refresh_minutes', 'history_days'))):
+                (cls is Settings and type(result.shared_workspace) is not bool) or
+                any(not isinstance(getattr(result, key), str) for key in allowed
+                    if key not in ('refresh_minutes', 'history_days', 'shared_workspace'))):
             raise ValueError('Érvénytelen beállításfájl.')
         return result
 

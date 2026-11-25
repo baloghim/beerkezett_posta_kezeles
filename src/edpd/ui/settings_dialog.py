@@ -1,7 +1,7 @@
 from dataclasses import replace
 import tempfile
 from PySide2.QtCore import Qt
-from PySide2.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPushButton,
+from PySide2.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QCheckBox,
                               QDialogButtonBox, QHBoxLayout, QFileDialog, QSlider, QLabel, QStyleFactory, QGroupBox, QApplication)
 from ..file_service import validate_paths
 from ..paths import normalize_path
@@ -32,6 +32,16 @@ class SettingsDialog(QDialog):
             browse.clicked.connect(lambda checked=False, e=edit: self.browse(e))
             row.addWidget(browse)
             form.addRow(title, row)
+        if not self.viewer_mode:
+            self.shared_workspace = QCheckBox('Ez egy közös mappa')
+            self.shared_workspace.setChecked(settings.shared_workspace)
+            explanation = QLabel('A feldolgozottsági jelzőket az ezt a munkamappát használó '
+                                 'munkatársak közösen látják és módosítják.')
+            explanation.setWordWrap(True)
+            shared = QVBoxLayout()
+            shared.addWidget(self.shared_workspace)
+            shared.addWidget(explanation)
+            form.addRow('', shared)
         self.history = QComboBox()
         for days in (14, 30, 90, 180, None):
             self.history.addItem(f'{days} nap' if days is not None else 'Összes', days)
@@ -82,7 +92,10 @@ class SettingsDialog(QDialog):
 
     def result_settings(self):
         ui_style, qt_style, surface = resolve_ui_style(self.style_combo.currentData())
-        paths = {} if self.viewer_mode else {'target': normalize_path(self.target.text())}
+        paths = {} if self.viewer_mode else {
+            'target': normalize_path(self.target.text()),
+            'shared_workspace': self.shared_workspace.isChecked(),
+        }
         return replace(self.original, source=normalize_path(self.source.text()), **paths,
                        history_days=self.history.currentData(),
                        refresh_minutes=self.slider.value() * 5, qt_style=qt_style, icon_theme=self.icon_combo.currentText(),
