@@ -59,15 +59,22 @@ class Harness:
     def wait(self, run, predicate, timeout=45):
         process, path, _ = run
         deadline = time.monotonic() + timeout
+        report = {}
         while time.monotonic() < deadline:
             report = read_report(path)
             if predicate(report):
                 return report
             if process.poll() is not None:
+                # The report may have been replaced between the read and poll.
+                report = read_report(path)
+                if predicate(report):
+                    return report
                 error = process.stderr.read().decode('utf-8', errors='replace')
-                raise AssertionError(f'Startup process exited early ({process.returncode}): {error[-2500:]}')
+                raise AssertionError(
+                    f'{path.stem}: startup process exited early ({process.returncode}), '
+                    f'last outcome={report.get("outcome")}: {error[-2500:]}')
             time.sleep(.025)
-        raise AssertionError('Startup report timeout')
+        raise AssertionError(f'{path.stem}: startup report timeout, last outcome={report.get("outcome")}')
 
     def loaded(self, run, display_name="EDPD Menedzser"):
         result = self.wait(run, lambda r:r.get('outcome') == 'loaded')

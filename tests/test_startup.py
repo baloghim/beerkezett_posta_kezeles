@@ -28,3 +28,27 @@ def test_trace_never_records_paths_or_document_data(tmp_path):
     data=json.loads((tmp_path/'timing.json').read_text())
     assert data['configuration_error']=='JSONDecodeError'
     assert str(tmp_path) not in json.dumps(data)
+
+
+def test_explicit_trace_retries_when_the_reader_locks_the_report(tmp_path, monkeypatch):
+    import json
+    import time
+    from edpd import startup_trace
+
+    path = tmp_path / 'timing.json'
+    trace = startup_trace.StartupTrace(time.perf_counter_ns(), path)
+    trace.publish('visible')
+    real_replace = startup_trace.os.replace
+    attempts = []
+
+    def temporarily_locked(source, destination):
+        attempts.append(destination)
+        if len(attempts) == 1:
+            raise PermissionError('Report is open in the reader')
+        real_replace(source, destination)
+
+    monkeypatch.setattr(startup_trace.os, 'replace', temporarily_locked)
+    trace.publish('loaded')
+    assert attempts == [path, path]
+    assert json.loads(path.read_text(encoding='utf-8'))['outcome'] == 'loaded'
+    assert list(tmp_path.iterdir()) == [path]

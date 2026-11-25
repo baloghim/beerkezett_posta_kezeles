@@ -48,7 +48,16 @@ class StartupTrace:
                 fd, temporary = tempfile.mkstemp(dir=path.parent, prefix='.startup-')
                 with os.fdopen(fd, 'w', encoding='utf-8') as stream:
                     json.dump(data, stream, indent=2)
-                os.replace(temporary, path)
+                # On Windows the probe reader can briefly lock the old report
+                # against replacement. Retry explicit reports before exiting.
+                for attempt in range(5):
+                    try:
+                        os.replace(temporary, path)
+                        break
+                    except PermissionError:
+                        if not self.report or attempt == 4:
+                            raise
+                        time.sleep(.01)
             except OSError:
                 pass  # Diagnostics must never prevent startup.
             finally:
