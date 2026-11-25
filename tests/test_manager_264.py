@@ -68,8 +68,10 @@ def test_status_cells_follow_snapshot_and_theme(app, folders, pdf_bytes):
     today = date.today()
     with ZipFile(source / f'{today:%Y%m%d}_test.zip', 'w') as archive:
         archive.writestr('sample.pdf', pdf_bytes)
+    with ZipFile(source / '20200101_other.zip', 'w') as archive:
+        archive.writestr('other.pdf', pdf_bytes)
     (target / 'sample.pdf').write_bytes(pdf_bytes)
-    window = MainWindow(Settings(source=str(source), target=str(target)), auto_refresh=False)
+    window = MainWindow(Settings(source=str(source), target=str(target), history_days=None), auto_refresh=False)
     window.split.setSizes([760, 840])
     window.show()
     try:
@@ -85,9 +87,11 @@ def test_status_cells_follow_snapshot_and_theme(app, folders, pdf_bytes):
         assert table.item(0, 3).text() == 'Kicsomagolva'
         assert all(table.item(0, col).font().bold() for col in range(5))
         marker = table.item(0, 4)
-        assert marker.text() == '' and marker.toolTip() == 'Nincs feldolgozva'
+        assert marker.text() == marker.toolTip() == '' and marker.icon().isNull()
+        assert marker.data(Qt.UserRole) is None
         assert table.columnWidth(4) >= table.horizontalHeader().fontMetrics().horizontalAdvance('Feldolgozva')
 
+        table.scrollToItem(marker)
         cell = table.visualItemRect(marker)
         QTest.mouseClick(table.viewport(), Qt.LeftButton, pos=cell.center())
         assert not ProcessedStore(source, target).read()
@@ -101,6 +105,9 @@ def test_status_cells_follow_snapshot_and_theme(app, folders, pdf_bytes):
             set_theme(name)
             assert marker.icon().cacheKey() == icon('processed').cacheKey()
             assert marker.toolTip() == 'Feldolgozva'
+            unmarked = table.item(1, 4)
+            assert unmarked.icon().isNull() and unmarked.text() == unmarked.toolTip() == ''
+            assert unmarked.data(Qt.UserRole) is None
         assert marker.icon().cacheKey() != before
         assert table.item(0, 2).textAlignment() == int(Qt.AlignCenter)
 
@@ -120,6 +127,19 @@ def test_status_cells_follow_snapshot_and_theme(app, folders, pdf_bytes):
             low = min(point[axis] for point in ink)
             high = max(point[axis] for point in ink)
             assert abs(low + high - (extent - 1)) <= 4
+
+        window.refresh()
+        wait_for(app, lambda: not window.jobs)
+        assert table.item(0, 4).toolTip() == 'Feldolgozva'
+        window.mark_day(window.days[0])
+        wait_for(app, lambda: not window.jobs)
+        assert not ProcessedStore(source, target).read()
+        marker = table.item(0, 4)
+        assert marker.icon().isNull() and marker.text() == marker.toolTip() == ''
+        assert marker.data(Qt.UserRole) is None
+        assert table.item(0, 3).text() == 'Kicsomagolva' and table.item(0, 3).font().bold()
+        app.processEvents()
+        assert table.viewport().grab(table.visualItemRect(marker)).toImage() == blank
 
         window.apply_snapshot(replace(snapshot, mark_error='Tárolási hiba'))
         assert table.item(0, 4).icon().isNull()

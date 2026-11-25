@@ -383,12 +383,12 @@ class MainWindow(QMainWindow, BrowserWidgets):
             marker = self.day_table.item(index, 4)
             if self.mark_error:
                 marker.setToolTip(self.mark_error)
+            elif packet_id(self.source_identity, day, canonical=True) in self.processed:
+                marker.setData(Qt.UserRole, 'processed')
+                marker.setIcon(icon('processed'))
+                marker.setToolTip('Feldolgozva')
             else:
-                marked = packet_id(self.source_identity, day, canonical=True) in self.processed
-                role = 'processed' if marked else 'unprocessed'
-                marker.setData(Qt.UserRole, role)
-                marker.setIcon(icon(role))
-                marker.setToolTip('Feldolgozva' if marked else 'Nincs feldolgozva')
+                marker.setToolTip('')
             self.day_table.item(index, 1).setIcon(icon('warning' if day.error or state == 'Fájlütközés' else 'zip'))
             if selected and day.date == selected.date:
                 row = index

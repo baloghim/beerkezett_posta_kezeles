@@ -89,7 +89,8 @@ def test_local_processed_marks_menu_target_and_viewer_exclusion(app,folders,pdf_
     assert restarted.day_table.item(0,4).toolTip()=='Feldolgozva'
     restarted.mark_day(restarted.days[0]);wait_for(app,lambda:not restarted.jobs)
     assert not store.read()
-    assert restarted.day_table.item(0,4).toolTip()=='Nincs feldolgozva'
+    marker = restarted.day_table.item(0,4)
+    assert marker.icon().isNull() and marker.text() == marker.toolTip() == ''
     restarted.close()
     viewer=MainWindow(Settings(source=str(folders[0]),target=str(folders[1])),Capabilities.viewer());viewer.show()
     wait_for(app,lambda:viewer.days and not viewer.jobs)
