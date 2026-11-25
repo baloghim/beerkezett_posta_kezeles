@@ -96,7 +96,7 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
                 time.sleep(0.01)
             raise TimeoutError('A felület háttérművelete nem fejeződött be.')
         try:
-            window = MainWindow(Settings(source=str(source), target=str(target), surface_theme=surface_theme))
+            window = MainWindow(Settings(source=str(source), target=str(target), qt_style='Fusion', surface_theme=surface_theme))
             window.show()
             wait(lambda: bool(window.entries) and not window.jobs)
             if len(window.days) != 2 or len(window.days[0].documents) != 2:
@@ -268,7 +268,10 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
             from .processed_store import ProcessedStore, packet_id
             window.mark_day(day)
             wait(lambda: not window.jobs)
-            if packet_id(source, day) not in ProcessedStore(source, target).read() or not window.day_table.item(0, 3).text().startswith('Feldolgozva'):
+            if packet_id(source, day) not in ProcessedStore(source, target).read() or (window.day_table.item(0, 3).text() != 'Kicsomagolva' or
+                    not window.day_table.item(0, 3).font().bold() or
+                    window.day_table.item(0, 4).toolTip() != 'Feldolgozva' or
+                    window.day_table.item(0, 4).icon().isNull()):
                 raise RuntimeError('A helyi feldolgozási jelölés nem maradt meg.')
             result['checks'].append('local_processed_marks')
             import threading

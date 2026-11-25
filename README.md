@@ -1,10 +1,10 @@
 # EDPD Menedzser és EDPD Betekintő
 
-## Két önálló Windows-program – 2.6.3
+## Két önálló Windows-program – 2.6.4
 
-[**EDPD Menedzser 2.6.3 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.3/EDPD-Manager-Windows-x64.zip)
+[**EDPD Menedzser 2.6.4 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.4/EDPD-Manager-Windows-x64.zip)
 
-[**EDPD Betekintő 2.6.3 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.3/EDPD-Betekinto-Windows-x64.zip)
+[**EDPD Betekintő 2.6.4 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.4/EDPD-Betekinto-Windows-x64.zip)
 
 A **Menedzser** a teljes dokumentumkezelő: kicsomagolás, munkamappa, törlés és helyi feldolgozottsági jelölés. A **Betekintő** a napi ZIP-eket és azok PDF-jeit közvetlenül böngészi, nyomtatja és egyenként menti; munkamappát nem használ. Külön EXE, saját beállítások és példányvédelem, közös ZIP/PDF-, téma- és felületi komponensek. Mindkettő önállóan és egymás mellett is futtatható.
 
@@ -21,9 +21,15 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 
 ## Windows letöltés
 
-**[EDPD Menedzser 2.6.3 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.3/EDPD-Manager-Windows-x64.zip)**
+**[EDPD Menedzser 2.6.4 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.6.4/EDPD-Manager-Windows-x64.zip)**
 
 **A 2.6.3 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** Windows XP Luna Blue, mind a 12 meglévő ikontémával. 188 sikeres Windows-teszt, nyolc csomagolt EXE-futtatás 160 sikeres funkcionális ellenőrzéssel, 12 indítási tesztcsoport, Blue és Luna 125/150%-os Qt-skálázási próbája. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzés, képek, méret/indulás és célgépes korlátok](docs/RELEASE-2.6.3.md).
+
+## Újdonság a 2.6.4 változatban
+
+Az új Menedzser-profilok Windows XP Luna Blue felülettel és SE98 ikonokkal indulnak. A napi ZIP-táblázatban a PDF-ek száma középre igazított, a feldolgozottság külön ikonos oszlopba került, a teljesen kicsomagolt sorok pedig félkövérek.
+
+[A Menedzser képernyőképe](docs/manager-2.6.4-table.png) · [Állapotikonok összehasonlítása](docs/processed-icon-comparison.png) · [Ikonforrások és licencek](docs/PROCESSED-ICONS.md)
 
 ## Újdonság a 2.6.3 változatban
 
@@ -129,7 +135,7 @@ Linuxon: `QT_QPA_PLATFORM=offscreen .venv-qt5/bin/python -m pytest -q`. A meglé
 A csomagolt EXE önellenőrzése:
 
 ```bat
-EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.6.3-1607.json"
+EDPD-Manager.exe --self-test --require-windows1607 --report "%USERPROFILE%\Desktop\EDPD-2.6.4-1607.json"
 ```
 
 A Windows workflow natív DLL-auditot, EXE-ikonerőforrás-vizsgálatot, a csomagolt ikonfájlok összehasonlítását és az EXE húsz funkcionális önellenőrzését is végzi. A `v*` címkéhez sikeres build után Release-t készít. [Windows 1607 útmutató](docs/WINDOWS1607.md). A modern runner sikere nem helyettesíti a valódi 1607-es célgépes próbát; a korábban ott ellenőrzött 0.2.1 kiadás sikere az új változatot nem minősíti.

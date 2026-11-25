@@ -4,7 +4,7 @@ import tempfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from .paths import normalize_path
-from .surface_styles import CUSTOM_SURFACES
+from .surface_styles import CUSTOM_SURFACES, LUNA
 
 
 @dataclass
@@ -16,20 +16,23 @@ class Settings:
     geometry: str = ''
     panels: str = ''
     left_panels: str = ''
-    qt_style: str = 'Fusion'
-    icon_theme: str = 'Crystal SVG'
+    qt_style: str = ''
+    icon_theme: str = 'SE98'
     surface_theme: str = 'Alapértelmezett'
     ui_style: str = ''
 
     def __post_init__(self):
-        # Migrate 2.6 profiles without discarding unrelated, valid settings.
+        # A fresh Manager profile has no native style to migrate.
         if not isinstance(self.ui_style, str) or not self.ui_style:
-            self.ui_style = (self.surface_theme if self.surface_theme in
-                             CUSTOM_SURFACES else
-                             self.qt_style if isinstance(self.qt_style, str) else 'Fusion')
+            if type(self) is Settings and self.qt_style == '' and self.surface_theme == 'Alapértelmezett':
+                self.surface_theme = LUNA
+            if self.surface_theme in CUSTOM_SURFACES:
+                self.ui_style = self.surface_theme
+            else:
+                self.ui_style = self.qt_style if isinstance(self.qt_style, str) else 'Fusion'
         if not isinstance(self.surface_theme, str):
             self.surface_theme = 'Alapértelmezett'
-        if not isinstance(self.qt_style, str):
+        if not isinstance(self.qt_style, str) or (type(self) is Settings and not self.qt_style):
             self.qt_style = 'Fusion'
         for key in ('source', 'target') if hasattr(self, 'target') else ('source',):
             value = getattr(self, key)
@@ -45,6 +48,11 @@ class Settings:
         data = json.loads(path.read_text(encoding='utf-8'))
         if not isinstance(data, dict):
             raise ValueError('A beállításfájl nem JSON-objektum.')
+        if cls is Settings:
+            # Preserve the previous fallbacks when an existing file lacks these fields.
+            if data.get('qt_style', '') == '':
+                data['qt_style'] = 'Fusion'
+            data.setdefault('icon_theme', 'Crystal SVG')
         allowed = cls.__dataclass_fields__
         result = cls(**{k: v for k, v in data.items() if k in allowed})
         if not isinstance(result.surface_theme, str):

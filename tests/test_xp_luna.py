@@ -44,7 +44,7 @@ def test_luna_selected_state_text_has_readable_contrast(app,folders):
     source,target=folders
     window=MainWindow(Settings(source=str(source),target=str(target),ui_style=LUNA),auto_refresh=False)
     table=window.day_table
-    states=('Feldolgozva','Részben kicsomagolva','Hibás csomag','Kicsomagolva')
+    states=('Fájlütközés','Részben kicsomagolva','Hibás csomag','Kicsomagolva')
     table.setRowCount(len(states))
     try:
         for row,state in enumerate(states):

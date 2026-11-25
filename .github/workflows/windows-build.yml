@@ -195,6 +195,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
+          cd release
+          for app in EDPD-Manager EDPD-Betekinto; do
+            zip="$app-Windows-x64.zip"
+            sha256sum --check --strict "$zip.sha256"
+            unzip -tq "$zip"
+            unzip -Z -1 "$zip" | grep -Fx "$app/$app.exe"
+          done
+          cd ..
           VERSION="${RELEASE_TAG#v}"
           printf '%s\n' "[EDPD Menedzser $VERSION – Windows x64](https://github.com/$GH_REPO/releases/download/$RELEASE_TAG/EDPD-Manager-Windows-x64.zip)" '' "[EDPD Betekintő $VERSION – Windows x64](https://github.com/$GH_REPO/releases/download/$RELEASE_TAG/EDPD-Betekinto-Windows-x64.zip)" '' "Mindkét program forráscommitja: $GITHUB_SHA. Python 3.10.11 / Qt 5.15.2; natív Windows build és funkcionális EXE-ellenőrzések. A tényleges Windows 10 1607 célgépes próba külön szükséges." > release-notes.txt
           gh release create "$RELEASE_TAG" release/*.zip release/*.sha256 --verify-tag --notes-file release-notes.txt --title "EDPD Menedzser és Betekintő $RELEASE_TAG"

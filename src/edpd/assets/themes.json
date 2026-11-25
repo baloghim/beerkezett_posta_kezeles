@@ -6,7 +6,22 @@
       "source": "https://github.com/dangvd/crystal-remix-icon-theme",
       "icons": {},
       "own_role_count": 19,
-      "fallback_roles": []
+      "fallback_roles": [],
+      "status_icons": {
+        "processed": {
+          "source": "22x22/actions/dialog-ok.png",
+          "commit": "f8863b558b8eedf22caea0eabe18030bfcbe0783",
+          "license": "GNU LGPL (upstream version unspecified)",
+          "original": "processed.png",
+          "sha256": "3c700ffa4a80b71376703eed6ca45bc840a2c7a4c9392e763268b0952041d474"
+        },
+        "unprocessed": {
+          "source": "EDPD original artwork",
+          "license": "EDPD project LICENSE (no separate grant)",
+          "original": "unprocessed.svg",
+          "sha256": "a6236177769faccce87ae63187df717a2c9c048b777de2a71082d82c1b1aabdd"
+        }
+      }
     },
     "Nuvola": {
       "id": "nuvola",
@@ -110,7 +125,22 @@
       "own_role_count": 18,
       "fallback_roles": [
         "width"
-      ]
+      ],
+      "status_icons": {
+        "processed": {
+          "source": "nuvola-icon.tar.gz!usr/share/icons/nuvola/22x22/actions/dialog-ok.png",
+          "commit": "fb94aa21035d19c2ec68d69ec0ab21697a73e7c2",
+          "license": "LGPL-2.1-or-later (Nuvola-specific Debian copyright entry)",
+          "original": "processed.png",
+          "sha256": "425862f5aebd188aaa51a4fcddf3e84c9eba3478aea8ba789b88f5b799497547"
+        },
+        "unprocessed": {
+          "source": "EDPD original artwork",
+          "license": "EDPD project LICENSE (no separate grant)",
+          "original": "unprocessed.svg",
+          "sha256": "4cb6c206232add1fa5d54163a82e446d29d51bb062b2d56d8e4eab6a52fadefc"
+        }
+      }
     },
     "KDE Modern Classic": {
       "id": "modern-classic",
@@ -215,7 +245,22 @@
         }
       },
       "own_role_count": 19,
-      "fallback_roles": []
+      "fallback_roles": [],
+      "status_icons": {
+        "processed": {
+          "source": "KDE-Modern-Classic/scalable/actions/dialog-ok.svg",
+          "commit": "466f093bf391f80c67cef60a24d4013be2536707",
+          "license": "LGPL-3.0-or-later",
+          "original": "processed.svg",
+          "sha256": "57aa0cdfa9625a956d23b06444348cf604f75a843d84339478a4f847b16b669d"
+        },
+        "unprocessed": {
+          "source": "EDPD original artwork",
+          "license": "EDPD project LICENSE (no separate grant)",
+          "original": "unprocessed.svg",
+          "sha256": "05d4a305506c9d502fcb5cd95707a76e65dd630a2ba5d47cde1c8ac61f19fda1"
+        }
+      }
     },
     "Papirus": {
       "id": "papirus",
@@ -349,7 +394,27 @@
       },
       "authors": "",
       "own_role_count": 19,
-      "fallback_roles": []
+      "fallback_roles": [],
+      "status_icons": {
+        "processed": {
+          "source": "Papirus/22x22/actions/object-select.svg",
+          "commit": "33d971eb2d0c8454bac58246687de78e58f960c8",
+          "license": "GPL-3.0",
+          "original": "processed.svg",
+          "sha256": "c40548e1825634eb7f1f245c9708b6fb12af74b84f6306550265d39bae843a1a",
+          "tint": "#23883b",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        },
+        "unprocessed": {
+          "source": "Papirus/22x22/symbolic/status/checkbox-symbolic.svg",
+          "commit": "33d971eb2d0c8454bac58246687de78e58f960c8",
+          "license": "GPL-3.0",
+          "original": "unprocessed.svg",
+          "sha256": "28a0c83ebcdfa0b4287e633dcc37eb29e217ed5726cbab2393f74499330c5c21",
+          "tint": "#737b80",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        }
+      }
     },
     "We10X": {
       "id": "we10x",
@@ -474,7 +539,27 @@
       },
       "authors": "",
       "own_role_count": 19,
-      "fallback_roles": []
+      "fallback_roles": [],
+      "status_icons": {
+        "processed": {
+          "source": "src/actions/22/dialog-ok-apply.svg",
+          "commit": "0f52ff2dce554146f8f76ab2c7a5968fd773400d",
+          "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)",
+          "original": "processed.svg",
+          "sha256": "a6a1159351e952ba602cccea827740aa5fe9aec18b7eb9fa7be74c545b641c8b",
+          "tint": "#168441",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        },
+        "unprocessed": {
+          "source": "src/status/symbolic/checkbox-symbolic.svg",
+          "commit": "0f52ff2dce554146f8f76ab2c7a5968fd773400d",
+          "license": "GPL-3.0 (upstream COPYING; Yaru attribution in AUTHORS)",
+          "original": "unprocessed.svg",
+          "sha256": "868d6021c98d2d1a9729820a92ba010196268f9a8062e29c821f9f8e9f661bfc",
+          "tint": "#777b7f",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        }
+      }
     },
     "Oxygen": {
       "id": "oxygen",
@@ -726,7 +811,22 @@
       "license": "LGPL-3.0-or-later",
       "authors": "The Oxygen Team; Nuno Pinheiro, David Vignoni, David Miller, Johann Ollivier Lapeyre, Kenneth Wimer, Riccardo Iaconelli",
       "own_role_count": 19,
-      "fallback_roles": []
+      "fallback_roles": [],
+      "status_icons": {
+        "processed": {
+          "source": "22x22/actions/dialog-ok-apply.png",
+          "commit": "f7c05b7e0417e39eae17b9272c8880d488985bf9",
+          "license": "LGPL-3.0-or-later",
+          "original": "processed.png",
+          "sha256": "347356687d78df580bf1d098505dea530a99cea97ea602b00b97fb98a12fba3e"
+        },
+        "unprocessed": {
+          "source": "EDPD original artwork",
+          "license": "EDPD project LICENSE (no separate grant)",
+          "original": "unprocessed.svg",
+          "sha256": "b4fd7a282cf311455ab3a3a9691f8d04d7b9913cd2c15e02df1d7b13390701aa"
+        }
+      }
     },
     "Win10Sur": {
       "id": "win10sur",
@@ -878,7 +978,27 @@
       "license": "GPL-3.0",
       "authors": "yeyushengfan258; OSX_ONE source credited by AUTHORS",
       "own_role_count": 19,
-      "fallback_roles": []
+      "fallback_roles": [],
+      "status_icons": {
+        "processed": {
+          "source": "src/actions/16/dialog-ok-apply.svg",
+          "commit": "2f41287774dffb79946f41aa2a20b90ee22aa648",
+          "license": "GPL-3.0",
+          "original": "processed.svg",
+          "sha256": "d30d615acd37e98d46647ace18f5ebd3a30e215a498280f85641ada2b5bc4a88",
+          "tint": "#218345",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        },
+        "unprocessed": {
+          "source": "src/status/symbolic/checkbox-symbolic.svg",
+          "commit": "2f41287774dffb79946f41aa2a20b90ee22aa648",
+          "license": "GPL-3.0",
+          "original": "unprocessed.svg",
+          "sha256": "868d6021c98d2d1a9729820a92ba010196268f9a8062e29c821f9f8e9f661bfc",
+          "tint": "#6c7479",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        }
+      }
     },
     "Oxylite": {
       "id": "oxylite",
@@ -1263,7 +1383,22 @@
       "own_role_count": 18,
       "fallback_roles": [
         "width"
-      ]
+      ],
+      "status_icons": {
+        "processed": {
+          "source": "actions/dialog-apply.svg",
+          "commit": "59f49b202ad2db33c50dc8d67b7961f47786bc87",
+          "license": "LGPL-3.0-or-later",
+          "original": "processed.svg",
+          "sha256": "9d5fdc8468bc84b29644db131d0b4163316f316300182825faca8d68e1ffc9d5"
+        },
+        "unprocessed": {
+          "source": "EDPD original artwork",
+          "license": "EDPD project LICENSE (no separate grant)",
+          "original": "unprocessed.svg",
+          "sha256": "ed0ac66b37385480cb4c76ba905e6c34e5747f2a8aba86be0df3beabf1af6b3b"
+        }
+      }
     },
     "WhiteSur": {
       "id": "whitesur",
@@ -1434,7 +1569,27 @@
       "license": "GPL-3.0",
       "authors": "Vince Liuice and original SVG metadata authors",
       "own_role_count": 19,
-      "fallback_roles": []
+      "fallback_roles": [],
+      "status_icons": {
+        "processed": {
+          "source": "src/actions/24/dialog-ok-apply.svg",
+          "commit": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+          "license": "GPL-3.0",
+          "original": "processed.svg",
+          "sha256": "1c375bf75b60ba712452dd697cc92cfac48558b7249557b3e94c6f0cb820c88b",
+          "tint": "#29854c",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        },
+        "unprocessed": {
+          "source": "src/status/symbolic/checkbox-symbolic.svg",
+          "commit": "73d8040da51a9ed74e47c7366e7e9ff437601a5c",
+          "license": "GPL-3.0",
+          "original": "unprocessed.svg",
+          "sha256": "868d6021c98d2d1a9729820a92ba010196268f9a8062e29c821f9f8e9f661bfc",
+          "tint": "#81878c",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        }
+      }
     },
     "Diagonal": {
       "id": "diagonal",
@@ -1584,9 +1739,29 @@
       "source": "https://github.com/tamascsabi/Diagonal-icon-theme",
       "commit": "9191af03b7251efe9e45ed9fd0fdeb527d5949e8",
       "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices",
-      "authors": "Tamás Csaba; credits in AUTHORS.md and original SVG metadata",
+      "authors": "Tam\u00e1s Csaba; credits in AUTHORS.md and original SVG metadata",
       "own_role_count": 19,
-      "fallback_roles": []
+      "fallback_roles": [],
+      "status_icons": {
+        "processed": {
+          "source": "base/actions/16/dialog-ok-apply.svg",
+          "commit": "9191af03b7251efe9e45ed9fd0fdeb527d5949e8",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices",
+          "original": "processed.svg",
+          "sha256": "ffc100fb293178fb30bc3f6df99a16e5aecdf97358c171e29becc5f8fb621b4b",
+          "tint": "#238037",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        },
+        "unprocessed": {
+          "source": "base/actions/16/checkbox.svg",
+          "commit": "9191af03b7251efe9e45ed9fd0fdeb527d5949e8",
+          "license": "CC-BY-4.0 (icons; upstream declaration); retained per-file notices",
+          "original": "unprocessed.svg",
+          "sha256": "b7136793acbc484501ff330f873f7669b7ee97cfef835134975a018812fc8b74",
+          "tint": "#72797e",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        }
+      }
     },
     "Modern Office Day": {
       "id": "modern-office",
@@ -1730,7 +1905,24 @@
         "width",
         "zoom_in",
         "zoom_out"
-      ]
+      ],
+      "status_icons": {
+        "processed": {
+          "source": "actions/16/dialog-ok-apply.svg",
+          "commit": "7c6466eeccac0809fa411f70da760dfafcfcc10b",
+          "license": "GPL-3.0 (theme); retained upstream notices",
+          "original": "processed.svg",
+          "sha256": "c79ebfb7542d1560eb856002d51db44020a5470e697014f384f4b2287fe69c1f",
+          "tint": "#227b39",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        },
+        "unprocessed": {
+          "source": "EDPD original artwork",
+          "license": "EDPD project LICENSE (no separate grant)",
+          "original": "unprocessed.svg",
+          "sha256": "d49b5f05df8c08320b3d00c8447cb2b9cbedb32fb9b1e043b7aacb6b3da9ab05"
+        }
+      }
     },
     "SE98": {
       "id": "se98",
@@ -1878,7 +2070,24 @@
       "own_role_count": 18,
       "fallback_roles": [
         "width"
-      ]
+      ],
+      "status_icons": {
+        "processed": {
+          "source": "SE98/actions/22/dialog-ok.png",
+          "commit": "a837b57a47242d6eefe63cadc9e6906a5be7e7a6",
+          "license": "GPL-2.0 (upstream repository declaration); individual Microsoft-derived artwork rights not independently established",
+          "original": "processed.png",
+          "sha256": "fb856906ebe9c05b3af1e25dec7b9ccfe57fff4be1837bc26af9b7fd8a083451",
+          "tint": "#168331",
+          "adaptation": "Original alpha silhouette, recolored with light contrast outline"
+        },
+        "unprocessed": {
+          "source": "EDPD original artwork",
+          "license": "EDPD project LICENSE (no separate grant)",
+          "original": "unprocessed.svg",
+          "sha256": "41b78ccf997a7097fed5a7047352b1b634705a515b8ca166a65661e29c24fa43"
+        }
+      }
     }
   }
 }

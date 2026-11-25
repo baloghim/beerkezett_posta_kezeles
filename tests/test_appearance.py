@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QDialogButtonBox, QLabel, QStyleFactory, QWidget
 from edpd import __version__
 from edpd.config import Settings
 from edpd.ui.about_dialog import AboutDialog
-from edpd.ui.appearance import apply_style, ui_style_choices
+from edpd.ui.appearance import apply_style, current_style_name, ui_style_choices
 from edpd.ui.main_window import MainWindow
 from edpd.ui.pdf_viewer import PDFViewer
 from edpd.ui.settings_dialog import SettingsDialog
@@ -135,9 +135,10 @@ def test_failed_settings_save_keeps_running_style(app, folders, tmp_path, monkey
     window.configure()
     wait_for(app, lambda: errors and not window.jobs)
     assert window.settings.qt_style == 'Fusion'
-    assert app.style().objectName() == 'fusion'
+    assert current_style_name() == 'fusion'
+    assert window.settings.ui_style == 'Windows XP Luna Blue'
     window.close()
-    assert Settings.load().qt_style == 'Fusion'
+    assert Settings.load().ui_style == 'Windows XP Luna Blue'
 
 
 def test_about_button_labels_and_dialog(app, folders, tmp_path, monkeypatch):

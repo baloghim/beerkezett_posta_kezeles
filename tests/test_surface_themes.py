@@ -32,7 +32,7 @@ def restore_surface(app):
 
 def test_choices_cancel_and_old_configuration(app,tmp_path):
     settings=Settings()
-    assert settings.surface_theme=='Alapértelmezett'
+    assert settings.surface_theme==LUNA
     path=tmp_path/'settings.json'
     path.write_text('{"source":"archive","target":"workspace"}')
     assert Settings.load(path).surface_theme=='Alapértelmezett'
@@ -45,10 +45,10 @@ def test_choices_cancel_and_old_configuration(app,tmp_path):
     assert tuple(dialog.style_combo.itemData(i) for i in range(dialog.style_combo.count())
                  if dialog.style_combo.itemData(i) in CUSTOM_SURFACES)==CUSTOM_SURFACES
     assert not hasattr(dialog, 'surface_combo')
-    assert dialog.style_combo.currentData()=='Fusion'
+    assert dialog.style_combo.currentData()==LUNA
     dialog.style_combo.setCurrentText('Longhorn Blue')
     dialog.reject()
-    assert path.read_bytes()==before and settings.surface_theme=='Alapértelmezett'
+    assert path.read_bytes()==before and settings.surface_theme==LUNA
     assert manager().name=='Alapértelmezett'
 
 
@@ -124,7 +124,7 @@ def test_selected_status_colours_are_actually_painted(app,folders,surface):
     window.resize(1600,900)
     table=window.day_table
     table.setRowCount(3)
-    states=('Feldolgozva','Részben kicsomagolva','Hibás csomag')
+    states=('Kicsomagolva','Részben kicsomagolva','Hibás csomag')
     for row,state in enumerate(states):
         window.fill(table,row,['2026.11.14.','synthetic.zip','2',state],appearance=row_appearance(state))
     set_theme(surface)
@@ -146,9 +146,8 @@ def test_selected_status_colours_are_actually_painted(app,folders,surface):
             for y in range(capture.height()):
                 for x in range(capture.width()):
                     c=capture.pixelColor(x,y)
-                    if surface==LUNA:
+                    if surface==LUNA or row==0:
                         good=max(abs(c.red()-expected_colour.red()),abs(c.green()-expected_colour.green()),abs(c.blue()-expected_colour.blue()))<15
-                    elif row==0: good=c.green()>c.red()*1.4 and c.green()>c.blue()*1.2
                     elif row==1: good=c.red()>c.green()*1.25 and c.green()>c.blue()*1.7
                     else: good=c.red()>c.green()*1.5 and c.red()>c.blue()*1.5
                     coloured+=bool(good)

@@ -4,7 +4,6 @@ import zipfile
 from pathlib import Path
 import pytest
 from PySide2.QtCore import Qt,QTimer
-from PySide2.QtGui import QColor
 from PySide2.QtWidgets import QMenu
 from edpd.config import Settings
 from edpd.models import Capabilities
@@ -31,9 +30,9 @@ def test_workspace_day_order_selection_and_responsive_columns(app,folders,pdf_by
     assert window.work_keys[window.docs_table.currentRow()]=='z.pdf'
     assert window.viewer.pdf is pdf and window.viewer.filename=='z.pdf'
     assert window.docs_table.item(window.docs_table.currentRow(),1).toolTip()=='z.pdf'
-    for table,ratios in [(window.day_table,(.18,.44,.10,.28)),(window.docs_table,(.21,.64,.15))]:
+    for table,ratios in [(window.day_table,(.17,.43,.09,.23,.08)),(window.docs_table,(.21,.64,.15))]:
         table.apply_widths()
-        assert sum(table.columnWidth(i) for i in range(table.columnCount()))==table.viewport().width()
+        assert sum(table.columnWidth(i) for i in range(table.columnCount()))==max(table.viewport().width(),sum(table.minimum_widths))
         for i,ratio in enumerate(ratios):
             assert table.columnWidth(i)>=table.minimum_widths[i]
             if all(table.viewport().width()*r>=m for r,m in zip(ratios,table.minimum_widths)):
@@ -78,16 +77,20 @@ def test_local_processed_marks_menu_target_and_viewer_exclusion(app,folders,pdf_
     window.show_day_menu(point);wait_for(app,lambda:not window.jobs)
     assert menu_items==['ZIP-csomag PDF-jeinek megtekintése…','Feldolgozva']
     assert packet_id(folders[0],day) in store.read()
-    assert window.day_table.item(0,3).text()=='Feldolgozva • Nincs kicsomagolva'
-    assert all(window.day_table.item(0,c).foreground().color()==QColor('#167235') for c in range(4))
+    assert window.day_table.item(0,3).text()=='Nincs kicsomagolva'
+    assert all(not window.day_table.item(0,c).font().bold() for c in range(5))
+    assert window.day_table.item(0,4).toolTip()=='Feldolgozva'
     assert not list(folders[1].glob('*.pdf'))
     window.close()
     restarted=MainWindow(Settings(source=str(folders[0]),target=str(folders[1]),history_days=None));restarted.show()
     wait_for(app,lambda:restarted.days and not restarted.jobs)
     assert restarted.processed_action.text()=='Feldolgozás visszavonása'
-    assert 'Feldolgozva' in restarted.day_table.item(0,3).text()
+    assert restarted.day_table.item(0,3).text()=='Nincs kicsomagolva'
+    assert restarted.day_table.item(0,4).toolTip()=='Feldolgozva'
     restarted.mark_day(restarted.days[0]);wait_for(app,lambda:not restarted.jobs)
-    assert not store.read();restarted.close()
+    assert not store.read()
+    assert restarted.day_table.item(0,4).toolTip()=='Nincs feldolgozva'
+    restarted.close()
     viewer=MainWindow(Settings(source=str(folders[0]),target=str(folders[1])),Capabilities.viewer());viewer.show()
     wait_for(app,lambda:viewer.days and not viewer.jobs)
     assert not viewer.processed_action.isVisible()

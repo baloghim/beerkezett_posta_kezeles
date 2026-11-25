@@ -8,7 +8,8 @@ from PySide2.QtGui import QColor, QBrush, QPalette, QFontMetrics
 from .. import __version__, DISPLAY_NAME
 from PySide2.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QSplitter, QLabel, QTableWidget,
                               QTableWidgetItem, QAbstractItemView, QMessageBox, QToolBar, QHeaderView,
-                              QDialog, QPushButton, QAction, QSizePolicy, QToolButton, QHBoxLayout)
+                              QDialog, QPushButton, QAction, QSizePolicy, QToolButton, QHBoxLayout,
+                              QApplication, QStyle, QStyleOptionViewItem)
 from ..config import cache_directory
 from ..file_service import FileService, validate_paths
 from ..models import Capabilities
@@ -53,8 +54,6 @@ class Snapshot:
 
 
 def row_appearance(state):
-    if state == 'Feldolgozva':
-        return '#167235', False
     if state == 'Kicsomagolva':
         return '#000000', True
     if state == 'Részben kicsomagolva':
@@ -62,6 +61,19 @@ def row_appearance(state):
     if state in ('Hibás csomag', 'Fájlütközés'):
         return '#ad2525', True
     return None, False
+
+
+class ProcessedIconDelegate(StatusItemDelegate):
+    def paint(self, painter, option, index):
+        cell = QStyleOptionViewItem(option)
+        self.initStyleOption(cell, index)
+        status_icon = cell.icon
+        cell.features = cell.features & ~QStyleOptionViewItem.HasDecoration
+        style = cell.widget.style() if cell.widget else QApplication.style()
+        style.drawControl(QStyle.CE_ItemViewItem, cell, painter, cell.widget)
+        size = min(cell.rect.width(), cell.rect.height(), 22)
+        bounds = QStyle.alignedRect(cell.direction, Qt.AlignCenter, QSize(size, size), cell.rect)
+        status_icon.paint(painter, bounds)
 
 
 class MainWindow(QMainWindow, BrowserWidgets):
@@ -145,14 +157,23 @@ class MainWindow(QMainWindow, BrowserWidgets):
         controls_layout.addWidget(self.about_button)
         self.split = QSplitter(Qt.Orientation.Horizontal)
         self.left = QSplitter(Qt.Orientation.Vertical)
-        self.day_table = self.table(['Dátum', 'Csomag azonosítója / ZIP neve', 'PDF-ek', 'Állapot'], (.18, .44, .10, .28))
+        self.day_table = self.table(['Dátum', 'Csomag azonosítója / ZIP neve', 'PDF-ek', 'Állapot', 'Feldolgozva'],
+                                    (.17, .43, .09, .23, .08))
         self.docs_table = self.table(['Dátum', 'Fájlnév', 'Méret'], (.21, .64, .15))
         self.day_table.setItemDelegate(StatusItemDelegate(self.day_table))
+        self.day_table.setItemDelegateForColumn(4, ProcessedIconDelegate(self.day_table))
         bold_font = self.day_table.font()
         bold_font.setBold(True)
         metrics = QFontMetrics(bold_font)
         date_width = metrics.horizontalAdvance('2000.00.00.') + 12
-        self.day_table.minimum_widths = (date_width, 100, metrics.horizontalAdvance('PDF-ek') + 16, 80)
+        header_metrics = self.day_table.horizontalHeader().fontMetrics()
+        header_widths = tuple(header_metrics.horizontalAdvance(
+            self.day_table.horizontalHeaderItem(col).text()) + 18 for col in range(5))
+        self.day_table.minimum_widths = (
+            max(date_width, header_widths[0]), header_widths[1], header_widths[2],
+            max(metrics.horizontalAdvance('Részben kicsomagolva') + 12, header_widths[3]),
+            header_widths[4],
+        )
         self.docs_table.minimum_widths = (date_width, 80, 60)
         self.docs_table.horizontalHeaderItem(0).setToolTip('Az eredeti napi ZIP-csomag dátuma. Ismeretlen eredetnél Ismeretlen.')
         top = self.panel('EDPD mappa tartalma', self.day_table)
@@ -171,7 +192,7 @@ class MainWindow(QMainWindow, BrowserWidgets):
         self.viewer.saved.connect(lambda path: self.statusBar().showMessage('PDF mentve: ' + path, 10000))
         self.split.addWidget(self.left)
         self.split.addWidget(self.viewer)
-        self.split.setSizes([560, 1040])
+        self.split.setSizes([780, 820])
         self.setCentralWidget(self.split)
         self.day_table.itemSelectionChanged.connect(self.select_day)
         self.day_table.itemDoubleClicked.connect(lambda *_: self.extract())
@@ -355,12 +376,19 @@ class MainWindow(QMainWindow, BrowserWidgets):
         row = 0
         for index, day in enumerate(self.days):
             state = snapshot.archive.states[day.date]
-            marked = packet_id(self.source_identity, day, canonical=True) in self.processed
-            display = 'Feldolgozva • ' + state if marked else state
-            color, bold = row_appearance('Feldolgozva' if marked else state)
             self.fill(self.day_table, index,
-                      [day.date.strftime('%Y.%m.%d.'), ', '.join(p.name for p in day.archives), str(len(day.documents)), display],
-                      appearance=(color, bold), tooltip=day.error or display)
+                      [day.date.strftime('%Y.%m.%d.'), ', '.join(p.name for p in day.archives), str(len(day.documents)), state, ''],
+                      appearance=row_appearance(state), tooltip=day.error or state)
+            self.day_table.item(index, 2).setTextAlignment(Qt.AlignCenter)
+            marker = self.day_table.item(index, 4)
+            if self.mark_error:
+                marker.setToolTip(self.mark_error)
+            else:
+                marked = packet_id(self.source_identity, day, canonical=True) in self.processed
+                role = 'processed' if marked else 'unprocessed'
+                marker.setData(Qt.UserRole, role)
+                marker.setIcon(icon(role))
+                marker.setToolTip('Feldolgozva' if marked else 'Nincs feldolgozva')
             self.day_table.item(index, 1).setIcon(icon('warning' if day.error or state == 'Fájlütközés' else 'zip'))
             if selected and day.date == selected.date:
                 row = index
@@ -711,6 +739,11 @@ class MainWindow(QMainWindow, BrowserWidgets):
             for row, day in enumerate(self.days):
                 state = self.archive_model.states.get(day.date, '')
                 self.day_table.item(row, 1).setIcon(icon('warning' if day.error or state == 'Fájlütközés' else 'zip'))
+                marker = self.day_table.item(row, 4)
+                if marker is not None:
+                    role = marker.data(Qt.UserRole)
+                    if role:
+                        marker.setIcon(icon(role))
             for row in range(self.docs_table.rowCount()):
                 self.docs_table.item(row, 1).setIcon(icon('pdf'))
         finally:

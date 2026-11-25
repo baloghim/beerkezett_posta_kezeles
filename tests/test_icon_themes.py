@@ -21,10 +21,10 @@ def reset_theme(app):
 
 def test_choices_defaults_persistence_and_unavailable_theme(app,tmp_path):
     settings=Settings()
-    assert settings.icon_theme=='Crystal SVG'
+    assert settings.icon_theme=='SE98'
     dialog=SettingsDialog(settings,None)
     assert tuple(dialog.icon_combo.itemText(i) for i in range(dialog.icon_combo.count()))==THEME_NAMES
-    assert dialog.icon_combo.currentText()=='Crystal SVG'
+    assert dialog.icon_combo.currentText()=='SE98'
     dialog.icon_combo.setCurrentText('Papirus')
     candidate=dialog.result_settings()
     candidate.save(tmp_path/'settings.json')
@@ -69,7 +69,7 @@ def test_missing_role_uses_crystal_then_qt(app,tmp_path):
 def test_all_visible_roles_switch_without_reloading_data(app,folders,monkeypatch,theme):
     source,target=folders
     (target/'test.pdf').write_bytes(b'synthetic')
-    window=MainWindow(Settings(source=str(source),target=str(target)))
+    window=MainWindow(Settings(source=str(source),target=str(target),icon_theme='Crystal SVG'))
     window.show()
     wait_for(app,lambda:window.source_generation>0 and not window.jobs)
     app_id=icon('app').cacheKey()

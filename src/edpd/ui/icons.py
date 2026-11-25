@@ -55,7 +55,13 @@ class IconThemeManager(QObject):
         else:
             record = self.manifest['themes'].get(self.name, {})
             paths = []
-            if self.name != 'Crystal SVG' and role in record.get('icons', {}):
+            if role in ('processed', 'unprocessed'):
+                if role in record.get('status_icons', {}):
+                    paths = [self.root / 'themes' / record['id'] / str(size) / (role + '.png') for size in (22,40)]
+                if not any(path.is_file() for path in paths):
+                    source = 'Crystal SVG'
+                    paths = [self.root / 'themes' / 'crystal' / str(size) / (role + '.png') for size in (22,40)]
+            elif self.name != 'Crystal SVG' and role in record.get('icons', {}):
                 paths = [self.root / 'themes' / record['id'] / str(size) / (role + '.png') for size in (22,40)]
             if not any(path.is_file() for path in paths):
                 source = 'Crystal SVG'
