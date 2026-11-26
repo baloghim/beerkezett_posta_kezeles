@@ -364,3 +364,96 @@ def test_access_notice_only_allocates_space_for_errors(app, folders):
         assert not window.statusBar().currentMessage()
     finally:
         window.close()
+
+
+@pytest.mark.parametrize('style', ['Fusion', 'Windows', 'WindowsVista', 'Windows XP Luna Blue',
+                                   'Longhorn Blue', 'Longhorn Slate'])
+def test_both_selected_rows_stay_visible_without_focus(app, folders, pdf_bytes, style):
+    from PySide2.QtGui import QColor, QPalette
+    from PySide2.QtWidgets import QStyleFactory
+
+    from edpd.surface_styles import CUSTOM_SURFACES
+
+    if style not in CUSTOM_SURFACES and style not in QStyleFactory.keys():
+        pytest.skip(f'{style} is unavailable on this platform')
+
+    source, _ = folders
+    archive(source, '20261116_A.zip', [('one.pdf', pdf_bytes)])
+    archive(source, '20261115_B.zip', [('two.pdf', pdf_bytes)])
+    window = ViewerWindow(ViewerSettings(source=str(source), ui_style=style), today_provider=lambda: TODAY)
+    window.show()
+    window.activateWindow()
+    day, docs = window.day_table, window.docs_table
+
+    for table in (day, docs):
+        palette = table.palette()
+        palette.setColor(QPalette.Inactive, QPalette.Highlight, QColor('#eaeaea'))
+        palette.setColor(QPalette.Inactive, QPalette.HighlightedText, QColor('#5a5a5a'))
+        table.setPalette(palette)
+
+    def row_background(table, row=0):
+        viewport = table.viewport()
+        picture = viewport.grab()
+        bitmap = picture.toImage()
+        dpr = picture.devicePixelRatio()
+        colours = []
+        for column in range(table.columnCount()):
+            rect = table.visualItemRect(table.item(row, column))
+            x = int((rect.right() - 4) * dpr)
+            y = int((rect.top() + 4) * dpr)
+            assert bitmap.rect().contains(x, y)
+            colours.append(bitmap.pixelColor(x, y).getRgb()[:3])
+        return colours
+
+    def assert_same_highlight(focused, unfocused):
+        # A native focus indicator can tint the current cell slightly.
+        for active, inactive in zip(focused, unfocused):
+            assert max(abs(a - b) for a, b in zip(active, inactive)) <= 18, (focused, unfocused)
+
+    try:
+        wait(app, lambda: day.rowCount() == 2 and not window.jobs)
+        day.setFocus()
+        wait(app, day.hasFocus)
+        day_focused = row_background(day)
+        day_unselected = row_background(day, 1)
+        assert all(highlight != plain for highlight, plain in zip(day_focused, day_unselected))
+
+        docs.setCurrentCell(0, 0)
+        docs.setFocus()
+        wait(app, lambda: docs.hasFocus() and window.viewer.pdf and not window.jobs)
+        doc_focused = row_background(docs)
+        assert day.currentRow() == 0 and not day.hasFocus()
+        assert_same_highlight(day_focused, row_background(day))
+
+        day.setFocus()
+        wait(app, day.hasFocus)
+        assert_same_highlight(doc_focused, row_background(docs))
+        assert docs.currentRow() == 0
+
+        # The refresh path must retain both logical selections and their paint.
+        window.refresh()
+        wait(app, lambda: not window.jobs)
+        assert day.currentRow() == docs.currentRow() == 0
+        assert_same_highlight(day_focused, row_background(day))
+        assert_same_highlight(doc_focused, row_background(docs))
+
+        day.setCurrentCell(1, 0)
+        app.processEvents()
+        assert day.currentRow() == 1
+        assert_same_highlight(day_focused, row_background(day, 1))
+        assert row_background(day) != day_focused
+        assert docs.item(0, 0).text() == 'two.pdf'
+
+        from edpd.ui.appearance import apply_settings_style
+        for table in (day, docs):
+            table.setPalette(QPalette())
+        apply_settings_style(ViewerSettings(ui_style='Longhorn Blue' if style == 'Windows XP Luna Blue'
+                                           else 'Windows XP Luna Blue'))
+        app.processEvents()
+        changed = row_background(day, 1)
+        assert all(highlight != plain for highlight, plain in zip(changed, row_background(day)))
+        docs.setFocus()
+        wait(app, docs.hasFocus)
+        assert_same_highlight(changed, row_background(day, 1))
+    finally:
+        window.close()

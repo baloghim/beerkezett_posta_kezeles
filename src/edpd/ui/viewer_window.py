@@ -3,9 +3,10 @@ from datetime import date
 from dataclasses import replace
 from pathlib import Path
 from PySide2.QtCore import Qt, QTimer, QSize, QByteArray, QThreadPool
+from PySide2.QtGui import QPalette
 from PySide2.QtWidgets import (QMainWindow, QToolBar, QSplitter, QLabel,
                               QTableWidgetItem, QDialog, QMessageBox, QWidget, QHBoxLayout,
-                              QSizePolicy, QToolButton)
+                              QSizePolicy, QToolButton, QStyle, QStyledItemDelegate, QStyleOptionViewItem, QApplication)
 from .. import __version__
 from ..config import viewer_cache_directory
 from ..paths import directory
@@ -18,6 +19,7 @@ from .icons import icon, manager, set_theme
 from .appearance import apply_settings_style
 from .settings_dialog import SettingsDialog
 from .about_dialog import AboutDialog
+from .themes import manager as surface_manager
 from .themes.widgets import ThemeStatusBar
 
 
@@ -31,6 +33,24 @@ def check_source(settings):
 
 def document_key(doc):
     return str(doc.archive), doc.member
+
+
+class ViewerSelectionDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        if not (option.state & QStyle.State_Selected and option.state & QStyle.State_Enabled):
+            return super().paint(painter, option, index)
+
+        selected = QStyleOptionViewItem(option)
+        self.initStyleOption(selected, index)
+        # Native styles can consult both the active flag and the palette group.
+        # Keep the real focus flag for the keyboard focus indicator.
+        selected.state |= QStyle.State_Active
+        for role in (QPalette.Highlight, QPalette.HighlightedText):
+            selected.palette.setBrush(QPalette.Inactive, role, selected.palette.brush(QPalette.Active, role))
+        selected.palette.setCurrentColorGroup(QPalette.Active)
+        widget = selected.widget
+        style = widget.style() if widget else QApplication.style()
+        style.drawControl(QStyle.CE_ItemViewItem, selected, painter, widget)
 
 
 class ViewerWindow(QMainWindow, BrowserWidgets):
@@ -92,6 +112,8 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
         self.split, self.left = QSplitter(Qt.Horizontal), QSplitter(Qt.Vertical)
         self.day_table = self.table(['Dátum', 'Csomag azonosítója / ZIP neve', 'PDF-ek'], (.23, .62, .15))
         self.docs_table = self.table(['Fájlnév', 'Méret', 'Forrás ZIP'], (.45, .15, .40))
+        for table in (self.day_table, self.docs_table):
+            table.setItemDelegate(ViewerSelectionDelegate(table))
         top = self.panel('EDPD mappa tartalma', self.day_table)
         self.access_notice = QLabel()
         self.access_notice.setWordWrap(True)
@@ -120,8 +142,23 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
             if value:
                 restore(QByteArray.fromBase64(value.encode()))
         manager().subscribe(self)
+        surface_manager().subscribe(self)
+        self.refresh_surface()
         if auto_refresh:
             QTimer.singleShot(0, self.refresh)
+
+    def refresh_surface(self):
+        selection_style = ''
+        if surface_manager().active:
+            palette = QApplication.palette()
+            background = palette.color(QPalette.Active, QPalette.Highlight).name()
+            text = palette.color(QPalette.Active, QPalette.HighlightedText).name()
+            # The surface stylesheet can source selection colours from the
+            # widget rather than the delegate's temporary palette.
+            selection_style = (f'QTableWidget::item:selected {{ background: {background}; '
+                               f'color: {text}; }}')
+        for table in (self.day_table, self.docs_table):
+            table.setStyleSheet(selection_style)
 
     def show_about(self):
         AboutDialog(self).exec_()
