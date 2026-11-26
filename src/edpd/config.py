@@ -21,6 +21,7 @@ class Settings:
     surface_theme: str = 'Alapértelmezett'
     ui_style: str = ''
     shared_workspace: bool = False
+    default_pdf_save_dir: str = ''
 
     def __post_init__(self):
         # A fresh Manager profile has no native style to migrate.
@@ -35,7 +36,8 @@ class Settings:
             self.surface_theme = 'Alapértelmezett'
         if not isinstance(self.qt_style, str) or (type(self) is Settings and not self.qt_style):
             self.qt_style = 'Fusion'
-        for key in ('source', 'target') if hasattr(self, 'target') else ('source',):
+        keys = ('source', 'default_pdf_save_dir')
+        for key in (*keys, 'target') if hasattr(self, 'target') else keys:
             value = getattr(self, key)
             if not isinstance(value, str):
                 raise ValueError('Érvénytelen mappaútvonal.')
@@ -115,6 +117,8 @@ class ViewerSettings:
     icon_theme: str = 'Crystal SVG'
     surface_theme: str = 'Alapértelmezett'
     ui_style: str = ''
+
+    default_pdf_save_dir: str = ''
 
     __post_init__ = Settings.__post_init__
     load = classmethod(Settings.load.__func__)

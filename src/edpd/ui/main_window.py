@@ -17,6 +17,7 @@ from ..paths import directory
 from ..state_service import inventory, day_status
 from ..zip_service import ZipService, read_document, MAX_PDF
 from .pdf_viewer import PDFViewer
+from ..pdf_export import check_pdf_save_directory
 from .icons import icon, manager, set_theme, ThemedMenu as QMenu
 from .settings_dialog import SettingsDialog, check_settings
 from .browser_widgets import BrowserWidgets
@@ -199,6 +200,7 @@ class MainWindow(QMainWindow, BrowserWidgets):
         self.left.addWidget(self.workspace_panel)
         self.viewer = PDFViewer()
         self.viewer.set_paths(settings.source, settings.target)
+        self.viewer.set_pdf_save_dir(settings.default_pdf_save_dir)
         self.viewer.saved.connect(lambda path: self.statusBar().showMessage('PDF mentve: ' + path, 10000))
         self.split.addWidget(self.left)
         self.split.addWidget(self.viewer)
@@ -821,6 +823,8 @@ class MainWindow(QMainWindow, BrowserWidgets):
             mark_storage_changed = (candidate.shared_workspace != previous.shared_workspace
                                     or (candidate.shared_workspace and candidate.target != previous.target))
             def save():
+                if path_changed or candidate.default_pdf_save_dir != previous.default_pdf_save_dir:
+                    check_pdf_save_directory(candidate)
                 if path_changed:
                     check_settings(candidate)
                 if self.capabilities.processed and candidate.shared_workspace and (mark_storage_changed or path_changed):
@@ -829,6 +833,7 @@ class MainWindow(QMainWindow, BrowserWidgets):
                 return candidate
             def saved(value):
                 self.settings = value
+                self.viewer.set_pdf_save_dir(value.default_pdf_save_dir)
                 if mark_storage_changed:
                     self.processed = frozenset()
                     self.shared_state = None

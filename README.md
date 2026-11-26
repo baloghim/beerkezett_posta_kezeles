@@ -1,10 +1,10 @@
 # EDPD Menedzser és EDPD Betekintő
 
-## Két önálló Windows-program – 2.7.0
+## Két önálló Windows-program – 2.7.1
 
-[**EDPD Menedzser 2.7.0 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.7.0/EDPD-Manager-Windows-x64.zip)
+[**EDPD Menedzser 2.7.1 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.7.1/EDPD-Manager-Windows-x64.zip)
 
-[**EDPD Betekintő 2.7.0 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.7.0/EDPD-Betekinto-Windows-x64.zip)
+[**EDPD Betekintő 2.7.1 – Windows x64**](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.7.1/EDPD-Betekinto-Windows-x64.zip)
 
 A **Menedzser** a teljes dokumentumkezelő: kicsomagolás, munkamappa, törlés és helyi feldolgozottsági jelölés. A **Betekintő** a napi ZIP-eket és azok PDF-jeit közvetlenül böngészi, nyomtatja és egyenként menti; munkamappát nem használ. Külön EXE, saját beállítások és példányvédelem, közös ZIP/PDF-, téma- és felületi komponensek. Mindkettő önállóan és egymás mellett is futtatható.
 
@@ -21,9 +21,13 @@ Az új indítóképernyő korai visszajelzést ad, a hálózati betöltés a fő
 
 ## Windows letöltés
 
-**[EDPD Menedzser 2.7.0 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.7.0/EDPD-Manager-Windows-x64.zip)**
+**[EDPD Menedzser 2.7.1 – Windows-verzió letöltése](https://github.com/baloghim/beerkezett_posta_kezeles/releases/download/v2.7.1/EDPD-Manager-Windows-x64.zip)**
 
 **A 2.6.3 Windows-kiadás elkészült és letöltéssel ellenőrizve van.** Windows XP Luna Blue, mind a 12 meglévő ikontémával. 188 sikeres Windows-teszt, nyolc csomagolt EXE-futtatás 160 sikeres funkcionális ellenőrzéssel, 12 indítási tesztcsoport, Blue és Luna 125/150%-os Qt-skálázási próbája. A ZIP SHA-256 és CRC-vizsgálata hibátlan. [Kiadásellenőrzés, képek, méret/indulás és célgépes korlátok](docs/RELEASE-2.6.3.md).
+
+## PDF-mentési mappa (2.7.1)
+
+Mindkét alkalmazás a Windows aktuális Dokumentumok mappájából indítja a PDF-mentést. A **Beállítások → Alapértelmezett PDF-mentési mappa** mezőben alkalmazásonként másik mappa választható. A mező törlésével visszaáll a Dokumentumok mappa követése. Az egyes mentéseknél külön célmappa is megadható.
 
 ## Közös munkamappa a Menedzserben (2.7.0)
 

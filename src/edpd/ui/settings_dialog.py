@@ -5,6 +5,7 @@ from PySide2.QtWidgets import (QDialog, QVBoxLayout, QFormLayout, QLineEdit, QPu
                               QDialogButtonBox, QHBoxLayout, QFileDialog, QSlider, QLabel, QStyleFactory, QGroupBox, QApplication)
 from ..file_service import validate_paths
 from ..paths import normalize_path
+from ..pdf_export import documents_directory
 from .icons import THEME_NAMES
 from .appearance import ui_style_choices, resolve_ui_style
 from .themes.widgets import SurfaceComboBox as QComboBox
@@ -25,6 +26,10 @@ class SettingsDialog(QDialog):
         if not self.viewer_mode:
             self.target = QLineEdit(settings.target)
             paths.append(('Ideiglenes munkamappa', self.target))
+        self.initial_pdf_save_dir = settings.default_pdf_save_dir or documents_directory()
+        self.pdf_save_dir = QLineEdit(self.initial_pdf_save_dir)
+        self.pdf_save_dir.setPlaceholderText('Dokumentumok')
+        paths.append(('Alapértelmezett PDF-mentési mappa', self.pdf_save_dir))
         for title, edit in paths:
             row = QHBoxLayout()
             row.addWidget(edit)
@@ -89,6 +94,7 @@ class SettingsDialog(QDialog):
         path = QFileDialog.getExistingDirectory(self, 'Mappa kiválasztása', edit.text())
         if path:
             edit.setText(path)
+            edit.setModified(True)
 
     def result_settings(self):
         ui_style, qt_style, surface = resolve_ui_style(self.style_combo.currentData())
@@ -96,7 +102,12 @@ class SettingsDialog(QDialog):
             'target': normalize_path(self.target.text()),
             'shared_workspace': self.shared_workspace.isChecked(),
         }
+        pdf_save_dir = normalize_path(self.pdf_save_dir.text())
+        if (not self.original.default_pdf_save_dir and not self.pdf_save_dir.isModified()
+                and self.pdf_save_dir.text() == self.initial_pdf_save_dir):
+            pdf_save_dir = ''
         return replace(self.original, source=normalize_path(self.source.text()), **paths,
+                       default_pdf_save_dir=pdf_save_dir,
                        history_days=self.history.currentData(),
                        refresh_minutes=self.slider.value() * 5, qt_style=qt_style, icon_theme=self.icon_combo.currentText(),
                        surface_theme=surface, ui_style=ui_style)

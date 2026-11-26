@@ -5,8 +5,9 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QToolBar, QScrollArea, QLabe
 from .icons import icon, manager
 from .themes import manager as surface_manager
 from ..pdf_service import PDFService
+from ..models import EDPDError
 from ..print_service import print_pdf
-from ..pdf_export import save_pdf, validate_export, target_stamp
+from ..pdf_export import accessible_save_directory, documents_directory, save_pdf, validate_export, target_stamp
 from pathlib import Path
 
 
@@ -65,6 +66,7 @@ class PDFViewer(QWidget):
         super().__init__()
         self.pdf = None
         self.filename = 'dokumentum.pdf'
+        self.default_pdf_save_dir = ''
         self.source_path = self.workspace_path = None
         self.save_job = None
         self.document_folders = ()
@@ -263,10 +265,21 @@ class PDFViewer(QWidget):
     def set_paths(self, source, target):
         self.source_path, self.workspace_path = source, target
 
+    def set_pdf_save_dir(self, path):
+        self.default_pdf_save_dir = path
+
     def save_current(self):
         if not self.pdf or self.pdf.document.is_closed or self.save_job is not None:
             return
-        path, _ = QFileDialog.getSaveFileName(self, 'PDF mentése', self.filename,
+        folder = self.default_pdf_save_dir or documents_directory()
+        try:
+            start_path = str(accessible_save_directory(folder) / self.filename)
+        except (OSError, ValueError, EDPDError):
+            name = folder or 'Dokumentumok'
+            QMessageBox.warning(self, 'PDF mentése',
+                                f'A PDF-mentési mappa nem érhető el: {name}\nVálasszon másik célmappát!')
+            start_path = self.filename
+        path, _ = QFileDialog.getSaveFileName(self, 'PDF mentése', start_path,
                                              'PDF-dokumentum (*.pdf)', options=QFileDialog.DontConfirmOverwrite)
         if not path:
             return

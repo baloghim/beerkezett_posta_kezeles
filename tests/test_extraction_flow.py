@@ -37,7 +37,7 @@ def test_old_settings_ignore_removed_keys_without_touching_old_folder(tmp_path, 
     settings.save(path);assert 'shared_data' not in json.loads(path.read_text())
     assert marks.read_bytes()==b'legacy-state'
     dialog=SettingsDialog(settings,None)
-    assert len(dialog.findChildren(QLineEdit))==2
+    assert set(dialog.findChildren(QLineEdit)) == {dialog.source, dialog.target, dialog.pdf_save_dir}
     assert not hasattr(dialog,'shared_data')
     dialog.reject()
 

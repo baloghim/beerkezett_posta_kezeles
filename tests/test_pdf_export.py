@@ -27,6 +27,7 @@ def test_export_preserves_original_multpage_bytes_and_guards_folders(folders,pdf
 
 @pytest.mark.parametrize('response',['cancel_dialog','deny_overwrite','confirm_overwrite'])
 def test_save_dialog_filename_cancel_and_confirm(app,pdf_bytes,tmp_path,monkeypatch,response):
+    monkeypatch.setattr('edpd.ui.pdf_viewer.documents_directory', lambda: str(tmp_path))
     viewer=PDFViewer();viewer.show()
     assert not viewer.save_action.isEnabled()
     viewer.open_data(pdf_bytes,'eredeti.pdf')
@@ -38,13 +39,14 @@ def test_save_dialog_filename_cancel_and_confirm(app,pdf_bytes,tmp_path,monkeypa
     monkeypatch.setattr(QMessageBox,'question',lambda *a:QMessageBox.Yes if response=='confirm_overwrite' else QMessageBox.No)
     errors=[];monkeypatch.setattr(QMessageBox,'warning',lambda *a:errors.append(a[-1]))
     viewer.save_action.trigger();wait_for(app,lambda:viewer.save_job is None)
-    assert suggested==['eredeti.pdf']
+    assert suggested==[str(tmp_path.resolve() / 'eredeti.pdf')]
     assert out.read_bytes()==(pdf_bytes if response=='confirm_overwrite' else b'old')
     assert not errors
     viewer.pdf.close();viewer.close()
 
 
 def test_direct_zip_preview_exports_entire_pdf_with_original_name(app,folders,pdf_bytes,tmp_path,monkeypatch):
+    monkeypatch.setattr('edpd.ui.pdf_viewer.documents_directory', lambda: str(tmp_path))
     source,target=folders
     with zipfile.ZipFile(source/f'{date.today():%Y%m%d}_A.zip','w') as archive:archive.writestr('nested/postai-level.pdf',pdf_bytes)
     window=MainWindow(Settings(source=str(source),target=str(target)));window.show()
@@ -61,6 +63,7 @@ def test_direct_zip_preview_exports_entire_pdf_with_original_name(app,folders,pd
 
 
 def test_loaded_document_keeps_original_archive_guard_after_settings_change(app,folders,pdf_bytes,tmp_path,monkeypatch):
+    monkeypatch.setattr('edpd.ui.pdf_viewer.documents_directory', lambda: str(tmp_path))
     source,target=folders
     viewer=PDFViewer();viewer.set_paths(source,target);viewer.open_data(pdf_bytes,'eredeti.pdf')
     changed_source=tmp_path/'new-source';changed_source.mkdir()

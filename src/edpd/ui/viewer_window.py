@@ -12,6 +12,7 @@ from ..zip_service import ZipService, read_document
 from .browser_widgets import BrowserWidgets
 from .jobs import Job
 from .pdf_viewer import PDFViewer
+from ..pdf_export import check_pdf_save_directory
 from .icons import icon, manager, set_theme
 from .appearance import apply_settings_style
 from .settings_dialog import SettingsDialog
@@ -77,6 +78,7 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
         self.left.addWidget(self.panel('A kiválasztott napi csomag PDF-dokumentumai', self.docs_table))
         self.viewer = PDFViewer()
         self.viewer.set_paths(settings.source, None)
+        self.viewer.set_pdf_save_dir(settings.default_pdf_save_dir)
         self.split.addWidget(self.left)
         self.split.addWidget(self.viewer)
         self.split.setSizes([650, 950])
@@ -272,11 +274,14 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
         def save():
             if source_changed:
                 check_source(candidate)
+            if source_changed or candidate.default_pdf_save_dir != self.settings.default_pdf_save_dir:
+                check_pdf_save_directory(candidate)
             candidate.save()
             return candidate
         def saved(value):
             source_changed = value.source != self.settings.source
             self.settings = value
+            self.viewer.set_pdf_save_dir(value.default_pdf_save_dir)
             apply_settings_style(value)
             value.icon_theme = set_theme(value.icon_theme)
             self.update_timer()

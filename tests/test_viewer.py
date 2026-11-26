@@ -135,6 +135,7 @@ def test_late_preview_cannot_overwrite_new_selection_or_day(browser, app, monkey
 
 
 def test_export_uses_original_bytes_and_rejects_archive_destination(browser, app, tmp_path, monkeypatch, pdf_bytes):
+    monkeypatch.setattr('edpd.ui.pdf_viewer.documents_directory', lambda: str(tmp_path))
     w=browser;w.docs_table.setCurrentCell(0,0);wait(app,lambda:not w.jobs)
     output=tmp_path/'export.pdf'
     monkeypatch.setattr(QFileDialog,'getSaveFileName',lambda *a,**k:(str(output),'PDF'))
