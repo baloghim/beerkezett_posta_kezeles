@@ -374,7 +374,7 @@ def test_both_selected_rows_stay_visible_without_focus(app, folders, pdf_bytes, 
 
     from edpd.surface_styles import CUSTOM_SURFACES
 
-    if style not in CUSTOM_SURFACES and style not in QStyleFactory.keys():
+    if style not in CUSTOM_SURFACES and style.casefold() not in {key.casefold() for key in QStyleFactory.keys()}:
         pytest.skip(f'{style} is unavailable on this platform')
 
     source, _ = folders
