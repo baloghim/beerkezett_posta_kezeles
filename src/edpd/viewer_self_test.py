@@ -80,7 +80,7 @@ def run(report_path, require_windows1607=False, surface_theme='Alapértelmezett'
                 raise AssertionError('Viewer readiness timeout: '+window.access_notice.text())
             wait(lambda: len(window.days)==2 and not window.jobs)
             assert not window.access_notice.text(), window.access_notice.text()
-            assert [a.text() for a in window.main_toolbar.actions()]==['Frissítés','Beállítások']
+            assert [a.text() for a in window.operation_toolbar.actions()]==['Frissítés','Beállítások']
             assert window.day_table.columnCount()==3
             assert window.day_table.contextMenuPolicy()!=__import__('PySide2.QtCore',fromlist=['Qt']).Qt.CustomContextMenu
             result['checks'].append('archive_only_toolbar_columns_no_context_menu')

@@ -4,7 +4,8 @@ from dataclasses import replace
 from pathlib import Path
 from PySide2.QtCore import Qt, QTimer, QSize, QByteArray, QThreadPool
 from PySide2.QtWidgets import (QMainWindow, QToolBar, QSplitter, QLabel,
-                              QTableWidgetItem, QDialog, QMessageBox)
+                              QTableWidgetItem, QDialog, QMessageBox, QWidget, QHBoxLayout,
+                              QSizePolicy, QToolButton)
 from .. import __version__
 from ..config import viewer_cache_directory
 from ..paths import directory
@@ -64,24 +65,50 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
         font.setPointSizeF(points + 2)
         self.main_toolbar.setFont(font)
         self.addToolBar(self.main_toolbar)
-        self.actions = [self.main_toolbar.addAction(icon(role), text, callback) for role, text, callback in
+        self.toolbar_controls = QWidget()
+        self.toolbar_controls.setObjectName('toolbar-controls')
+        self.toolbar_controls.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        controls = QHBoxLayout(self.toolbar_controls)
+        controls.setContentsMargins(0, 0, 0, 0)
+        self.main_toolbar.addWidget(self.toolbar_controls)
+
+        self.operation_toolbar = QToolBar('Műveleti gombok')
+        self.operation_toolbar.setObjectName('operation-toolbar')
+        self.operation_toolbar.setFont(font)
+        self.operation_toolbar.setIconSize(self.main_toolbar.iconSize())
+        self.operation_toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.operation_toolbar.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        controls.addWidget(self.operation_toolbar, 1)
+        self.actions = [self.operation_toolbar.addAction(icon(role), text, callback) for role, text, callback in
                         [('refresh', 'Frissítés', self.refresh), ('settings', 'Beállítások', self.configure)]]
-        self.menuBar().addMenu('Súgó').addAction('Névjegy', self.show_about)
+        self.about_button = QToolButton()
+        self.about_button.setIcon(icon('about'))
+        self.about_button.setIconSize(self.main_toolbar.iconSize())
+        self.about_button.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.about_button.setToolTip('Névjegy')
+        self.about_button.setAccessibleName('Névjegy')
+        self.about_button.clicked.connect(self.show_about)
+        controls.addWidget(self.about_button)
         self.split, self.left = QSplitter(Qt.Horizontal), QSplitter(Qt.Vertical)
         self.day_table = self.table(['Dátum', 'Csomag azonosítója / ZIP neve', 'PDF-ek'], (.23, .62, .15))
         self.docs_table = self.table(['Fájlnév', 'Méret', 'Forrás ZIP'], (.45, .15, .40))
         top = self.panel('EDPD mappa tartalma', self.day_table)
         self.access_notice = QLabel()
         self.access_notice.setWordWrap(True)
+        self.access_notice.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.access_notice.hide()
         top.layout().insertWidget(1, self.access_notice)
         self.left.addWidget(top)
-        self.left.addWidget(self.panel('A kiválasztott napi csomag PDF-dokumentumai', self.docs_table))
+        documents_panel = self.panel('A kiválasztott napi csomag PDF-dokumentumai', self.docs_table)
+        documents_panel.title_label.setWordWrap(True)
+        self.left.addWidget(documents_panel)
+        self.left.setSizes([468, 432])
         self.viewer = PDFViewer()
         self.viewer.set_paths(settings.source, None)
         self.viewer.set_pdf_save_dir(settings.default_pdf_save_dir)
         self.split.addWidget(self.left)
         self.split.addWidget(self.viewer)
-        self.split.setSizes([650, 950])
+        self.split.setSizes([400, 1200])
         self.setCentralWidget(self.split)
         self.day_table.itemSelectionChanged.connect(self.select_day)
         self.docs_table.itemSelectionChanged.connect(self.select_document)
@@ -101,6 +128,7 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
 
     def error(self, text):
         self.access_notice.setText('Hiba: ' + text)
+        self.access_notice.show()
         self.statusBar().showMessage('Hiba: ' + text)
 
     def submit(self, function, success, failure=None, finished=None):
@@ -159,6 +187,8 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
             selected_key = document_key(doc) if doc else None
             self.days, self.entries = result
             self.access_notice.clear()
+            self.access_notice.hide()
+            self.statusBar().clearMessage()
             self.day_table.blockSignals(True)
             self.day_table.setRowCount(len(self.days))
             for row, item in enumerate(self.days):
@@ -168,6 +198,7 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
                     cell.setToolTip(item.error)
                     if column == 1:
                         cell.setIcon(icon('warning' if item.error else 'zip'))
+                    cell.setTextAlignment(Qt.AlignCenter if column != 1 else Qt.AlignLeft | Qt.AlignVCenter)
                     self.day_table.setItem(row, column, cell)
             row = next((i for i, d in enumerate(self.days) if d.date == selected_date), 0 if self.days else -1)
             self.day_table.setCurrentCell(row, 0)
@@ -207,6 +238,7 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
                 cell.setToolTip(doc.member)
                 if column == 0:
                     cell.setIcon(icon('pdf'))
+                cell.setTextAlignment(Qt.AlignCenter if column != 0 else Qt.AlignLeft | Qt.AlignVCenter)
                 self.docs_table.setItem(row, column, cell)
             if document_key(doc) == selected_key:
                 selected = row
@@ -298,6 +330,7 @@ class ViewerWindow(QMainWindow, BrowserWidgets):
     def refresh_icons(self):
         for action, role in zip(self.actions, ('refresh', 'settings')):
             action.setIcon(icon(role))
+        self.about_button.setIcon(icon('about'))
         for row, day in enumerate(self.days):
             self.day_table.item(row, 1).setIcon(icon('warning' if day.error else 'zip'))
         for row in range(len(self.documents)):

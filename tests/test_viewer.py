@@ -74,7 +74,7 @@ def test_viewer_never_calls_workspace_services(app, tmp_path, pdf_bytes, monkeyp
 
 def test_viewer_ui_and_duplicate_identity(browser, app, pdf_bytes):
     w=browser
-    assert [a.text() for a in w.main_toolbar.actions()]==['Frissítés','Beállítások']
+    assert [a.text() for a in w.operation_toolbar.actions()]==['Frissítés','Beállítások']
     assert w.day_table.columnCount()==3
     assert w.day_table.contextMenuPolicy()==Qt.DefaultContextMenu
     assert not hasattr(w,'extract') and not hasattr(w,'delete') and not hasattr(w,'processed_action')
@@ -260,3 +260,107 @@ def test_daily_size_limit_blocks_preview(browser, app, monkeypatch):
     browser.docs_table.setCurrentCell(0, 0)
     app.processEvents()
     assert browser.viewer.pdf is None and not browser.jobs
+
+
+def test_default_splitter_ratios_and_saved_positions(app, folders):
+    settings = ViewerSettings(source=str(folders[0]), ui_style='Windows XP Luna Blue')
+    window = ViewerWindow(settings, auto_refresh=False)
+    window.show()
+    for width in (1600, 1920):
+        window.resize(width, 900)
+        app.processEvents()
+        horizontal, vertical = window.split.sizes(), window.left.sizes()
+        assert horizontal[0] / sum(horizontal) == pytest.approx(.25, abs=.025)
+        assert vertical[0] / sum(vertical) == pytest.approx(.52, abs=.025)
+    window.split.moveSplitter(640, 1)
+    window.left.moveSplitter(300, 1)
+    app.processEvents()
+    horizontal, vertical = window.split.sizes(), window.left.sizes()
+    assert horizontal[0] == pytest.approx(640, abs=4)
+    assert vertical[0] == pytest.approx(300, abs=4)
+    window.close()
+
+    reopened = ViewerWindow(ViewerSettings.load(), auto_refresh=False)
+    reopened.show()
+    try:
+        app.processEvents()
+        for splitter, original in ((reopened.split, horizontal), (reopened.left, vertical)):
+            sizes = splitter.sizes()
+            assert sizes[0] / sum(sizes) == pytest.approx(original[0] / sum(original), abs=.02)
+    finally:
+        reopened.close()
+
+
+def test_table_alignment_remains_after_refresh(browser, app):
+    for _ in range(2):
+        for table, center in ((browser.day_table, {0, 2}), (browser.docs_table, {1, 2})):
+            assert table.rowCount() > 0
+            for row in range(table.rowCount()):
+                for col in range(table.columnCount()):
+                    alignment = Qt.AlignCenter if col in center else Qt.AlignLeft | Qt.AlignVCenter
+                    assert table.item(row, col).textAlignment() == int(alignment)
+        browser.refresh()
+        wait(app, lambda: not browser.jobs)
+
+
+def test_toolbar_about_stays_at_right_and_tracks_theme(browser, app, monkeypatch):
+    from PySide2.QtCore import QPoint
+    from edpd.ui.about_dialog import AboutDialog
+    from edpd.ui.icons import icon, manager, set_theme
+
+    button = browser.about_button
+    assert browser.menuWidget() is None
+    assert button.toolButtonStyle() == Qt.ToolButtonIconOnly
+    assert button.iconSize().width() == button.iconSize().height() == 40
+    assert button.toolTip() == 'Névjegy'
+    for width in (1600, 850):
+        browser.resize(width, 800)
+        app.processEvents()
+        controls = browser.toolbar_controls
+        assert button.isVisible()
+        assert controls.width() - button.geometry().right() <= 2
+        actions_edge = browser.operation_toolbar.mapToGlobal(QPoint(0, 0)).x()
+        assert actions_edge < button.mapToGlobal(QPoint(0, 0)).x()
+
+    dialogs = []
+    monkeypatch.setattr(AboutDialog, 'exec_', lambda dialog: dialogs.append(dialog))
+    button.click()
+    assert len(dialogs) == 1 and 'EDPD Betekintő' in dialogs[0].info.toPlainText()
+    previous = manager().name
+    try:
+        original = button.icon().cacheKey()
+        set_theme('SE98')
+        assert icon('about').cacheKey() == button.icon().cacheKey() != original
+    finally:
+        set_theme(previous)
+
+
+def test_access_notice_only_allocates_space_for_errors(app, folders):
+    source, _ = folders
+    window = ViewerWindow(ViewerSettings(source=str(source / 'missing'), ui_style='Windows XP Luna Blue'),
+                          auto_refresh=False)
+    window.show()
+    app.processEvents()
+
+    def gap(table):
+        title = table.parentWidget().title_label
+        return table.y() - title.geometry().bottom() - 1
+
+    try:
+        assert not window.access_notice.isVisible()
+        assert gap(window.day_table) == gap(window.docs_table)
+        normal_gap = gap(window.day_table)
+        window.refresh()
+        wait(app, lambda: not window.jobs)
+        assert window.access_notice.isVisible()
+        assert 'nem olvasható' in window.access_notice.text()
+        wait(app, lambda: gap(window.day_table) > normal_gap)
+
+        window.settings.source = str(source)
+        window.refresh()
+        wait(app, lambda: not window.jobs)
+        assert not window.access_notice.isVisible() and not window.access_notice.text()
+        wait(app, lambda: gap(window.day_table) == normal_gap)
+        assert not window.statusBar().currentMessage()
+    finally:
+        window.close()

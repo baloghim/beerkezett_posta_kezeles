@@ -1,3 +1,3 @@
 """Helyi, telemetria nélküli postai csomagkezelő."""
-__version__ = "2.7.1"
+__version__ = "2.7.2"
 DISPLAY_NAME = "EDPD Menedzser"
