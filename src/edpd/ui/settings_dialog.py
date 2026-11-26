@@ -20,24 +20,20 @@ class SettingsDialog(QDialog):
         layout = QVBoxLayout(self)
         form = QFormLayout()
         layout.addLayout(form)
-        self.source = QLineEdit(settings.source)
-        self.viewer_mode = not hasattr(settings, 'target')
-        paths = [('Forrásarchívum (csak olvasás)', self.source)]
-        if not self.viewer_mode:
-            self.target = QLineEdit(settings.target)
-            paths.append(('Ideiglenes munkamappa', self.target))
-        self.initial_pdf_save_dir = settings.default_pdf_save_dir or documents_directory()
-        self.pdf_save_dir = QLineEdit(self.initial_pdf_save_dir)
-        self.pdf_save_dir.setPlaceholderText('Dokumentumok')
-        paths.append(('Alapértelmezett PDF-mentési mappa', self.pdf_save_dir))
-        for title, edit in paths:
+        def add_path_row(title, edit):
             row = QHBoxLayout()
             row.addWidget(edit)
             browse = QPushButton('Tallózás…')
             browse.clicked.connect(lambda checked=False, e=edit: self.browse(e))
             row.addWidget(browse)
             form.addRow(title, row)
+
+        self.source = QLineEdit(settings.source)
+        self.viewer_mode = not hasattr(settings, 'target')
+        add_path_row('Forrásarchívum (csak olvasás)', self.source)
         if not self.viewer_mode:
+            self.target = QLineEdit(settings.target)
+            add_path_row('Ideiglenes munkamappa', self.target)
             self.shared_workspace = QCheckBox('Ez egy közös mappa')
             self.shared_workspace.setChecked(settings.shared_workspace)
             explanation = QLabel('A feldolgozottsági jelzőket az ezt a munkamappát használó '
@@ -47,6 +43,10 @@ class SettingsDialog(QDialog):
             shared.addWidget(self.shared_workspace)
             shared.addWidget(explanation)
             form.addRow('', shared)
+        self.initial_pdf_save_dir = settings.default_pdf_save_dir or documents_directory()
+        self.pdf_save_dir = QLineEdit(self.initial_pdf_save_dir)
+        self.pdf_save_dir.setPlaceholderText('Dokumentumok')
+        add_path_row('Alapértelmezett PDF-mentési mappa', self.pdf_save_dir)
         self.history = QComboBox()
         for days in (14, 30, 90, 180, None):
             self.history.addItem(f'{days} nap' if days is not None else 'Összes', days)
